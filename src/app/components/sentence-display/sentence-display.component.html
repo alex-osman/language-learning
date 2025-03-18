@@ -1,0 +1,79 @@
+<div class="container">
+  <!-- Fixed Sidebar for Currently Highlighted -->
+  <div class="highlight-sidebar">
+    <div class="debug-section">
+      <strong>Currently Highlighted:</strong>
+      <div class="debug-row">
+        <span class="debug-label">Characters:</span>
+        <span class="debug-value text-chinese">
+          {{ currentHighlighted?.characters || "—" }}
+        </span>
+      </div>
+      <div class="debug-row">
+        <span class="debug-label">Pinyin:</span>
+        <span class="debug-value text-pinyin">
+          {{ currentHighlighted?.pinyin || "—" }}
+        </span>
+      </div>
+      <div class="debug-row">
+        <span class="debug-label">Definition:</span>
+        <span class="debug-value">
+          {{ currentHighlighted?.definition || "—" }}
+        </span>
+      </div>
+      <div class="debug-row" *ngIf="currentHighlighted?.audioUrls?.length">
+        <span class="debug-label">Audio:</span>
+        <span class="debug-value">
+          <button 
+            *ngFor="let url of currentHighlighted?.audioUrls; let i = index"
+            class="audio-button"
+            (click)="playAudio(url)"
+            >
+            Syllable {{ i + 1 }}
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <h2>Language Learning Sentences</h2>
+      <div>
+          <a  
+            href="https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table"
+            >Interactive Pinyin Chart</a
+          >
+          <br />
+          <br />
+      </div>
+      <div class="controls">
+        <div class="select-buttons">
+          <button class="control-button" (click)="selectAll()">Select All</button>
+          <button class="control-button" (click)="clearAll()">Clear All</button>
+        </div>
+        <div class="checkbox-group">
+          <label *ngFor="let lang of languages" class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="selectedLanguages.includes(lang)"
+              (change)="toggleLanguage(lang)"
+            />
+            {{ lang }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sentence-grid">
+      <app-sentence
+        *ngFor="let sentence of sentences"
+        [sentence]="sentence"
+        [displayLanguages]="displayLanguages"
+        [showStructure]="true"
+        (wordHighlighted)="onWordHighlighted($event)"
+      ></app-sentence>
+    </div>
+  </div>
+</div>
