@@ -70,12 +70,17 @@
 
 .chinese-char,
 .pinyin-syllable {
-  cursor: pointer;
-  padding: 2px;
-  
-  &.highlighted {
-    background-color: #fff3cd;
-    border-radius: 2px;
+  &:not(.punctuation) {
+    cursor: pointer;
+    
+    &.highlighted {
+      background-color: #fff3cd;
+      border-radius: 2px;
+    }
+  }
+
+  &.punctuation {
+    cursor: default;
   }
 }
 

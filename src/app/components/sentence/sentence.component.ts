@@ -51,10 +51,19 @@ export class SentenceComponent implements OnInit, OnDestroy {
   }
 
   isHighlighted(mapping: CharacterMapping): boolean {
+    // Don't show highlight if it's punctuation
+    if (this.pinyinService.checkPunctuation(mapping.char)) {
+      return false;
+    }
     return this.highlightedGroup === mapping.groupIndex;
   }
 
   highlightGroup(mapping: CharacterMapping) {
+    // Don't highlight if it's punctuation
+    if (this.pinyinService.checkPunctuation(mapping.char)) {
+      return;
+    }
+
     if (this.highlightedGroup !== mapping.groupIndex) {
       this.highlightedGroup = mapping.groupIndex;
       
@@ -178,5 +187,9 @@ export class SentenceComponent implements OnInit, OnDestroy {
     });
 
     return audioUrls;
+  }
+
+  public isPunctuation(char: string): boolean {
+    return this.pinyinService.checkPunctuation(char);
   }
 } 

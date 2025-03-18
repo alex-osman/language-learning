@@ -1,0 +1,48 @@
+<div class="sentence-card">
+  <div class="audio-controls">
+    <button 
+      class="play-button fast" 
+      [class.playing]="isPlayingFast"
+      (click)="playSentenceAudio(false)">
+      <span class="icon">{{ isPlayingFast ? '⏹️' : '🔊' }}</span>
+      <span class="label">{{ isPlayingFast ? 'Stop' : 'Normal' }}</span>
+    </button>
+    <button 
+      class="play-button slow" 
+      [class.playing]="isPlayingSlow"
+      (click)="playSentenceAudio(true)">
+      <span class="icon">{{ isPlayingSlow ? '⏹️' : '🔊' }}</span>
+      <span class="label">{{ isPlayingSlow ? 'Stop' : 'Slower' }}</span>
+    </button>
+  </div>
+  <ng-container *ngFor="let lang of displayLanguages">
+    <p class="language-line" [class]="'text-' + lang.toLowerCase()">
+      <strong>{{ lang }}:</strong>
+      <ng-container *ngIf="lang === 'Chinese'">
+        <span
+          *ngFor="let mapping of sentence.characterMappings"
+          class="chinese-char"
+          [class.punctuation]="isPunctuation(mapping.char)"
+          [class.highlighted]="isHighlighted(mapping)"
+          (mouseenter)="highlightGroup(mapping)"
+          (click)="playHighlightedAudio()"
+          >{{ mapping.char }}</span
+        >
+      </ng-container>
+      <ng-container *ngIf="lang === 'Pinyin'">
+        <span
+          *ngFor="let mapping of sentence.characterMappings"
+          class="pinyin-syllable"
+          [class.punctuation]="isPunctuation(mapping.char)"
+          [class.highlighted]="isHighlighted(mapping)"
+          (mouseenter)="highlightGroup(mapping)"
+          (click)="playHighlightedAudio()"
+          >{{ mapping.pinyin }}{{ needsSpace(mapping) ? " " : "" }}</span
+        >
+      </ng-container>
+      <ng-container *ngIf="lang !== 'Chinese' && lang !== 'Pinyin'">
+        {{ getLanguageText(lang) }}
+      </ng-container>
+    </p>
+  </ng-container>
+</div> 
