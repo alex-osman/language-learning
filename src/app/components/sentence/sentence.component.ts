@@ -1,54 +1,19 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sentence, CharacterMapping } from '../../interfaces/sentence.interface';
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
+import { SpeechService } from '../../services/speech.service';
+import { Subscription, combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-sentence',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="sentence-card">
-      <div class="sentence-header">
-        <button class="play-button" (click)="playSentenceAudio()">
-          Play Sentence
-        </button>
-      </div>
-      <ng-container *ngFor="let lang of displayLanguages">
-        <p class="language-line" [class]="'text-' + lang.toLowerCase()">
-          <strong>{{ lang }}:</strong>
-          <ng-container *ngIf="lang === 'Chinese'">
-            <span
-              *ngFor="let mapping of sentence.characterMappings"
-              class="chinese-char"
-              [class.highlighted]="isHighlighted(mapping)"
-              (mouseenter)="highlightGroup(mapping)"
-              (click)="playHighlightedAudio()"
-              >{{ mapping.char }}</span
-            >
-          </ng-container>
-          <ng-container *ngIf="lang === 'Pinyin'">
-            <span
-              *ngFor="let mapping of sentence.characterMappings"
-              class="pinyin-syllable"
-              [class.highlighted]="isHighlighted(mapping)"
-              (mouseenter)="highlightGroup(mapping)"
-              (click)="playHighlightedAudio()"
-              >{{ mapping.pinyin }}{{ needsSpace(mapping) ? " " : "" }}</span
-            >
-          </ng-container>
-          <ng-container *ngIf="lang !== 'Chinese' && lang !== 'Pinyin'">
-            {{ getLanguageText(lang) }}
-          </ng-container>
-        </p>
-      </ng-container>
-
-    </div>
-  `,
+  templateUrl: './sentence.component.html',
   styleUrls: ['./sentence.component.scss']
 })
-export class SentenceComponent implements OnInit {
+export class SentenceComponent implements OnInit, OnDestroy {
   @Input() sentence!: Sentence;
   @Input() displayLanguages: string[] = ['Chinese', 'Pinyin'];
   @Input() showStructure = false;
@@ -56,10 +21,34 @@ export class SentenceComponent implements OnInit {
 
   highlightedGroup: number = -1;
   currentHighlighted: ChineseWord | undefined = undefined;
+  isPlayingSlow = false;
+  isPlayingFast = false;
+  private subscriptions = new Subscription();
 
-  constructor(private pinyinService: PinyinService) {}
+  constructor(private pinyinService: PinyinService, private speechService: SpeechService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Combine both speaking status and current sentence subscriptions
+    this.subscriptions.add(
+      combineLatest([
+        this.speechService.speaking$,
+        this.speechService.currentSentence$
+      ]).subscribe({
+        next: ([speaking, currentSentence]) => {
+          // Only show as playing if this sentence is the current one
+          this.isPlayingFast = speaking && currentSentence === this.sentence.chinese;
+        },
+        error: (error) => {
+          console.error('Speech service error:', error);
+          this.isPlayingFast = false;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
 
   isHighlighted(mapping: CharacterMapping): boolean {
     return this.highlightedGroup === mapping.groupIndex;
@@ -117,10 +106,54 @@ export class SentenceComponent implements OnInit {
     }
   }
 
-  async playSentenceAudio() {
-    const audioUrls = this.getSentenceAudioUrls();
-    for (const url of audioUrls) {
-      await this.pinyinService.playAudioFile(url);
+  async playSentenceAudio(slow: boolean = false) {
+    // If clicking the same button that's currently playing, just stop
+    if ((slow && this.isPlayingSlow) || (!slow && this.isPlayingFast)) {
+      if (slow) {
+        this.isPlayingSlow = false;
+      } else {
+        this.speechService.stop();
+      }
+      return;
+    }
+
+    // Stop any ongoing playback
+    if (this.isPlayingSlow || this.isPlayingFast) {
+      if (this.isPlayingFast) {
+        this.speechService.stop();
+      }
+      this.isPlayingSlow = false;
+      this.isPlayingFast = false;
+    }
+
+    if (slow) {
+      try {
+        this.isPlayingSlow = true;
+        const audioUrls = this.getSentenceAudioUrls();
+        for (const url of audioUrls) {
+          if (!this.isPlayingSlow) break; // Check if stopped
+          await this.pinyinService.playAudioFile(url);
+        }
+      } catch (error) {
+        console.error('Slow audio playback error:', error);
+      } finally {
+        // Only reset if this component's slow playback is active
+        if (this.isPlayingSlow) {
+          this.isPlayingSlow = false;
+        }
+      }
+    } else {
+      try {
+        this.isPlayingFast = true;
+        await this.speechService.speak(this.sentence.chinese);
+      } catch (error) {
+        console.error('Speech synthesis error:', error);
+      } finally {
+        // Only reset if this component's fast playback is active
+        if (this.isPlayingFast) {
+          this.isPlayingFast = false;
+        }
+      }
     }
   }
 

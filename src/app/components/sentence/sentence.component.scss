@@ -1,8 +1,8 @@
 .sentence-card {
-  border: 1px solid #e2e2e2;
-  padding: 16px;
+  position: relative;
+  padding: 1rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sentence-header {
@@ -11,32 +11,54 @@
   margin-bottom: 12px;
 }
 
+.audio-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .play-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #10b981;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f0f0f0;
 
-  &:hover {
-    background-color: #059669;
+  &.fast {
+    background-color: #e3f2fd;
+    &:hover { background-color: #bbdefb; }
+    &.playing { background-color: #90caf9; }
   }
 
-  &:active {
-    background-color: #047857;
+  &.slow {
+    background-color: #e8f5e9;
+    &:hover { background-color: #c8e6c9; }
+    &.playing { background-color: #a5d6a7; }
+  }
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &.playing {
+    background-color: #bdbdbd;
+  }
+
+  .icon {
+    font-size: 1.2em;
+  }
+
+  .label {
+    font-size: 0.9em;
   }
 }
 
 .language-line {
-  margin: 12px 0;
-  font-size: 16px;
-  line-height: 1.6;
+  margin: 0.5rem 0;
 }
 
 /* Language-specific styles */
@@ -46,14 +68,13 @@
   line-height: 1.8;
 }
 
-.chinese-char {
-  display: inline-block;
+.chinese-char,
+.pinyin-syllable {
   cursor: pointer;
-  padding: 0 1px;
-  transition: all 0.2s;
-
+  padding: 2px;
+  
   &.highlighted {
-    background-color: #fef3c7;
+    background-color: #fff3cd;
     border-radius: 2px;
   }
 }
@@ -62,18 +83,6 @@
   font-family: 'Noto Sans', sans-serif;
   font-size: 16px;
   color: #4a5568;
-}
-
-.pinyin-syllable {
-  display: inline-block;
-  cursor: pointer;
-  padding: 0 1px;
-  transition: all 0.2s;
-
-  &.highlighted {
-    background-color: #fef3c7;
-    border-radius: 2px;
-  }
 }
 
 .text-english {
