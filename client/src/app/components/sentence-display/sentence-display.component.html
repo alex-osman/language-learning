@@ -1,0 +1,48 @@
+<div class="container">
+  <!-- Highlight Sidebar Component -->
+  <app-highlight-sidebar
+    [currentHighlighted]="currentHighlighted"
+    (audioRequested)="playAudio($event)"
+  ></app-highlight-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <h2>Language Learning Sentences</h2>
+
+      <div>
+        <p>Currently Highlighting: {{ currentHighlighted | json }}</p>
+      </div>
+      
+      <!-- Sentence Selector -->
+      <div class="sentence-selector">
+        <button 
+          *ngFor="let s of sentences; let i = index"
+          (click)="selectSentence(s)"
+          [class.active]="s === activeSentence"
+          class="sentence-button">
+          Sentence {{i + 1}}
+        </button>
+      </div>
+
+      <div class="controls">
+        <!-- Language Controls Component -->
+        <app-language-controls
+          [languages]="languages"
+          [selectedLanguages]="selectedLanguages"
+          (selectedLanguagesChange)="onSelectedLanguagesChange($event)"
+        ></app-language-controls>
+      </div>
+    </div>
+
+    <!-- Active Sentence -->
+    <app-sentence
+      *ngIf="activeSentence"
+      [sentence]="activeSentence"
+      [displayLanguages]="displayLanguages"
+      [showStructure]="true"
+      [forceStop]="forceStopCounter"
+      (wordHighlighted)="onWordHighlighted($event)"
+    ></app-sentence>
+  </div>
+</div>
