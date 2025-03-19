@@ -30,14 +30,22 @@
 
   &.fast {
     background-color: #e3f2fd;
-    &:hover { background-color: #bbdefb; }
-    &.playing { background-color: #90caf9; }
+    &:hover {
+      background-color: #bbdefb;
+    }
+    &.playing {
+      background-color: #90caf9;
+    }
   }
 
   &.slow {
     background-color: #e8f5e9;
-    &:hover { background-color: #c8e6c9; }
-    &.playing { background-color: #a5d6a7; }
+    &:hover {
+      background-color: #c8e6c9;
+    }
+    &.playing {
+      background-color: #a5d6a7;
+    }
   }
 
   &:hover {
@@ -72,7 +80,7 @@
 .pinyin-syllable {
   &:not(.punctuation) {
     cursor: pointer;
-    
+
     &.highlighted {
       background-color: #fff3cd;
       border-radius: 2px;
@@ -91,12 +99,12 @@
 }
 
 .text-english {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #2d3748;
 }
 
 .text-french {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #2d3748;
   font-style: italic;
 }
@@ -156,7 +164,7 @@ strong {
 
 .structure-sentence {
   position: relative;
-  
+
   &:not(:last-child)::after {
     content: '';
     display: block;
@@ -180,10 +188,30 @@ strong {
   .language-line {
     margin: 0.5rem 0;
     line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
 
     strong {
       color: #666;
       margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .text-with-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+
+      app-copy-button {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover app-copy-button {
+        opacity: 1;
+      }
     }
   }
 
@@ -191,7 +219,8 @@ strong {
     font-size: 1.2rem;
   }
 
-  .chinese-char, .pinyin-syllable {
+  .chinese-char,
+  .pinyin-syllable {
     display: inline-block;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -208,7 +237,7 @@ strong {
 
     &.punctuation {
       cursor: default;
-      
+
       &:hover {
         background-color: transparent;
       }
@@ -222,4 +251,4 @@ strong {
   .pinyin-syllable {
     padding: 0.1rem 0.2rem;
   }
-} 
+}

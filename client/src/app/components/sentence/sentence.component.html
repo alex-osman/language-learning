@@ -5,37 +5,42 @@
     (stop)="onStop()"
     (mp3)="onMp3()"
   ></app-audio-controls>
-  
+
   <div class="language-lines">
     <ng-container *ngFor="let lang of displayLanguages">
       <p class="language-line" [class]="'text-' + lang.toLowerCase()">
         <strong>{{ lang }}:</strong>
-        <ng-container *ngIf="lang === 'Chinese'">
-          <span
-            *ngFor="let mapping of sentence.characterMappings"
-            class="chinese-char"
-            [class.punctuation]="isPunctuation(mapping.char)"
-            [class.highlighted]="isHighlighted(mapping)"
-            (mouseenter)="highlightGroup(mapping)"
-            (click)="playHighlightedAudio()"
-            >{{ mapping.char }}</span
-          >
-        </ng-container>
-        <ng-container *ngIf="lang === 'Pinyin'">
-          <span
-            *ngFor="let mapping of sentence.characterMappings"
-            class="pinyin-syllable"
-            [class.punctuation]="isPunctuation(mapping.char)"
-            [class.highlighted]="isHighlighted(mapping)"
-            (mouseenter)="highlightGroup(mapping)"
-            (click)="playHighlightedAudio()"
-            >{{ mapping.pinyin }}{{ needsSpace(mapping) ? " " : "" }}</span
-          >
-        </ng-container>
-        <ng-container *ngIf="lang !== 'Chinese' && lang !== 'Pinyin'">
-          {{ getLanguageText(lang) }}
-        </ng-container>
+        <span class="text-with-copy">
+          <ng-container *ngIf="lang === 'Chinese'">
+            <span
+              *ngFor="let mapping of sentence.characterMappings"
+              class="chinese-char"
+              [class.punctuation]="isPunctuation(mapping.char)"
+              [class.highlighted]="isHighlighted(mapping)"
+              (mouseenter)="highlightGroup(mapping)"
+              (click)="playHighlightedAudio()"
+              >{{ mapping.char }}</span
+            >
+            <app-copy-button [text]="sentence.chinese"></app-copy-button>
+          </ng-container>
+          <ng-container *ngIf="lang === 'Pinyin'">
+            <span
+              *ngFor="let mapping of sentence.characterMappings"
+              class="pinyin-syllable"
+              [class.punctuation]="isPunctuation(mapping.char)"
+              [class.highlighted]="isHighlighted(mapping)"
+              (mouseenter)="highlightGroup(mapping)"
+              (click)="playHighlightedAudio()"
+              >{{ mapping.pinyin }}{{ needsSpace(mapping) ? ' ' : '' }}</span
+            >
+            <app-copy-button [text]="sentence.pinyin"></app-copy-button>
+          </ng-container>
+          <ng-container *ngIf="lang !== 'Chinese' && lang !== 'Pinyin'">
+            <span>{{ getLanguageText(lang) }}</span>
+            <app-copy-button [text]="getLanguageText(lang)"></app-copy-button>
+          </ng-container>
+        </span>
       </p>
     </ng-container>
   </div>
-</div> 
+</div>

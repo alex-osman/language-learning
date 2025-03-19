@@ -9,21 +9,19 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  Sentence,
-  CharacterMapping,
-} from '../../interfaces/sentence.interface';
+import { Sentence, CharacterMapping } from '../../interfaces/sentence.interface';
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { SpeechService } from '../../services/speech.service';
 import { Subject, takeUntil, distinctUntilChanged } from 'rxjs';
 import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
 import { PlaybackState } from '../audio-controls/playback-state.enum';
+import { CopyButtonComponent } from '../copy-button/copy-button.component';
 
 @Component({
   selector: 'app-sentence',
   standalone: true,
-  imports: [CommonModule, AudioControlsComponent],
+  imports: [CommonModule, AudioControlsComponent, CopyButtonComponent],
   templateUrl: './sentence.component.html',
   styleUrls: ['./sentence.component.scss'],
 })
@@ -45,10 +43,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private pinyinService: PinyinService,
-    private speechService: SpeechService
-  ) {}
+  constructor(private pinyinService: PinyinService, private speechService: SpeechService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['sentence'] && !changes['sentence'].firstChange) {
@@ -59,22 +54,20 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     // Synchronize playback state with speech service
-    this.speechService.speaking$
-      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe({
-        next: (speaking) => {
-          // Update state
-          if (speaking) {
-            this.updatePlaybackState(PlaybackState.PlayingFast);
-          } else {
-            this.updatePlaybackState(PlaybackState.Stopped);
-          }
-        },
-        error: (error) => {
-          console.error('Failed to monitor speech service state:', error);
+    this.speechService.speaking$.pipe(distinctUntilChanged(), takeUntil(this.destroy$)).subscribe({
+      next: speaking => {
+        // Update state
+        if (speaking) {
+          this.updatePlaybackState(PlaybackState.PlayingFast);
+        } else {
           this.updatePlaybackState(PlaybackState.Stopped);
-        },
-      });
+        }
+      },
+      error: error => {
+        console.error('Failed to monitor speech service state:', error);
+        this.updatePlaybackState(PlaybackState.Stopped);
+      },
+    });
   }
 
   // Helper to update playback state
@@ -107,13 +100,13 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
       this.highlightedGroup = mapping.groupIndex;
 
       const highlightedMappings = this.sentence.characterMappings.filter(
-        (m) => m.groupIndex === this.highlightedGroup
+        m => m.groupIndex === this.highlightedGroup
       );
 
-      const chars = highlightedMappings.map((m) => m.char).join('');
+      const chars = highlightedMappings.map(m => m.char).join('');
       const pinyin = highlightedMappings
-        .map((m) => m.pinyin)
-        .filter((p) => p)
+        .map(m => m.pinyin)
+        .filter(p => p)
         .join(' ');
 
       if (chars) {
@@ -121,7 +114,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
         const audioUrls = this.pinyinService.getAudioUrls(pinyin);
 
         // Now get the individual syllables by converting the URLs back to pinyin
-        const pinyinSyllables = audioUrls.map((url) => {
+        const pinyinSyllables = audioUrls.map(url => {
           // Extract the pinyin from the URL (e.g., from "https://cdn.yoyochinese.com/audio/pychart/zhong1.mp3")
           const syllable = url.split('/').pop()?.replace('.mp3', '') || '';
           // Convert number notation back to tone marks
@@ -143,9 +136,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   needsSpace(mapping: CharacterMapping): boolean {
-    return (
-      !!mapping.pinyin && !this.pinyinService.checkPunctuation(mapping.char)
-    );
+    return !!mapping.pinyin && !this.pinyinService.checkPunctuation(mapping.char);
   }
 
   getLanguageText(lang: string): string {
@@ -221,7 +212,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
     this.onStop();
 
     try {
-      const mp3Path = `/sentence${this.sentence.id}.mp3`;
+      const mp3Path = `/assets/sentence${this.sentence.id}.mp3`;
       this.mp3Audio = new Audio(mp3Path);
 
       this.mp3Audio.addEventListener('ended', () => {
@@ -243,19 +234,14 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
     // Collect pinyin for each group
     this.sentence.characterMappings
-      .filter((mapping) => mapping.pinyin)
-      .forEach((mapping) => {
+      .filter(mapping => mapping.pinyin)
+      .forEach(mapping => {
         const existing = groups.get(mapping.groupIndex) || '';
-        groups.set(
-          mapping.groupIndex,
-          existing ? `${existing} ${mapping.pinyin}` : mapping.pinyin
-        );
+        groups.set(mapping.groupIndex, existing ? `${existing} ${mapping.pinyin}` : mapping.pinyin);
       });
 
     // Get audio URLs for each group's pinyin
-    return Array.from(groups.values()).flatMap((pinyin) =>
-      this.pinyinService.getAudioUrls(pinyin)
-    );
+    return Array.from(groups.values()).flatMap(pinyin => this.pinyinService.getAudioUrls(pinyin));
   }
 
   public isPunctuation(char: string): boolean {
