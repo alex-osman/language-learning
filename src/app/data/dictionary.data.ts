@@ -22,6 +22,8 @@ export const DICTIONARY_DATA = {
     "在": "at, in, on",
     "地方": "place",
     "坐车": "to take a vehicle",
+    "坐": "to sit (take a train/vehicle)",
+    "车": "vehicle",
     "多": "many, much",
     "大": "big",
     "她": "she, her",

@@ -4,7 +4,13 @@ import { Sentence, CharacterMapping } from '../../interfaces/sentence.interface'
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { SpeechService } from '../../services/speech.service';
-import { Subscription, combineLatest } from 'rxjs';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
+
+enum PlaybackState {
+  Stopped = 'stopped',
+  PlayingSlow = 'playing_slow',
+  PlayingFast = 'playing_fast'
+}
 
 @Component({
   selector: 'app-sentence',
@@ -19,35 +25,42 @@ export class SentenceComponent implements OnInit, OnDestroy {
   @Input() showStructure = false;
   @Output() wordHighlighted = new EventEmitter<ChineseWord>();
 
+  readonly PlaybackState = PlaybackState; // Expose enum to template
+  
   highlightedGroup: number = -1;
   currentHighlighted: ChineseWord | undefined = undefined;
-  isPlayingSlow = false;
-  isPlayingFast = false;
-  private subscriptions = new Subscription();
+  playbackState: PlaybackState = PlaybackState.Stopped;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(private pinyinService: PinyinService, private speechService: SpeechService) {}
 
   ngOnInit() {
-    // Combine both speaking status and current sentence subscriptions
-    this.subscriptions.add(
-      combineLatest([
-        this.speechService.speaking$,
-        this.speechService.currentSentence$
-      ]).subscribe({
-        next: ([speaking, currentSentence]) => {
-          // Only show as playing if this sentence is the current one
-          this.isPlayingFast = speaking && currentSentence === this.sentence.chinese;
-        },
-        error: (error) => {
-          console.error('Speech service error:', error);
-          this.isPlayingFast = false;
+    // Monitor speech service state
+    combineLatest([
+      this.speechService.speaking$,
+      this.speechService.currentSentence$
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: ([speaking, currentSentence]) => {
+        // Only show as playing if this sentence is the current one
+        if (speaking && currentSentence === this.sentence.chinese) {
+          this.playbackState = PlaybackState.PlayingFast;
+        } else if (this.playbackState === PlaybackState.PlayingFast) {
+          this.playbackState = PlaybackState.Stopped;
         }
-      })
-    );
+      },
+      error: (error) => {
+        console.error('Speech service error:', error);
+        this.playbackState = PlaybackState.Stopped;
+      }
+    });
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   isHighlighted(mapping: CharacterMapping): boolean {
@@ -128,10 +141,12 @@ export class SentenceComponent implements OnInit, OnDestroy {
   }
 
   async playSentenceAudio(slow: boolean = false) {
+    const targetState = slow ? PlaybackState.PlayingSlow : PlaybackState.PlayingFast;
+    
     // If clicking the same button that's currently playing, just stop
-    if ((slow && this.isPlayingSlow) || (!slow && this.isPlayingFast)) {
+    if (this.playbackState === targetState) {
       if (slow) {
-        this.isPlayingSlow = false;
+        this.playbackState = PlaybackState.Stopped;
       } else {
         this.speechService.stop();
       }
@@ -139,40 +154,39 @@ export class SentenceComponent implements OnInit, OnDestroy {
     }
 
     // Stop any ongoing playback
-    if (this.isPlayingSlow || this.isPlayingFast) {
-      if (this.isPlayingFast) {
+    if (this.playbackState !== PlaybackState.Stopped) {
+      if (this.playbackState === PlaybackState.PlayingFast) {
         this.speechService.stop();
       }
-      this.isPlayingSlow = false;
-      this.isPlayingFast = false;
+      this.playbackState = PlaybackState.Stopped;
     }
 
     if (slow) {
       try {
-        this.isPlayingSlow = true;
+        this.playbackState = PlaybackState.PlayingSlow;
         const audioUrls = this.getSentenceAudioUrls();
         for (const url of audioUrls) {
-          if (!this.isPlayingSlow) break; // Check if stopped
+          if (this.playbackState !== PlaybackState.PlayingSlow) break; // Check if stopped
           await this.pinyinService.playAudioFile(url);
         }
       } catch (error) {
         console.error('Slow audio playback error:', error);
       } finally {
         // Only reset if this component's slow playback is active
-        if (this.isPlayingSlow) {
-          this.isPlayingSlow = false;
+        if (this.playbackState === PlaybackState.PlayingSlow) {
+          this.playbackState = PlaybackState.Stopped;
         }
       }
     } else {
       try {
-        this.isPlayingFast = true;
+        this.playbackState = PlaybackState.PlayingFast;
         await this.speechService.speak(this.sentence.chinese);
       } catch (error) {
         console.error('Speech synthesis error:', error);
       } finally {
         // Only reset if this component's fast playback is active
-        if (this.isPlayingFast) {
-          this.isPlayingFast = false;
+        if (this.playbackState === PlaybackState.PlayingFast) {
+          this.playbackState = PlaybackState.Stopped;
         }
       }
     }

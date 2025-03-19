@@ -6,10 +6,8 @@ import { SentenceDisplayComponent } from './components/sentence-display/sentence
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, SentenceDisplayComponent],
-  template: `
-    <app-sentence-display></app-sentence-display>
-  `,
-  styles: [],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'chinois';

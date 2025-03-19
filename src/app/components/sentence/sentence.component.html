@@ -2,17 +2,17 @@
   <div class="audio-controls">
     <button 
       class="play-button fast" 
-      [class.playing]="isPlayingFast"
+      [class.playing]="playbackState === PlaybackState.PlayingFast"
       (click)="playSentenceAudio(false)">
-      <span class="icon">{{ isPlayingFast ? '⏹️' : '🔊' }}</span>
-      <span class="label">{{ isPlayingFast ? 'Stop' : 'Normal' }}</span>
+      <span class="icon">{{ playbackState === PlaybackState.PlayingFast ? '⏹️' : '🔊' }}</span>
+      <span class="label">{{ playbackState === PlaybackState.PlayingFast ? 'Stop' : 'Normal' }}</span>
     </button>
     <button 
       class="play-button slow" 
-      [class.playing]="isPlayingSlow"
+      [class.playing]="playbackState === PlaybackState.PlayingSlow"
       (click)="playSentenceAudio(true)">
-      <span class="icon">{{ isPlayingSlow ? '⏹️' : '🔊' }}</span>
-      <span class="label">{{ isPlayingSlow ? 'Stop' : 'Slower' }}</span>
+      <span class="icon">{{ playbackState === PlaybackState.PlayingSlow ? '⏹️' : '🔊' }}</span>
+      <span class="label">{{ playbackState === PlaybackState.PlayingSlow ? 'Stop' : 'Slower' }}</span>
     </button>
   </div>
   <ng-container *ngFor="let lang of displayLanguages">

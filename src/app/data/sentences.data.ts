@@ -130,10 +130,11 @@ export const SENTENCE_DATA: Sentence[] = [
         { "char": "远", "pinyin": "yuǎn", "groupIndex": 3 },
         { "char": "，", "pinyin": "", "groupIndex": 4 },
         { "char": "我们", "pinyin": "wǒmen", "groupIndex": 5 },
-        { "char": "坐车", "pinyin": "zuò chē", "groupIndex": 6 },
-        { "char": "去", "pinyin": "qù", "groupIndex": 7 },
-        { "char": "吧", "pinyin": "ba", "groupIndex": 8 },
-        { "char": "！", "pinyin": "", "groupIndex": 9 }
+        { "char": "坐", "pinyin": "zuò", "groupIndex": 6 },
+        { "char": "车", "pinyin": "chē", "groupIndex": 7 },
+        { "char": "去", "pinyin": "qù", "groupIndex": 8 },
+        { "char": "吧", "pinyin": "ba", "groupIndex": 9 },
+        { "char": "！", "pinyin": "", "groupIndex": 10 }
       ]
     },
     {
