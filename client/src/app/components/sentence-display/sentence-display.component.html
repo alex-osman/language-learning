@@ -10,10 +10,6 @@
     <div class="header">
       <h2>Language Learning Sentences</h2>
 
-      <div>
-        <p>Currently Highlighting: {{ currentHighlighted | json }}</p>
-      </div>
-      
       <!-- Sentence Selector -->
       <div class="sentence-selector">
         <button 
@@ -21,7 +17,7 @@
           (click)="selectSentence(s)"
           [class.active]="s === activeSentence"
           class="sentence-button">
-          Sentence {{i + 1}}
+          Sentence {{s.id}}
         </button>
       </div>
 

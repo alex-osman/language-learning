@@ -13,6 +13,7 @@ export class AudioControlsComponent {
   @Input() playbackState: PlaybackState = PlaybackState.Stopped;
   @Output() play = new EventEmitter<boolean>();
   @Output() stop = new EventEmitter<void>();
+  @Output() mp3 = new EventEmitter<void>();
 
   readonly PlaybackState = PlaybackState; // Expose enum to template
 
@@ -24,6 +25,14 @@ export class AudioControlsComponent {
       this.stop.emit();
     } else {
       this.play.emit(slow);
+    }
+  }
+
+  toggleMp3() {
+    if (this.playbackState === PlaybackState.PlayingMp3) {
+      this.stop.emit();
+    } else {
+      this.mp3.emit();
     }
   }
 } 

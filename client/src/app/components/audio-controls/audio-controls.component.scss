@@ -44,4 +44,18 @@
       transform: scale(0.9);
     }
   }
+
+  &.mp3 {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+
+    &:hover {
+      background-color: #c8e6c9;
+    }
+
+    &.playing {
+      background-color: #66bb6a;
+      color: white;
+    }
+  }
 } 

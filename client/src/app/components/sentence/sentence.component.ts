@@ -16,14 +16,7 @@ import {
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { SpeechService } from '../../services/speech.service';
-import {
-  Subject,
-  takeUntil,
-  combineLatest,
-  map,
-  distinctUntilChanged,
-  filter,
-} from 'rxjs';
+import { Subject, takeUntil, distinctUntilChanged } from 'rxjs';
 import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
 import { PlaybackState } from '../audio-controls/playback-state.enum';
 
@@ -48,6 +41,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
   highlightedGroup: number = -1;
   currentHighlighted: ChineseWord | undefined = undefined;
   playbackState: PlaybackState = PlaybackState.Stopped;
+  private mp3Audio: HTMLAudioElement | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -66,10 +60,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit() {
     // Synchronize playback state with speech service
     this.speechService.speaking$
-      .pipe(
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe({
         next: (speaking) => {
           // Update state
@@ -184,7 +175,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
     // Stop any current playback first
     this.speechService.stop();
     this.pinyinService.stop();
-    
+
     if (slow) {
       try {
         this.updatePlaybackState(PlaybackState.PlayingSlow);
@@ -217,7 +208,33 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
   onStop() {
     this.speechService.stop();
     this.pinyinService.stop();
+    if (this.mp3Audio) {
+      this.mp3Audio.pause();
+      this.mp3Audio.currentTime = 0;
+      this.mp3Audio = null;
+    }
     this.updatePlaybackState(PlaybackState.Stopped);
+  }
+
+  async onMp3() {
+    // Stop any current playback first
+    this.onStop();
+
+    try {
+      const mp3Path = `/sentence${this.sentence.id}.mp3`;
+      this.mp3Audio = new Audio(mp3Path);
+
+      this.mp3Audio.addEventListener('ended', () => {
+        this.updatePlaybackState(PlaybackState.Stopped);
+        this.mp3Audio = null;
+      });
+
+      this.updatePlaybackState(PlaybackState.PlayingMp3);
+      await this.mp3Audio.play();
+    } catch (error) {
+      console.error('Failed to play MP3:', error);
+      this.updatePlaybackState(PlaybackState.Stopped);
+    }
   }
 
   private getSentenceAudioUrls(): string[] {
