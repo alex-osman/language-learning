@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SentenceComponent } from '../sentence/sentence.component';
 import { HighlightSidebarComponent } from '../highlight-sidebar/highlight-sidebar.component';
+import { LanguageControlsComponent } from '../language-controls/language-controls.component';
 import { Sentence } from '../../interfaces/sentence.interface';
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
@@ -10,7 +11,12 @@ import { SENTENCE_DATA } from '../../data/sentences.data';
 @Component({
   selector: 'app-sentence-display',
   standalone: true,
-  imports: [CommonModule, SentenceComponent, HighlightSidebarComponent],
+  imports: [
+    CommonModule,
+    SentenceComponent,
+    HighlightSidebarComponent,
+    LanguageControlsComponent
+  ],
   templateUrl: './sentence-display.component.html',
   styleUrls: ['./sentence-display.component.scss']
 })
@@ -76,5 +82,9 @@ export class SentenceDisplayComponent implements OnInit {
       return syllables;
     }
     return this.currentHighlighted.pinyinSyllables;
+  }
+
+  onSelectedLanguagesChange(languages: string[]) {
+    this.selectedLanguages = languages;
   }
 } 

@@ -1,0 +1,16 @@
+<div class="language-controls">
+  <div class="select-buttons">
+    <button class="control-button" (click)="selectAll()">Select All</button>
+    <button class="control-button" (click)="clearAll()">Clear All</button>
+  </div>
+  <div class="checkbox-group">
+    <label *ngFor="let lang of languages" class="checkbox-label">
+      <input
+        type="checkbox"
+        [checked]="isSelected(lang)"
+        (change)="toggleLanguage(lang)"
+      />
+      {{ lang }}
+    </label>
+  </div>
+</div> 

@@ -10,29 +10,18 @@
     <div class="header">
       <h2>Language Learning Sentences</h2>
       <div>
-          <a  
-            href="https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table"
-            >Interactive Pinyin Chart</a
-          >
-          <br />
-          <br />
+        <a href="https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table">
+          Interactive Pinyin Chart
+        </a>
+        <br />
+        <br />
       </div>
-      <div class="controls">
-        <div class="select-buttons">
-          <button class="control-button" (click)="selectAll()">Select All</button>
-          <button class="control-button" (click)="clearAll()">Clear All</button>
-        </div>
-        <div class="checkbox-group">
-          <label *ngFor="let lang of languages" class="checkbox-label">
-            <input
-              type="checkbox"
-              [checked]="selectedLanguages.includes(lang)"
-              (change)="toggleLanguage(lang)"
-            />
-            {{ lang }}
-          </label>
-        </div>
-      </div>
+      <!-- Language Controls Component -->
+      <app-language-controls
+        [languages]="languages"
+        [selectedLanguages]="selectedLanguages"
+        (selectedLanguagesChange)="onSelectedLanguagesChange($event)"
+      ></app-language-controls>
     </div>
 
     <div class="sentence-grid">
