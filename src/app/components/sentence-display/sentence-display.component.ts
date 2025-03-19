@@ -53,4 +53,27 @@ export class SentenceDisplayComponent implements OnInit {
   onWordHighlighted(word: ChineseWord) {
     this.currentHighlighted = word;
   }
+
+  getPinyinSyllables(): string[] {
+    if (!this.currentHighlighted?.pinyinSyllables) {
+      // If pinyinSyllables is not set, try to split the pinyin intelligently
+      const pinyin = this.currentHighlighted?.pinyin || '';
+      // Remove any punctuation and split by spaces
+      const cleanPinyin = pinyin.replace(/[.,，。]/g, '').trim();
+      
+      // First try to use the number of audio URLs as a guide
+      if (this.currentHighlighted?.audioUrls) {
+        const numSyllables = this.currentHighlighted.audioUrls.length;
+        if (numSyllables === 1) {
+          return [cleanPinyin];
+        }
+      }
+      
+      // If that doesn't work, split by spaces and try to handle multi-syllable words
+      const syllables = cleanPinyin.split(/[\s\u00A0]+/).filter(s => s.length > 0);
+      console.log('Pinyin syllables:', syllables);
+      return syllables;
+    }
+    return this.currentHighlighted.pinyinSyllables;
+  }
 } 

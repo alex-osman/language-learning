@@ -29,15 +29,19 @@ export class SpeechService {
   }
 
   private loadVoices(): SpeechSynthesisVoice[] {
+    console.log('Loading voices', this.synth.getVoices());
     return this.synth.getVoices().filter(voice => 
-      voice.lang.startsWith('zh') || voice.lang.startsWith('en')
+      voice.lang.startsWith('zh')
     );
   }
 
   private getBestVoice(lang: string): SpeechSynthesisVoice | null {
-    const voices = this.loadVoices();
-    // Prefer voices with "Google" or "Premium" in the name as they tend to be better quality
-    return voices.find(voice => 
+    if (lang === 'zh-CN') {
+      return this.loadVoices().find(voice => voice.name === 'Meijia') || null;
+    }
+      const voices = this.loadVoices();
+      // Prefer voices with "Google" or "Premium" in the name as they tend to be better quality
+      return voices.find(voice => 
       voice.lang.startsWith(lang) && 
       (voice.name.includes('Google') || voice.name.includes('Premium'))
     ) || voices.find(voice => voice.lang.startsWith(lang)) || null;
@@ -53,6 +57,7 @@ export class SpeechService {
     
     // Get the best available voice
     const voice = this.getBestVoice(lang);
+    console.log('Voice', voice);
     if (voice) {
       utterance.voice = voice;
     }

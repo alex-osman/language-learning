@@ -56,6 +56,51 @@ export class PinyinService {
     return `${base}${toneNumber}`;
   }
 
+  convertNumberToToneMark(syllable: string): string {
+    // Map of vowels to their tone mark versions
+    const toneMarks: { [key: string]: string[] } = {
+      'a': ['a', 'ā', 'á', 'ǎ', 'à'],
+      'e': ['e', 'ē', 'é', 'ě', 'è'],
+      'i': ['i', 'ī', 'í', 'ǐ', 'ì'],
+      'o': ['o', 'ō', 'ó', 'ǒ', 'ò'],
+      'u': ['u', 'ū', 'ú', 'ǔ', 'ù'],
+      'ü': ['ü', 'ǖ', 'ǘ', 'ǚ', 'ǜ']
+    };
+
+    // Extract the tone number from the end of the syllable
+    const match = syllable.match(/([a-zü]+)([1-5])$/i);
+    if (!match) return syllable;
+
+    const [_, base, tone] = match;
+    const toneNum = parseInt(tone);
+    if (toneNum < 1 || toneNum > 5) return base;
+
+    // Find the vowel to modify (using standard Pinyin rules)
+    const vowels = 'aeiouü';
+    let vowelToModify = '';
+    
+    if (base.includes('a')) vowelToModify = 'a';
+    else if (base.includes('e')) vowelToModify = 'e';
+    else if (base.includes('ou')) vowelToModify = 'o';
+    else {
+      // Find the last vowel in the syllable
+      for (let i = base.length - 1; i >= 0; i--) {
+        if (vowels.includes(base[i])) {
+          vowelToModify = base[i];
+          break;
+        }
+      }
+    }
+
+    if (!vowelToModify) return base;
+
+    // Replace the vowel with its tone mark version
+    return base.replace(
+      vowelToModify,
+      toneMarks[vowelToModify][toneNum] || vowelToModify
+    );
+  }
+
   private splitPinyinWord(pinyin: string): string[] {
     // Handle empty or null input
     if (!pinyin) return [];

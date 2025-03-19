@@ -75,12 +75,24 @@ export class SentenceComponent implements OnInit, OnDestroy {
       const pinyin = highlightedMappings.map(m => m.pinyin).filter(p => p).join(' ');
       
       if (chars) {
+        // Get audio URLs first, as this will properly split the pinyin
+        const audioUrls = this.pinyinService.getAudioUrls(pinyin);
+        
+        // Now get the individual syllables by converting the URLs back to pinyin
+        const pinyinSyllables = audioUrls.map(url => {
+          // Extract the pinyin from the URL (e.g., from "https://cdn.yoyochinese.com/audio/pychart/zhong1.mp3")
+          const syllable = url.split('/').pop()?.replace('.mp3', '') || '';
+          // Convert number notation back to tone marks
+          return this.pinyinService.convertNumberToToneMark(syllable);
+        });
+        
         this.currentHighlighted = {
           characters: chars,
           pinyin: pinyin,
           definition: this.pinyinService.getDefinition(chars),
-          audioUrls: pinyin ? this.pinyinService.getAudioUrls(pinyin) : [],
-          groupIndex: this.highlightedGroup
+          audioUrls: audioUrls,
+          groupIndex: this.highlightedGroup,
+          pinyinSyllables: pinyinSyllables
         };
 
         this.wordHighlighted.emit(this.currentHighlighted);
