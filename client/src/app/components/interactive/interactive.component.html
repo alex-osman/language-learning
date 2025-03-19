@@ -1,0 +1,102 @@
+<div class="interactive-container">
+  <h1>Interactive Chinese Learning</h1>
+
+  <div class="text-to-speech-section">
+    <h2>Text to Speech & Chat</h2>
+
+    <div class="chat-container">
+      <!-- Chat History -->
+      <div class="chat-history" [class.empty]="chatHistory.length === 0">
+        <div *ngIf="chatHistory.length === 0" class="empty-state">
+          Start a conversation by typing a message below
+        </div>
+        <div class="messages">
+          <div
+            *ngFor="let message of chatHistory"
+            class="message"
+            [class.user-message]="message.isUser"
+            [class.ai-message]="!message.isUser"
+          >
+            <div class="message-header">
+              <span class="sender">{{ message.isUser ? 'You' : 'AI Assistant' }}</span>
+              <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
+            </div>
+            <div class="message-content">
+              {{ message.content }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <form (ngSubmit)="onSubmit()" #ttsForm="ngForm">
+          <div class="input-group">
+            <textarea
+              [(ngModel)]="textInput"
+              name="textInput"
+              placeholder="Enter Chinese text here..."
+              rows="3"
+              class="text-input"
+            >
+            </textarea>
+          </div>
+
+          <div class="controls">
+            <div class="buttons">
+              <button
+                type="submit"
+                class="submit-btn"
+                [class.loading]="isLoading"
+                [disabled]="!textInput.trim() || isLoading || isChatLoading"
+              >
+                <span class="button-content">
+                  <span class="spinner" *ngIf="isLoading"></span>
+                  {{ isLoading ? 'Generating...' : 'Generate Speech' }}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="chat-btn"
+                [class.loading]="isChatLoading"
+                [disabled]="!textInput.trim() || isLoading || isChatLoading"
+                (click)="onChat()"
+              >
+                <span class="button-content">
+                  <span class="spinner" *ngIf="isChatLoading"></span>
+                  {{ isChatLoading ? 'Getting Response...' : 'Get AI Response' }}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="new-chat-btn"
+                (click)="onNewConversation()"
+                [disabled]="isLoading || isChatLoading"
+              >
+                New Conversation
+              </button>
+            </div>
+
+            <div class="speed-control">
+              <label>
+                <input type="radio" name="speed" [value]="'normal'" [(ngModel)]="speed" />
+                Normal Speed
+              </label>
+              <label>
+                <input type="radio" name="speed" [value]="'slow'" [(ngModel)]="speed" />
+                Slow Speed
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

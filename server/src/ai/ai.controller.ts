@@ -2,6 +2,7 @@ import { Controller, Post, Body, Header, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AiService } from './ai.service';
 import { TtsRequestDto } from './dto/tts-request.dto';
+import { ChatRequestDto } from './dto/chat-request.dto';
 
 @Controller('/api/ai')
 export class AiController {
@@ -20,5 +21,12 @@ export class AiController {
     });
 
     res.send(audioBuffer);
+  }
+
+  @Post('chat')
+  async generateChatResponse(
+    @Body() request: ChatRequestDto,
+  ): Promise<{ response: string; conversationId: string }> {
+    return this.aiService.generateChatResponse(request);
   }
 }
