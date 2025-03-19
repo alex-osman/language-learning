@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SentenceComponent } from '../sentence/sentence.component';
+import { HighlightSidebarComponent } from '../highlight-sidebar/highlight-sidebar.component';
 import { Sentence } from '../../interfaces/sentence.interface';
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
@@ -9,12 +10,12 @@ import { SENTENCE_DATA } from '../../data/sentences.data';
 @Component({
   selector: 'app-sentence-display',
   standalone: true,
-  imports: [CommonModule, SentenceComponent],
+  imports: [CommonModule, SentenceComponent, HighlightSidebarComponent],
   templateUrl: './sentence-display.component.html',
   styleUrls: ['./sentence-display.component.scss']
 })
 export class SentenceDisplayComponent implements OnInit {
-  sentences: Sentence[] = SENTENCE_DATA
+  sentences: Sentence[] = SENTENCE_DATA;
   
   languages: string[] = ['Chinese', 'Pinyin', 'English', 'French'];
   selectedLanguages: string[] = ['Chinese', 'Pinyin'];
