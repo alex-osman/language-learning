@@ -13,6 +13,7 @@ import { Sentence, CharacterMapping } from '../../interfaces/sentence.interface'
 import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { SpeechService } from '../../services/speech.service';
+import { TtsService } from '../../services/tts.service';
 import { Subject, takeUntil, distinctUntilChanged } from 'rxjs';
 import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
 import { PlaybackState } from '../audio-controls/playback-state.enum';
@@ -43,7 +44,11 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private pinyinService: PinyinService, private speechService: SpeechService) {}
+  constructor(
+    private pinyinService: PinyinService,
+    private speechService: SpeechService,
+    private ttsService: TtsService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['sentence'] && !changes['sentence'].firstChange) {
@@ -80,14 +85,6 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  isHighlighted(mapping: CharacterMapping): boolean {
-    // Don't show highlight if it's punctuation
-    if (this.pinyinService.checkPunctuation(mapping.char)) {
-      return false;
-    }
-    return this.highlightedGroup === mapping.groupIndex;
   }
 
   highlightGroup(mapping: CharacterMapping) {
@@ -132,25 +129,6 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
         this.wordHighlighted.emit(this.currentHighlighted);
       }
-    }
-  }
-
-  needsSpace(mapping: CharacterMapping): boolean {
-    return !!mapping.pinyin && !this.pinyinService.checkPunctuation(mapping.char);
-  }
-
-  getLanguageText(lang: string): string {
-    switch (lang) {
-      case 'Chinese':
-        return this.sentence.chinese;
-      case 'Pinyin':
-        return this.sentence.pinyin;
-      case 'English':
-        return this.sentence.english;
-      case 'French':
-        return this.sentence.french;
-      default:
-        return '';
     }
   }
 
@@ -228,6 +206,20 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  async onTts() {
+    // Stop any current playback first
+    this.onStop();
+
+    try {
+      this.updatePlaybackState(PlaybackState.PlayingTts);
+      await this.ttsService.generateSpeech(this.sentence.chinese);
+      this.updatePlaybackState(PlaybackState.Stopped);
+    } catch (error) {
+      console.error('Failed to play TTS:', error);
+      this.updatePlaybackState(PlaybackState.Stopped);
+    }
+  }
+
   private getSentenceAudioUrls(): string[] {
     // Group pinyin by character groups and get audio URLs for each group
     const groups = new Map<number, string>();
@@ -246,5 +238,25 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
   public isPunctuation(char: string): boolean {
     return this.pinyinService.checkPunctuation(char);
+  }
+
+  public needsSpace(mapping: CharacterMapping): boolean {
+    // Add space after each character unless it's punctuation or the last character in its group
+    if (this.isPunctuation(mapping.char)) {
+      return false;
+    }
+
+    const nextMapping = this.sentence.characterMappings.find(
+      m => m.groupIndex === mapping.groupIndex + 1
+    );
+    return nextMapping !== undefined;
+  }
+
+  public isHighlighted(mapping: CharacterMapping): boolean {
+    return mapping.groupIndex === this.highlightedGroup;
+  }
+
+  public getLanguageText(lang: string): string {
+    return this.sentence[lang.toLowerCase() as keyof Sentence] as string;
   }
 }

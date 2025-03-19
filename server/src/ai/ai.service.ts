@@ -15,8 +15,8 @@ export class AiService {
 
   async generateSpeech(request: TtsRequestDto): Promise<Buffer> {
     const response = await this.openai.audio.speech.create({
-      model: 'tts-1-hd',
-      voice: 'fable',
+      model: 'tts-1',
+      voice: 'coral',
       input: request.text,
       speed: request.speed === 'slow' ? 0.7 : 1.0,
     });

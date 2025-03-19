@@ -7,19 +7,20 @@ import { PlaybackState } from './playback-state.enum';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './audio-controls.component.html',
-  styleUrls: ['./audio-controls.component.scss']
+  styleUrls: ['./audio-controls.component.scss'],
 })
 export class AudioControlsComponent {
   @Input() playbackState: PlaybackState = PlaybackState.Stopped;
   @Output() play = new EventEmitter<boolean>();
   @Output() stop = new EventEmitter<void>();
   @Output() mp3 = new EventEmitter<void>();
+  @Output() tts = new EventEmitter<void>();
 
   readonly PlaybackState = PlaybackState; // Expose enum to template
 
   togglePlayback(slow: boolean) {
     const targetState = slow ? PlaybackState.PlayingSlow : PlaybackState.PlayingFast;
-    
+
     // Just emit what action we want - let the parent handle state
     if (this.playbackState === targetState) {
       this.stop.emit();
@@ -35,4 +36,12 @@ export class AudioControlsComponent {
       this.mp3.emit();
     }
   }
-} 
+
+  toggleTts() {
+    if (this.playbackState === PlaybackState.PlayingTts) {
+      this.stop.emit();
+    } else {
+      this.tts.emit();
+    }
+  }
+}
