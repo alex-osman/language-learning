@@ -164,4 +164,62 @@ strong {
     background-color: #e2e8f0;
     margin: 8px 0;
   }
+}
+
+.sentence {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin: 0.75rem 0;
+
+  .language-lines {
+    margin-top: 0.75rem;
+  }
+
+  .language-line {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+
+    strong {
+      color: #666;
+      margin-right: 0.5rem;
+    }
+  }
+
+  .text-chinese {
+    font-size: 1.2rem;
+  }
+
+  .chinese-char, .pinyin-syllable {
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &.highlighted {
+      background-color: rgba(255, 223, 118, 0.4);
+      border-radius: 4px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 223, 118, 0.2);
+      border-radius: 4px;
+    }
+
+    &.punctuation {
+      cursor: default;
+      
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  .chinese-char {
+    padding: 0.1rem 0.2rem;
+  }
+
+  .pinyin-syllable {
+    padding: 0.1rem 0.2rem;
+  }
 } 

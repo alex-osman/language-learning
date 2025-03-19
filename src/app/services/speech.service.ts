@@ -29,7 +29,6 @@ export class SpeechService {
   }
 
   private loadVoices(): SpeechSynthesisVoice[] {
-    console.log('Loading voices', this.synth.getVoices());
     return this.synth.getVoices().filter(voice => 
       voice.lang.startsWith('zh')
     );
@@ -57,7 +56,6 @@ export class SpeechService {
     
     // Get the best available voice
     const voice = this.getBestVoice(lang);
-    console.log('Voice', voice);
     if (voice) {
       utterance.voice = voice;
     }

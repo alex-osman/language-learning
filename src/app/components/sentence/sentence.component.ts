@@ -5,17 +5,13 @@ import { ChineseWord } from '../../interfaces/chinese-word.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { SpeechService } from '../../services/speech.service';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
-
-enum PlaybackState {
-  Stopped = 'stopped',
-  PlayingSlow = 'playing_slow',
-  PlayingFast = 'playing_fast'
-}
+import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
+import { PlaybackState } from '../audio-controls/playback-state.enum';
 
 @Component({
   selector: 'app-sentence',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AudioControlsComponent],
   templateUrl: './sentence.component.html',
   styleUrls: ['./sentence.component.scss']
 })
@@ -25,8 +21,6 @@ export class SentenceComponent implements OnInit, OnDestroy {
   @Input() showStructure = false;
   @Output() wordHighlighted = new EventEmitter<ChineseWord>();
 
-  readonly PlaybackState = PlaybackState; // Expose enum to template
-  
   highlightedGroup: number = -1;
   currentHighlighted: ChineseWord | undefined = undefined;
   playbackState: PlaybackState = PlaybackState.Stopped;
@@ -36,7 +30,8 @@ export class SentenceComponent implements OnInit, OnDestroy {
   constructor(private pinyinService: PinyinService, private speechService: SpeechService) {}
 
   ngOnInit() {
-    // Monitor speech service state
+    // Synchronize playback state with speech service
+    // Only show as playing if this sentence is currently being spoken
     combineLatest([
       this.speechService.speaking$,
       this.speechService.currentSentence$
@@ -44,7 +39,6 @@ export class SentenceComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: ([speaking, currentSentence]) => {
-        // Only show as playing if this sentence is the current one
         if (speaking && currentSentence === this.sentence.chinese) {
           this.playbackState = PlaybackState.PlayingFast;
         } else if (this.playbackState === PlaybackState.PlayingFast) {
@@ -52,7 +46,7 @@ export class SentenceComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Speech service error:', error);
+        console.error('Failed to monitor speech service state:', error);
         this.playbackState = PlaybackState.Stopped;
       }
     });
@@ -140,39 +134,22 @@ export class SentenceComponent implements OnInit, OnDestroy {
     }
   }
 
-  async playSentenceAudio(slow: boolean = false) {
-    const targetState = slow ? PlaybackState.PlayingSlow : PlaybackState.PlayingFast;
-    
-    // If clicking the same button that's currently playing, just stop
-    if (this.playbackState === targetState) {
-      if (slow) {
-        this.playbackState = PlaybackState.Stopped;
-      } else {
-        this.speechService.stop();
-      }
-      return;
-    }
-
-    // Stop any ongoing playback
-    if (this.playbackState !== PlaybackState.Stopped) {
-      if (this.playbackState === PlaybackState.PlayingFast) {
-        this.speechService.stop();
-      }
-      this.playbackState = PlaybackState.Stopped;
-    }
+  async onPlay(slow: boolean) {
+    // Stop any ongoing playback first
+    this.onStop();
 
     if (slow) {
       try {
         this.playbackState = PlaybackState.PlayingSlow;
         const audioUrls = this.getSentenceAudioUrls();
         for (const url of audioUrls) {
-          if (this.playbackState !== PlaybackState.PlayingSlow) break; // Check if stopped
+          if (this.playbackState !== PlaybackState.PlayingSlow) break;
           await this.pinyinService.playAudioFile(url);
         }
       } catch (error) {
-        console.error('Slow audio playback error:', error);
+        console.error('Failed to play individual character audio:', error);
+        this.playbackState = PlaybackState.Stopped;
       } finally {
-        // Only reset if this component's slow playback is active
         if (this.playbackState === PlaybackState.PlayingSlow) {
           this.playbackState = PlaybackState.Stopped;
         }
@@ -182,37 +159,33 @@ export class SentenceComponent implements OnInit, OnDestroy {
         this.playbackState = PlaybackState.PlayingFast;
         await this.speechService.speak(this.sentence.chinese);
       } catch (error) {
-        console.error('Speech synthesis error:', error);
-      } finally {
-        // Only reset if this component's fast playback is active
-        if (this.playbackState === PlaybackState.PlayingFast) {
-          this.playbackState = PlaybackState.Stopped;
-        }
+        console.error('Failed to synthesize speech for sentence:', error);
+        this.playbackState = PlaybackState.Stopped;
       }
     }
   }
 
+  onStop() {
+    // Always stop the speech service - it's a no-op if it's not playing
+    this.speechService.stop();
+    this.playbackState = PlaybackState.Stopped;
+  }
+
   private getSentenceAudioUrls(): string[] {
-    const audioUrls: string[] = [];
+    // Group pinyin by character groups and get audio URLs for each group
+    const groups = new Map<number, string>();
     
-    const groups = new Map<number, string[]>();
-    this.sentence.characterMappings.forEach(mapping => {
-      if (mapping.pinyin) {
-        if (!groups.has(mapping.groupIndex)) {
-          groups.set(mapping.groupIndex, []);
-        }
-        groups.get(mapping.groupIndex)!.push(mapping.pinyin);
-      }
-    });
+    // Collect pinyin for each group
+    this.sentence.characterMappings
+      .filter(mapping => mapping.pinyin)
+      .forEach(mapping => {
+        const existing = groups.get(mapping.groupIndex) || '';
+        groups.set(mapping.groupIndex, existing ? `${existing} ${mapping.pinyin}` : mapping.pinyin);
+      });
 
-    groups.forEach(pinyinArray => {
-      const pinyin = pinyinArray.join(' ');
-      if (pinyin) {
-        audioUrls.push(...this.pinyinService.getAudioUrls(pinyin));
-      }
-    });
-
-    return audioUrls;
+    // Get audio URLs for each group's pinyin
+    return Array.from(groups.values())
+      .flatMap(pinyin => this.pinyinService.getAudioUrls(pinyin));
   }
 
   public isPunctuation(char: string): boolean {

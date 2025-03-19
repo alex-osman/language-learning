@@ -78,7 +78,6 @@ export class SentenceDisplayComponent implements OnInit {
       
       // If that doesn't work, split by spaces and try to handle multi-syllable words
       const syllables = cleanPinyin.split(/[\s\u00A0]+/).filter(s => s.length > 0);
-      console.log('Pinyin syllables:', syllables);
       return syllables;
     }
     return this.currentHighlighted.pinyinSyllables;

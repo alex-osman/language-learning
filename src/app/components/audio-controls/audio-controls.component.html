@@ -1,0 +1,16 @@
+<div class="audio-controls">
+  <button 
+    class="play-button fast" 
+    [class.playing]="playbackState === PlaybackState.PlayingFast"
+    (click)="togglePlayback(false)">
+    <span class="icon">{{ playbackState === PlaybackState.PlayingFast ? '⏹️' : '🔊' }}</span>
+    <span class="label">{{ playbackState === PlaybackState.PlayingFast ? 'Stop' : 'Normal' }}</span>
+  </button>
+  <button 
+    class="play-button slow" 
+    [class.playing]="playbackState === PlaybackState.PlayingSlow"
+    (click)="togglePlayback(true)">
+    <span class="icon">{{ playbackState === PlaybackState.PlayingSlow ? '⏹️' : '🔊' }}</span>
+    <span class="label">{{ playbackState === PlaybackState.PlayingSlow ? 'Stop' : 'Slower' }}</span>
+  </button>
+</div> 
