@@ -7,34 +7,37 @@
     <div class="message-text">
       <!-- Multi-language support -->
       <ng-container *ngIf="multiLanguageSupport && !isUser">
-        <div class="chinese" *ngIf="isLanguageSelected('Chinese')">
-          {{ content.chinese }}
+        <div
+          class="target"
+          *ngIf="config.targetLanguage && isLanguageSelected(config.targetLanguage)"
+        >
+          {{ content.target }}
         </div>
-        <div class="pinyin" *ngIf="isLanguageSelected('Pinyin')">
-          {{ content.pinyin }}
+        <div
+          class="transliteration"
+          *ngIf="isLanguageSelected('Pinyin') && content.transliteration"
+        >
+          {{ content.transliteration }}
         </div>
-        <div class="french" *ngIf="isLanguageSelected('French')">
-          {{ content.french }}
-        </div>
-        <div class="english" *ngIf="isLanguageSelected('English')">
-          {{ content.english }}
+        <div class="base" *ngIf="config.baseLanguage && isLanguageSelected(config.baseLanguage)">
+          {{ content.base }}
         </div>
       </ng-container>
 
       <!-- Single language support -->
       <ng-container *ngIf="!multiLanguageSupport || isUser">
-        <div>{{ content.text || content.chinese || content.french }}</div>
+        <div>{{ content.text || content.target }}</div>
       </ng-container>
 
       <!-- Message Actions -->
       <div *ngIf="!isUser" class="message-actions">
         <app-copy-button
           *ngIf="showCopyButton"
-          [text]="(content.chinese || content.text || '').toString()"
+          [text]="(content.target || content.text || '').toString()"
         ></app-copy-button>
         <app-speak-button
           *ngIf="showSpeakButton"
-          [text]="(content.chinese || content.text || '').toString()"
+          [text]="(content.target || content.text || '').toString()"
         ></app-speak-button>
       </div>
     </div>

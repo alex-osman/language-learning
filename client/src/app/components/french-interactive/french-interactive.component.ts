@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DEFAULT_FRENCH_LANGUAGES, Language } from '@shared/types/languages';
 import { firstValueFrom } from 'rxjs';
-import { FrenchChatService } from '../../services/french-chat.service';
 import { CritiqueService } from '../../services/critique.service';
 import { TtsService } from '../../services/tts.service';
 import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-box.component';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'app-french-interactive',
@@ -22,6 +23,7 @@ import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-b
             [config]="mainChatConfig"
             [messages]="chatHistory"
             [isLoading]="isChatLoading"
+            [availableLanguages]="['French', 'English']"
             (sendMessage)="onChat($event)"
             (newConversation)="onNewConversation()"
             (languageChange)="onLanguageChange($event)"
@@ -48,7 +50,7 @@ import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-b
 })
 export class FrenchInteractiveComponent {
   textInput: string = '';
-  speed: 'normal' | 'slow' = 'normal';
+  targetLanguage: Language = Language.FRENCH;
   isLoading: boolean = false;
   isChatLoading: boolean = false;
   isCritiqueLoading: boolean = false;
@@ -57,7 +59,7 @@ export class FrenchInteractiveComponent {
   critiqueHistory: ChatMessage[] = [];
   currentConversationId?: string;
   currentCritiqueId?: string;
-  selectedLanguages: string[] = ['French', 'English'];
+  selectedLanguages: string[] = DEFAULT_FRENCH_LANGUAGES;
 
   mainChatConfig: ChatBoxConfig = {
     showLanguageControls: true,
@@ -66,6 +68,8 @@ export class FrenchInteractiveComponent {
     multiLanguageSupport: true,
     height: '100%',
     placeholder: 'Type your message in French or English...',
+    baseLanguage: 'English',
+    targetLanguage: 'French',
   };
 
   critiqueChatConfig: ChatBoxConfig = {
@@ -79,7 +83,7 @@ export class FrenchInteractiveComponent {
 
   constructor(
     private ttsService: TtsService,
-    private chatService: FrenchChatService,
+    private chatService: ChatService,
     private critiqueService: CritiqueService
   ) {}
 
@@ -96,7 +100,7 @@ export class FrenchInteractiveComponent {
       try {
         this.isLoading = true;
         this.error = null;
-        await this.ttsService.generateSpeech(this.textInput, this.speed);
+        await this.ttsService.generateSpeech(this.textInput, this.targetLanguage);
       } catch (error) {
         console.error('Failed to generate speech:', error);
         this.error = 'Failed to generate speech. Please try again.';
@@ -108,7 +112,7 @@ export class FrenchInteractiveComponent {
 
   private addUserMessage(text: string) {
     this.chatHistory.push({
-      content: { french: text },
+      content: { text },
       isUser: true,
       timestamp: new Date(),
     });
@@ -116,12 +120,14 @@ export class FrenchInteractiveComponent {
 
   private async handleChatResponse(text: string): Promise<void> {
     try {
-      const chatResponse = await firstValueFrom(this.chatService.generateResponse(text));
+      const chatResponse = await firstValueFrom(
+        this.chatService.generateResponse(text, this.targetLanguage)
+      );
       if (chatResponse) {
         const aiMessage = {
           content: {
-            french: chatResponse.french,
-            english: chatResponse.english,
+            base: chatResponse.base,
+            target: chatResponse.target,
           },
           isUser: false,
           timestamp: new Date(),
@@ -131,7 +137,7 @@ export class FrenchInteractiveComponent {
 
         // Play TTS
         await this.ttsService
-          .generateSpeech(chatResponse.french, this.speed)
+          .generateSpeech(chatResponse.target, Language.FRENCH)
           .catch(error => console.error('Failed to generate speech:', error));
       }
     } finally {

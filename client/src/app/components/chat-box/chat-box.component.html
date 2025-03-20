@@ -2,7 +2,7 @@
   <!-- Language Controls -->
   <div *ngIf="config.showLanguageControls" class="language-controls-container">
     <app-language-controls
-      [languages]="['Chinese', 'Pinyin', 'English']"
+      [languages]="availableLanguages"
       [selectedLanguages]="selectedLanguages"
       (selectedLanguagesChange)="onLanguageChange($event)"
     ></app-language-controls>
@@ -23,6 +23,7 @@
         [showSpeakButton]="config.showSpeakButton"
         [multiLanguageSupport]="config.multiLanguageSupport"
         [selectedLanguages]="selectedLanguages"
+        [config]="{ baseLanguage: config.baseLanguage, targetLanguage: config.targetLanguage }"
       ></app-chat-message>
     </div>
   </div>

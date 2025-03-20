@@ -4,11 +4,15 @@ import { CopyButtonComponent } from '../copy-button/copy-button.component';
 import { SpeakButtonComponent } from '../speak-button/speak-button.component';
 
 interface MessageContent {
-  chinese?: string;
-  pinyin?: string;
-  english?: string;
-  french?: string;
-  text?: string;
+  base?: string;
+  target?: string;
+  transliteration?: string;
+  text?: string; // Keep for backwards compatibility with critique messages
+}
+
+interface ChatMessageConfig {
+  baseLanguage?: string;
+  targetLanguage?: string;
 }
 
 @Component({
@@ -26,6 +30,7 @@ export class ChatMessageComponent {
   @Input() showSpeakButton?: boolean;
   @Input() multiLanguageSupport?: boolean;
   @Input() selectedLanguages: string[] = [];
+  @Input() config: ChatMessageConfig = {};
 
   formatTime(date: Date): string {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

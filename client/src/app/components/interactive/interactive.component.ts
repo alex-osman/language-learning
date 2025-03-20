@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { DEFAULT_CHINESE_LANGUAGES, Language } from '@shared/types/languages';
 import { firstValueFrom } from 'rxjs';
 import { ChatService } from '../../services/chat.service';
 import { CritiqueService } from '../../services/critique.service';
 import { TtsService } from '../../services/tts.service';
 import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-box.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-interactive',
@@ -15,6 +16,7 @@ import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-b
   styleUrls: ['./interactive.component.scss'],
 })
 export class InteractiveComponent {
+  targetLanguage: Language = Language.CHINESE;
   textInput: string = '';
   speed: 'normal' | 'slow' = 'normal';
   isLoading: boolean = false;
@@ -25,7 +27,7 @@ export class InteractiveComponent {
   critiqueHistory: ChatMessage[] = [];
   currentConversationId?: string;
   currentCritiqueId?: string;
-  selectedLanguages: string[] = ['Chinese', 'Pinyin', 'English'];
+  selectedLanguages: string[] = DEFAULT_CHINESE_LANGUAGES;
 
   mainChatConfig: ChatBoxConfig = {
     showLanguageControls: true,
@@ -34,6 +36,8 @@ export class InteractiveComponent {
     multiLanguageSupport: true,
     height: '100%',
     placeholder: 'Type your message in any language...',
+    baseLanguage: 'English',
+    targetLanguage: 'Chinese',
   };
 
   critiqueChatConfig: ChatBoxConfig = {
@@ -64,7 +68,7 @@ export class InteractiveComponent {
       try {
         this.isLoading = true;
         this.error = null;
-        await this.ttsService.generateSpeech(this.textInput, this.speed);
+        await this.ttsService.generateSpeech(this.textInput, this.targetLanguage);
       } catch (error) {
         console.error('Failed to generate speech:', error);
         this.error = 'Failed to generate speech. Please try again.';
@@ -76,7 +80,7 @@ export class InteractiveComponent {
 
   private addUserMessage(text: string) {
     this.chatHistory.push({
-      content: { chinese: text },
+      content: { text },
       isUser: true,
       timestamp: new Date(),
     });
@@ -84,13 +88,15 @@ export class InteractiveComponent {
 
   private async handleChatResponse(text: string): Promise<void> {
     try {
-      const chatResponse = await firstValueFrom(this.chatService.generateResponse(text));
+      const chatResponse = await firstValueFrom(
+        this.chatService.generateResponse(text, this.targetLanguage)
+      );
       if (chatResponse) {
         const aiMessage = {
           content: {
-            chinese: chatResponse.chinese,
-            pinyin: chatResponse.pinyin,
-            english: chatResponse.english,
+            base: chatResponse.base,
+            target: chatResponse.target,
+            transliteration: chatResponse.transliteration,
           },
           isUser: false,
           timestamp: new Date(),
@@ -100,7 +106,7 @@ export class InteractiveComponent {
 
         // Play TTS
         await this.ttsService
-          .generateSpeech(chatResponse.chinese, this.speed)
+          .generateSpeech(chatResponse.target, this.targetLanguage)
           .catch(error => console.error('Failed to generate speech:', error));
       }
     } finally {

@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
+import { Language } from '@shared/types/languages';
 export interface ChatResponse {
-  chinese: string;
-  pinyin: string;
-  english: string;
+  base: string; // English
+  target: string; // Chinese
+  transliteration: string; // Pinyin
   conversationId: string;
 }
 
@@ -19,8 +19,9 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  generateResponse(text: string): Observable<ChatResponse> {
+  generateResponse(text: string, targetLanguage: Language): Observable<ChatResponse> {
     const request = {
+      language: targetLanguage,
       text,
       conversationId: this.currentConversationId,
     };

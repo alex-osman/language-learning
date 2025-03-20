@@ -3,11 +3,11 @@ import { BaseAiService } from './base-ai.service';
 import { ChatRequestDto } from '../dto/chat-request.dto';
 import { ChatResponseDto } from '../dto/chat-response.dto';
 import { ConversationService } from './conversation.service';
-import { TranslationSchema } from '../schemas/chat-response.schema';
+import { ChineseTranslationSchema } from '../schemas/chat-response.schema';
 
 @Injectable()
-export class ChatAiService extends BaseAiService {
-  private readonly logger = new Logger(ChatAiService.name);
+export class ChineseChatAiService extends BaseAiService {
+  private readonly logger = new Logger(ChineseChatAiService.name);
 
   private readonly SYSTEM_PROMPT = `你是一位非常友好、耐心的中文老师，正在跟初学中文的学生聊天。
 请用简单的中文回答学生的问题，词汇和语法要简单、自然。
@@ -34,11 +34,11 @@ export class ChatAiService extends BaseAiService {
     super();
   }
 
-  async generateChatResponse(
+  async generateChineseChatResponse(
     request: ChatRequestDto,
   ): Promise<ChatResponseDto> {
     this.logger.log(
-      `Generating chat response for request: ${JSON.stringify(request)}`,
+      `Generating chinese chat response for request: ${JSON.stringify(request)}`,
     );
 
     // Get or create conversation
@@ -98,7 +98,7 @@ export class ChatAiService extends BaseAiService {
       try {
         const parsedJson = JSON.parse(structuredContent);
         // Validate with Zod schema
-        structuredResponse = TranslationSchema.parse(parsedJson);
+        structuredResponse = ChineseTranslationSchema.parse(parsedJson);
       } catch (error) {
         this.logger.error(
           `Failed to parse/validate structured response: ${error.message}`,
@@ -134,7 +134,9 @@ export class ChatAiService extends BaseAiService {
       );
 
       const response = {
-        ...structuredResponse,
+        base: structuredResponse.english,
+        target: structuredResponse.chinese,
+        transliteration: structuredResponse.pinyin,
         conversationId,
       };
 

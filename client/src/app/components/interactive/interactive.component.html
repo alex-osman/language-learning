@@ -2,12 +2,13 @@
   <!-- Main Content -->
   <div class="main-content">
     <div class="text-to-speech-section">
-      <h2>Text to Speech & Chat</h2>
+      <h2>Chinese Chat & Practice</h2>
 
       <app-chat-box
         [config]="mainChatConfig"
         [messages]="chatHistory"
         [isLoading]="isChatLoading"
+        [availableLanguages]="['Chinese', 'Pinyin', 'English']"
         (sendMessage)="onChat($event)"
         (newConversation)="onNewConversation()"
         (languageChange)="onLanguageChange($event)"

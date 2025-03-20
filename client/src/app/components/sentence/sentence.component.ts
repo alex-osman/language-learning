@@ -18,6 +18,7 @@ import { Subject, takeUntil, distinctUntilChanged } from 'rxjs';
 import { AudioControlsComponent } from '../audio-controls/audio-controls.component';
 import { PlaybackState } from '../audio-controls/playback-state.enum';
 import { CopyButtonComponent } from '../copy-button/copy-button.component';
+import { Language } from '@shared/types/languages';
 
 @Component({
   selector: 'app-sentence',
@@ -212,7 +213,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
     try {
       this.updatePlaybackState(PlaybackState.PlayingTts);
-      await this.ttsService.generateSpeech(this.sentence.chinese);
+      await this.ttsService.generateSpeech(this.sentence.chinese, Language.CHINESE);
       this.updatePlaybackState(PlaybackState.Stopped);
     } catch (error) {
       console.error('Failed to play TTS:', error);

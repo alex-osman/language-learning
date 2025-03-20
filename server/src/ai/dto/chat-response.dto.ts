@@ -1,6 +1,6 @@
 export class ChatResponseDto {
-  chinese: string;
-  pinyin: string;
-  english: string;
+  base: string; // English (base language)
+  target: string; // Chinese or French (target language)
+  transliteration?: string; // Pinyin (only for Chinese)
   conversationId: string;
 }

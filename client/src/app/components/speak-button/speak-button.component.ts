@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TtsService } from '../../services/tts.service';
+import { Language } from '@shared/types/languages';
 
 @Component({
   selector: 'app-speak-button',
@@ -77,6 +78,7 @@ import { TtsService } from '../../services/tts.service';
 })
 export class SpeakButtonComponent {
   @Input() text: string = '';
+  @Input() targetLanguage: Language = Language.CHINESE;
   isLoading = false;
 
   constructor(private ttsService: TtsService) {}
@@ -86,7 +88,7 @@ export class SpeakButtonComponent {
 
     try {
       this.isLoading = true;
-      await this.ttsService.generateSpeech(this.text, 'normal');
+      await this.ttsService.generateSpeech(this.text, this.targetLanguage);
     } catch (error) {
       console.error('Failed to generate speech:', error);
     } finally {
