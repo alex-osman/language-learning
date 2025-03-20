@@ -1,0 +1,63 @@
+.message {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 85%;
+
+  &.user-message {
+    background-color: #e2e8f0;
+    margin-left: auto;
+  }
+
+  &.ai-message {
+    background-color: #f8fafc;
+    margin-right: auto;
+  }
+
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+
+    .sender {
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .timestamp {
+      color: #64748b;
+    }
+  }
+
+  .message-content {
+    .message-text {
+      color: #1e293b;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+
+      .chinese {
+        font-size: 1.1em;
+        margin-bottom: 0.25rem;
+      }
+
+      .pinyin {
+        color: #64748b;
+        margin-bottom: 0.25rem;
+      }
+
+      .english {
+        color: #475569;
+      }
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      justify-content: flex-end;
+    }
+  }
+}

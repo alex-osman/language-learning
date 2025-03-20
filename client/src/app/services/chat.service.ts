@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface ChatResponse {
   chinese: string;
@@ -23,11 +24,11 @@ export class ChatService {
       text,
       conversationId: this.currentConversationId,
     };
-    const response = this.http.post<ChatResponse>(this.API_URL, request);
-    response.subscribe(res => {
-      this.currentConversationId = res.conversationId;
-    });
-    return response;
+    return this.http.post<ChatResponse>(this.API_URL, request).pipe(
+      tap(res => {
+        this.currentConversationId = res.conversationId;
+      })
+    );
   }
 
   // Method to manually reset the conversation

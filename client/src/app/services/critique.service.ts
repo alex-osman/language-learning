@@ -6,6 +6,7 @@ export interface CritiqueRequest {
   text: string;
   conversationId?: string;
   mainConversationId?: string;
+  isFollowUp?: boolean;
 }
 
 export interface CritiqueResponse {

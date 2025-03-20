@@ -1,0 +1,39 @@
+<div class="message" [class.user-message]="isUser" [class.ai-message]="!isUser">
+  <div class="message-header">
+    <span class="sender">{{ isUser ? 'You' : 'AI Assistant' }}</span>
+    <span class="timestamp">{{ formatTime(timestamp) }}</span>
+  </div>
+  <div class="message-content">
+    <div class="message-text">
+      <!-- Multi-language support -->
+      <ng-container *ngIf="multiLanguageSupport && !isUser">
+        <div class="chinese" *ngIf="isLanguageSelected('Chinese')">
+          {{ content.chinese }}
+        </div>
+        <div class="pinyin" *ngIf="isLanguageSelected('Pinyin')">
+          {{ content.pinyin }}
+        </div>
+        <div class="english" *ngIf="isLanguageSelected('English')">
+          {{ content.english }}
+        </div>
+      </ng-container>
+
+      <!-- Single language support -->
+      <ng-container *ngIf="!multiLanguageSupport || isUser">
+        <div>{{ content.text || content.chinese }}</div>
+      </ng-container>
+
+      <!-- Message Actions -->
+      <div *ngIf="!isUser" class="message-actions">
+        <app-copy-button
+          *ngIf="showCopyButton"
+          [text]="(content.chinese || content.text || '').toString()"
+        ></app-copy-button>
+        <app-speak-button
+          *ngIf="showSpeakButton"
+          [text]="(content.chinese || content.text || '').toString()"
+        ></app-speak-button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,6 +7,7 @@
       <app-chat-box
         [config]="mainChatConfig"
         [messages]="chatHistory"
+        [isLoading]="isChatLoading"
         (sendMessage)="onChat($event)"
         (newConversation)="onNewConversation()"
         (languageChange)="onLanguageChange($event)"
@@ -21,6 +22,8 @@
       <app-chat-box
         [config]="critiqueChatConfig"
         [messages]="critiqueHistory"
+        [isLoading]="isCritiqueLoading"
+        (sendMessage)="onCritiqueChatMessage($event)"
         (newConversation)="onNewCritiqueConversation()"
       ></app-chat-box>
     </div>

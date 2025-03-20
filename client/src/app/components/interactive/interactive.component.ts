@@ -19,6 +19,7 @@ export class InteractiveComponent {
   speed: 'normal' | 'slow' = 'normal';
   isLoading: boolean = false;
   isChatLoading: boolean = false;
+  isCritiqueLoading: boolean = false;
   error: string | null = null;
   chatHistory: ChatMessage[] = [];
   critiqueHistory: ChatMessage[] = [];
@@ -30,7 +31,6 @@ export class InteractiveComponent {
     showLanguageControls: true,
     showCopyButton: true,
     showSpeakButton: true,
-    showNewConversationButton: false,
     multiLanguageSupport: true,
     height: '100%',
     placeholder: 'Type your message in any language...',
@@ -40,10 +40,9 @@ export class InteractiveComponent {
     showLanguageControls: false,
     showCopyButton: false,
     showSpeakButton: false,
-    showNewConversationButton: false,
     multiLanguageSupport: false,
     height: '100%',
-    placeholder: 'Select a message to analyze...',
+    placeholder: 'Ask questions about the feedback...',
   };
 
   constructor(
@@ -75,28 +74,17 @@ export class InteractiveComponent {
     }
   }
 
-  async onChat(text: string) {
+  private addUserMessage(text: string) {
+    this.chatHistory.push({
+      content: { chinese: text },
+      isUser: true,
+      timestamp: new Date(),
+    });
+  }
+
+  private async handleChatResponse(text: string): Promise<void> {
     try {
-      // Add user message immediately
-      this.chatHistory.push({
-        content: { chinese: text },
-        isUser: true,
-        timestamp: new Date(),
-      });
-
-      // Fire both requests concurrently
-      const [chatResponse, critiqueResponse] = await Promise.all([
-        firstValueFrom(this.chatService.generateResponse(text)),
-        firstValueFrom(
-          this.critiqueService.generateCritique({
-            text,
-            conversationId: this.currentCritiqueId,
-            mainConversationId: this.currentConversationId,
-          })
-        ),
-      ]);
-
-      // Handle chat response
+      const chatResponse = await firstValueFrom(this.chatService.generateResponse(text));
       if (chatResponse) {
         const aiMessage = {
           content: {
@@ -110,15 +98,26 @@ export class InteractiveComponent {
         this.chatHistory.push(aiMessage);
         this.currentConversationId = chatResponse.conversationId;
 
-        // Automatically play TTS for AI's Chinese response
-        try {
-          await this.ttsService.generateSpeech(chatResponse.chinese, this.speed);
-        } catch (ttsError) {
-          console.error('Failed to generate speech:', ttsError);
-        }
+        // Play TTS
+        await this.ttsService
+          .generateSpeech(chatResponse.chinese, this.speed)
+          .catch(error => console.error('Failed to generate speech:', error));
       }
+    } finally {
+      this.isChatLoading = false;
+    }
+  }
 
-      // Handle critique response
+  private async handleCritiqueResponse(text: string): Promise<void> {
+    try {
+      const critiqueResponse = await firstValueFrom(
+        this.critiqueService.generateCritique({
+          text,
+          conversationId: this.currentCritiqueId,
+          mainConversationId: this.currentConversationId,
+        })
+      );
+
       if (critiqueResponse) {
         this.critiqueHistory.push({
           content: { text: critiqueResponse.text },
@@ -128,7 +127,26 @@ export class InteractiveComponent {
         this.currentCritiqueId = critiqueResponse.conversationId;
       }
     } catch (error) {
-      console.error('Failed to get response:', error);
+      console.error('Failed to get critique response:', error);
+    }
+  }
+
+  async onChat(text: string) {
+    try {
+      this.isChatLoading = true;
+      this.addUserMessage(text);
+
+      // Fire both requests independently
+      const chatPromise = this.handleChatResponse(text);
+      const critiquePromise = this.handleCritiqueResponse(text);
+
+      // Wait for both to complete but don't block UI updates
+      await Promise.all([chatPromise, critiquePromise]).catch(error =>
+        console.error('Error in chat or critique:', error)
+      );
+    } catch (error) {
+      console.error('Failed to process chat:', error);
+      this.isChatLoading = false;
     }
   }
 
@@ -142,6 +160,41 @@ export class InteractiveComponent {
     this.critiqueService.resetConversation();
     this.critiqueHistory = [];
     this.currentCritiqueId = undefined;
+  }
+
+  async onCritiqueChatMessage(text: string) {
+    try {
+      this.isCritiqueLoading = true;
+      // Add user message to critique history
+      this.critiqueHistory.push({
+        content: { text },
+        isUser: true,
+        timestamp: new Date(),
+      });
+
+      // Get response from critique service
+      const critiqueResponse = await firstValueFrom(
+        this.critiqueService.generateCritique({
+          text,
+          conversationId: this.currentCritiqueId,
+          mainConversationId: this.currentConversationId,
+          isFollowUp: true,
+        })
+      );
+
+      if (critiqueResponse) {
+        this.critiqueHistory.push({
+          content: { text: critiqueResponse.text },
+          isUser: false,
+          timestamp: new Date(),
+        });
+        this.currentCritiqueId = critiqueResponse.conversationId;
+      }
+    } catch (error) {
+      console.error('Failed to get critique response:', error);
+    } finally {
+      this.isCritiqueLoading = false;
+    }
   }
 
   // Format timestamp for display
