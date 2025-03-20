@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 interface ChatResponse {
-  response: string;
+  chinese: string;
+  pinyin: string;
+  english: string;
   conversationId: string;
 }
 
@@ -15,7 +17,7 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  async generateResponse(text: string): Promise<string> {
+  async generateResponse(text: string): Promise<ChatResponse> {
     try {
       const response = await firstValueFrom(
         this.http.post<ChatResponse>('/api/ai/chat', {
@@ -26,7 +28,7 @@ export class ChatService {
 
       // Store the conversation ID for subsequent requests
       this.currentConversationId = response.conversationId;
-      return response.response;
+      return response;
     } catch (error) {
       console.error('Failed to generate chat response:', error);
       // If there's an error with the conversation, we might want to reset it

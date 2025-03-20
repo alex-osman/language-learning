@@ -5,6 +5,15 @@
     <h2>Text to Speech & Chat</h2>
 
     <div class="chat-container">
+      <!-- Language Controls -->
+      <div class="language-controls-container">
+        <app-language-controls
+          [languages]="['Chinese', 'Pinyin', 'English']"
+          [selectedLanguages]="selectedLanguages"
+          (selectedLanguagesChange)="onLanguageChange($event)"
+        ></app-language-controls>
+      </div>
+
       <!-- Chat History -->
       <div class="chat-history" [class.empty]="chatHistory.length === 0">
         <div *ngIf="chatHistory.length === 0" class="empty-state">
@@ -22,7 +31,19 @@
               <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
             </div>
             <div class="message-content">
-              {{ message.content }}
+              <div class="message-text" *ngIf="message.isUser">
+                {{ message.chinese }}
+              </div>
+              <div class="message-text" *ngIf="!message.isUser">
+                <div class="chinese" *ngIf="isLanguageSelected('Chinese')">
+                  {{ message.chinese }}
+                </div>
+                <div class="pinyin" *ngIf="isLanguageSelected('Pinyin')">{{ message.pinyin }}</div>
+                <div class="english" *ngIf="isLanguageSelected('English')">
+                  {{ message.english }}
+                </div>
+                <app-copy-button [text]="message.chinese"></app-copy-button>
+              </div>
             </div>
           </div>
         </div>
