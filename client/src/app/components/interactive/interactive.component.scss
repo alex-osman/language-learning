@@ -1,7 +1,16 @@
-.interactive-container {
-  padding: 1.5rem;
-  max-width: 1200px;
+.container {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  max-width: 1400px;
   margin: 0 auto;
+}
+
+.main-content {
+  flex: 0 0 75%; // Takes up 75% of the space
+  max-width: 75%;
 
   h1 {
     color: #2c3e50;
@@ -94,32 +103,45 @@
               .message-text {
                 flex: 1;
 
+                // Common styles for text sections
+                .chinese,
+                .pinyin,
+                .english {
+                  margin-bottom: 4px;
+                }
+
                 .chinese {
                   font-size: 1.1em;
-                  margin-bottom: 4px;
                 }
 
-                .pinyin {
-                  font-size: 0.9em;
-                  color: #64748b;
-                  margin-bottom: 4px;
-                }
-
+                .pinyin,
                 .english {
                   font-size: 0.9em;
                   color: #64748b;
+                }
+
+                .english {
                   font-style: italic;
                 }
-              }
 
-              app-copy-button {
-                opacity: 0;
-                transition: opacity 0.2s ease;
-                margin-top: 2px;
-              }
+                .message-actions {
+                  display: flex;
+                  gap: 4px;
+                  margin-top: 4px;
 
-              &:hover app-copy-button {
-                opacity: 1;
+                  app-copy-button,
+                  app-speak-button {
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+                  }
+                }
+
+                &:hover .message-actions {
+                  app-copy-button,
+                  app-speak-button {
+                    opacity: 1;
+                  }
+                }
               }
             }
 
@@ -290,6 +312,13 @@
       font-size: 0.875rem;
     }
   }
+}
+
+app-interactive-sidebar {
+  flex: 0 0 25%; // Takes up 25% of the space
+  position: sticky;
+  top: 20px;
+  height: fit-content;
 }
 
 @keyframes spin {

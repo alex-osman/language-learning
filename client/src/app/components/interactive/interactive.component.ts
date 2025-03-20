@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { TtsService } from '../../services/tts.service';
 import { ChatService } from '../../services/chat.service';
 import { CopyButtonComponent } from '../copy-button/copy-button.component';
+import { SpeakButtonComponent } from '../speak-button/speak-button.component';
 import { LanguageControlsComponent } from '../language-controls/language-controls.component';
+import { InteractiveSidebarComponent } from '../interactive-sidebar/interactive-sidebar.component';
 
 interface ChatMessage {
   chinese: string;
@@ -17,7 +19,14 @@ interface ChatMessage {
 @Component({
   selector: 'app-interactive',
   standalone: true,
-  imports: [CommonModule, FormsModule, CopyButtonComponent, LanguageControlsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CopyButtonComponent,
+    SpeakButtonComponent,
+    LanguageControlsComponent,
+    InteractiveSidebarComponent,
+  ],
   templateUrl: './interactive.component.html',
   styleUrls: ['./interactive.component.scss'],
 })
