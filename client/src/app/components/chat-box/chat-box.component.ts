@@ -115,6 +115,7 @@ export interface ChatMessage {
               [placeholder]="config.placeholder || 'Type your message...'"
               rows="3"
               class="text-input"
+              (keydown)="onKeyDown($event)"
             >
             </textarea>
           </div>
@@ -201,5 +202,15 @@ export class ChatBoxComponent {
 
   setError(error: string | null) {
     this.error = error;
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    // Check if Enter was pressed without Shift
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault(); // Prevent new line
+      if (this.textInput.trim() && !this.isLoading) {
+        this.onSubmit();
+      }
+    }
   }
 }

@@ -109,6 +109,13 @@ export class InteractiveComponent {
         };
         this.chatHistory.push(aiMessage);
         this.currentConversationId = chatResponse.conversationId;
+
+        // Automatically play TTS for AI's Chinese response
+        try {
+          await this.ttsService.generateSpeech(chatResponse.chinese, this.speed);
+        } catch (ttsError) {
+          console.error('Failed to generate speech:', ttsError);
+        }
       }
 
       // Handle critique response

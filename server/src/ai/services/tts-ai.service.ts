@@ -9,7 +9,7 @@ export class TtsAiService extends BaseAiService {
       model: 'tts-1',
       voice: 'coral',
       input: request.text,
-      speed: request.speed === 'slow' ? 0.85 : 1.0,
+      speed: 0.9,
     });
 
     const buffer = Buffer.from(await response.arrayBuffer());

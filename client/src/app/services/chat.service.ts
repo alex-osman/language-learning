@@ -19,7 +19,15 @@ export class ChatService {
   constructor(private http: HttpClient) {}
 
   generateResponse(text: string): Observable<ChatResponse> {
-    return this.http.post<ChatResponse>(this.API_URL, { text });
+    const request = {
+      text,
+      conversationId: this.currentConversationId,
+    };
+    const response = this.http.post<ChatResponse>(this.API_URL, request);
+    response.subscribe(res => {
+      this.currentConversationId = res.conversationId;
+    });
+    return response;
   }
 
   // Method to manually reset the conversation
