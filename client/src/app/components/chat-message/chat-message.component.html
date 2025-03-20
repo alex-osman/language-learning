@@ -13,6 +13,9 @@
         <div class="pinyin" *ngIf="isLanguageSelected('Pinyin')">
           {{ content.pinyin }}
         </div>
+        <div class="french" *ngIf="isLanguageSelected('French')">
+          {{ content.french }}
+        </div>
         <div class="english" *ngIf="isLanguageSelected('English')">
           {{ content.english }}
         </div>
@@ -20,7 +23,7 @@
 
       <!-- Single language support -->
       <ng-container *ngIf="!multiLanguageSupport || isUser">
-        <div>{{ content.text || content.chinese }}</div>
+        <div>{{ content.text || content.chinese || content.french }}</div>
       </ng-container>
 
       <!-- Message Actions -->

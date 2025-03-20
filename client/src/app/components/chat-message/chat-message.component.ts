@@ -7,6 +7,7 @@ interface MessageContent {
   chinese?: string;
   pinyin?: string;
   english?: string;
+  french?: string;
   text?: string;
 }
 

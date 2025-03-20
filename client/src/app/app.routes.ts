@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { SentenceDisplayComponent } from './components/sentence-display/sentence-display.component';
 import { InteractiveComponent } from './components/interactive/interactive.component';
+import { FrenchInteractiveComponent } from './components/french-interactive/french-interactive.component';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,10 @@ export const routes: Routes = [
   {
     path: 'interactive',
     component: InteractiveComponent,
+  },
+  {
+    path: 'french',
+    component: FrenchInteractiveComponent,
   },
   {
     path: '',
