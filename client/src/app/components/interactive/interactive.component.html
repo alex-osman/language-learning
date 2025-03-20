@@ -1,134 +1,28 @@
 <div class="container">
   <!-- Main Content -->
   <div class="main-content">
-    <h1>Interactive Chinese Learning</h1>
-
     <div class="text-to-speech-section">
       <h2>Text to Speech & Chat</h2>
 
-      <div class="chat-container">
-        <!-- Language Controls -->
-        <div class="language-controls-container">
-          <app-language-controls
-            [languages]="['Chinese', 'Pinyin', 'English']"
-            [selectedLanguages]="selectedLanguages"
-            (selectedLanguagesChange)="onLanguageChange($event)"
-          ></app-language-controls>
-        </div>
-
-        <!-- Chat History -->
-        <div class="chat-history" [class.empty]="chatHistory.length === 0">
-          <div *ngIf="chatHistory.length === 0" class="empty-state">
-            Start a conversation by typing a message below
-          </div>
-          <div class="messages">
-            <div
-              *ngFor="let message of chatHistory"
-              class="message"
-              [class.user-message]="message.isUser"
-              [class.ai-message]="!message.isUser"
-            >
-              <div class="message-header">
-                <span class="sender">{{ message.isUser ? 'You' : 'AI Assistant' }}</span>
-                <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
-              </div>
-              <div class="message-content">
-                <div class="message-text" *ngIf="message.isUser">
-                  {{ message.chinese }}
-                </div>
-                <div class="message-text" *ngIf="!message.isUser">
-                  <div class="chinese" *ngIf="isLanguageSelected('Chinese')">
-                    {{ message.chinese }}
-                  </div>
-                  <div class="pinyin" *ngIf="isLanguageSelected('Pinyin')">
-                    {{ message.pinyin }}
-                  </div>
-                  <div class="english" *ngIf="isLanguageSelected('English')">
-                    {{ message.english }}
-                  </div>
-                  <div class="message-actions">
-                    <app-copy-button [text]="message.chinese"></app-copy-button>
-                    <app-speak-button [text]="message.chinese"></app-speak-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Error Message -->
-        <div *ngIf="error" class="error-message">
-          {{ error }}
-        </div>
-
-        <!-- Input Area -->
-        <div class="input-area">
-          <form (ngSubmit)="onSubmit()" #ttsForm="ngForm">
-            <div class="input-group">
-              <textarea
-                [(ngModel)]="textInput"
-                name="textInput"
-                placeholder="Enter Chinese text here..."
-                rows="3"
-                class="text-input"
-              >
-              </textarea>
-            </div>
-
-            <div class="controls">
-              <div class="buttons">
-                <button
-                  type="submit"
-                  class="submit-btn"
-                  [class.loading]="isLoading"
-                  [disabled]="!textInput.trim() || isLoading || isChatLoading"
-                >
-                  <span class="button-content">
-                    <span class="spinner" *ngIf="isLoading"></span>
-                    {{ isLoading ? 'Generating...' : 'Generate Speech' }}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  class="chat-btn"
-                  [class.loading]="isChatLoading"
-                  [disabled]="!textInput.trim() || isLoading || isChatLoading"
-                  (click)="onChat()"
-                >
-                  <span class="button-content">
-                    <span class="spinner" *ngIf="isChatLoading"></span>
-                    {{ isChatLoading ? 'Getting Response...' : 'Get AI Response' }}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  class="new-chat-btn"
-                  (click)="onNewConversation()"
-                  [disabled]="isLoading || isChatLoading"
-                >
-                  New Conversation
-                </button>
-              </div>
-
-              <div class="speed-control">
-                <label>
-                  <input type="radio" name="speed" [value]="'normal'" [(ngModel)]="speed" />
-                  Normal Speed
-                </label>
-                <label>
-                  <input type="radio" name="speed" [value]="'slow'" [(ngModel)]="speed" />
-                  Slow Speed
-                </label>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+      <app-chat-box
+        [config]="mainChatConfig"
+        [messages]="chatHistory"
+        (sendMessage)="onChat($event)"
+        (newConversation)="onNewConversation()"
+        (languageChange)="onLanguageChange($event)"
+      ></app-chat-box>
     </div>
   </div>
 
   <!-- Sidebar -->
-  <app-interactive-sidebar></app-interactive-sidebar>
+  <div class="sidebar">
+    <div class="critique-section">
+      <h2>Conversation Analysis</h2>
+      <app-chat-box
+        [config]="critiqueChatConfig"
+        [messages]="critiqueHistory"
+        (newConversation)="onNewCritiqueConversation()"
+      ></app-chat-box>
+    </div>
+  </div>
 </div>

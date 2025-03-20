@@ -1,32 +1,16 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TtsService } from '../../services/tts.service';
+import { firstValueFrom } from 'rxjs';
 import { ChatService } from '../../services/chat.service';
-import { CopyButtonComponent } from '../copy-button/copy-button.component';
-import { SpeakButtonComponent } from '../speak-button/speak-button.component';
-import { LanguageControlsComponent } from '../language-controls/language-controls.component';
-import { InteractiveSidebarComponent } from '../interactive-sidebar/interactive-sidebar.component';
-
-interface ChatMessage {
-  chinese: string;
-  pinyin: string;
-  english: string;
-  isUser: boolean;
-  timestamp: Date;
-}
+import { CritiqueService } from '../../services/critique.service';
+import { TtsService } from '../../services/tts.service';
+import { ChatBoxComponent, ChatBoxConfig, ChatMessage } from '../chat-box/chat-box.component';
 
 @Component({
   selector: 'app-interactive',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CopyButtonComponent,
-    SpeakButtonComponent,
-    LanguageControlsComponent,
-    InteractiveSidebarComponent,
-  ],
+  imports: [CommonModule, FormsModule, ChatBoxComponent],
   templateUrl: './interactive.component.html',
   styleUrls: ['./interactive.component.scss'],
 })
@@ -37,9 +21,36 @@ export class InteractiveComponent {
   isChatLoading: boolean = false;
   error: string | null = null;
   chatHistory: ChatMessage[] = [];
+  critiqueHistory: ChatMessage[] = [];
+  currentConversationId?: string;
+  currentCritiqueId?: string;
   selectedLanguages: string[] = ['Chinese', 'Pinyin', 'English'];
 
-  constructor(private ttsService: TtsService, private chatService: ChatService) {}
+  mainChatConfig: ChatBoxConfig = {
+    showLanguageControls: true,
+    showCopyButton: true,
+    showSpeakButton: true,
+    showNewConversationButton: false,
+    multiLanguageSupport: true,
+    height: '100%',
+    placeholder: 'Type your message in any language...',
+  };
+
+  critiqueChatConfig: ChatBoxConfig = {
+    showLanguageControls: false,
+    showCopyButton: false,
+    showSpeakButton: false,
+    showNewConversationButton: false,
+    multiLanguageSupport: false,
+    height: '100%',
+    placeholder: 'Select a message to analyze...',
+  };
+
+  constructor(
+    private ttsService: TtsService,
+    private chatService: ChatService,
+    private critiqueService: CritiqueService
+  ) {}
 
   onLanguageChange(languages: string[]) {
     this.selectedLanguages = languages;
@@ -64,53 +75,66 @@ export class InteractiveComponent {
     }
   }
 
-  async onChat() {
-    if (this.textInput.trim()) {
-      try {
-        this.isChatLoading = true;
-        this.error = null;
+  async onChat(text: string) {
+    try {
+      // Add user message immediately
+      this.chatHistory.push({
+        content: { chinese: text },
+        isUser: true,
+        timestamp: new Date(),
+      });
 
-        // Add user message to chat history immediately
-        this.addMessageToHistory({
-          chinese: this.textInput,
-          pinyin: '',
-          english: '',
-          isUser: true,
+      // Fire both requests concurrently
+      const [chatResponse, critiqueResponse] = await Promise.all([
+        firstValueFrom(this.chatService.generateResponse(text)),
+        firstValueFrom(
+          this.critiqueService.generateCritique({
+            text,
+            conversationId: this.currentCritiqueId,
+            mainConversationId: this.currentConversationId,
+          })
+        ),
+      ]);
+
+      // Handle chat response
+      if (chatResponse) {
+        const aiMessage = {
+          content: {
+            chinese: chatResponse.chinese,
+            pinyin: chatResponse.pinyin,
+            english: chatResponse.english,
+          },
+          isUser: false,
           timestamp: new Date(),
-        });
+        };
+        this.chatHistory.push(aiMessage);
+        this.currentConversationId = chatResponse.conversationId;
+      }
 
-        const userText = this.textInput;
-
-        // Clear input right away for better UX
-        this.textInput = '';
-
-        // Get AI response
-        const response = await this.chatService.generateResponse(userText);
-
-        // Add AI response to chat history
-        this.addMessageToHistory({
-          ...response,
+      // Handle critique response
+      if (critiqueResponse) {
+        this.critiqueHistory.push({
+          content: { text: critiqueResponse.text },
           isUser: false,
           timestamp: new Date(),
         });
-      } catch (error) {
-        console.error('Failed to generate chat response:', error);
-        this.error = 'Failed to get response. Please try again.';
-      } finally {
-        this.isChatLoading = false;
+        this.currentCritiqueId = critiqueResponse.conversationId;
       }
+    } catch (error) {
+      console.error('Failed to get response:', error);
     }
   }
 
-  private addMessageToHistory(message: ChatMessage) {
-    this.chatHistory.push(message);
-  }
-
-  // Start a new conversation
   onNewConversation() {
     this.chatService.resetConversation();
     this.chatHistory = [];
-    this.error = null;
+    this.currentConversationId = undefined;
+  }
+
+  onNewCritiqueConversation() {
+    this.critiqueService.resetConversation();
+    this.critiqueHistory = [];
+    this.currentCritiqueId = undefined;
   }
 
   // Format timestamp for display

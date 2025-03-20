@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 
-interface ChatResponse {
+export interface ChatResponse {
   chinese: string;
   pinyin: string;
   english: string;
@@ -13,33 +13,13 @@ interface ChatResponse {
   providedIn: 'root',
 })
 export class ChatService {
+  private readonly API_URL = '/api/ai/chat';
   private currentConversationId: string | null = null;
 
   constructor(private http: HttpClient) {}
 
-  async generateResponse(text: string): Promise<ChatResponse> {
-    try {
-      const response = await firstValueFrom(
-        this.http.post<ChatResponse>('/api/ai/chat', {
-          text,
-          conversationId: this.currentConversationId,
-        })
-      );
-
-      // Store the conversation ID for subsequent requests
-      this.currentConversationId = response.conversationId;
-      return response;
-    } catch (error) {
-      console.error('Failed to generate chat response:', error);
-      // If there's an error with the conversation, we might want to reset it
-      if (
-        (error as any).status === 404 ||
-        (error as any).message?.includes('Conversation not found')
-      ) {
-        this.currentConversationId = null;
-      }
-      throw error;
-    }
+  generateResponse(text: string): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(this.API_URL, { text });
   }
 
   // Method to manually reset the conversation
