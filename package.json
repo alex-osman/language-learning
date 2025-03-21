@@ -1,0 +1,14 @@
+{
+  "name": "language-learning",
+  "version": "1.0.0",
+  "description": "Language learning application with client and server",
+  "scripts": {
+    "start:client": "cd client && npm run start",
+    "start:server": "cd server && npm run start:dev",
+    "dev": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
