@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Language } from '@shared/types/languages';
 
 interface CacheEntry {
   blob: Blob;
@@ -17,8 +16,8 @@ export class TtsService {
 
   constructor(private http: HttpClient) {}
 
-  private getCacheKey(text: string, targetLanguage: Language): string {
-    return `${text}:${targetLanguage}`;
+  private getCacheKey(text: string): string {
+    return `${text}`;
   }
 
   private cleanOldCache(): void {
@@ -30,13 +29,13 @@ export class TtsService {
     }
   }
 
-  async generateSpeech(text: string, targetLanguage: Language): Promise<void> {
+  async generateSpeech(text: string): Promise<void> {
     try {
       // Clean old cache entries periodically
       this.cleanOldCache();
 
       // Check cache first
-      const cacheKey = this.getCacheKey(text, targetLanguage);
+      const cacheKey = this.getCacheKey(text);
       const cachedEntry = this.cache.get(cacheKey);
 
       let audioBlob: Blob;
@@ -49,7 +48,7 @@ export class TtsService {
         const response = await firstValueFrom(
           this.http.post(
             '/api/ai/tts',
-            { text, targetLanguage },
+            { text },
             {
               responseType: 'arraybuffer',
             }

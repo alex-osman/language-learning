@@ -88,7 +88,7 @@ export class SpeakButtonComponent {
 
     try {
       this.isLoading = true;
-      await this.ttsService.generateSpeech(this.text, this.targetLanguage);
+      await this.ttsService.generateSpeech(this.text);
     } catch (error) {
       console.error('Failed to generate speech:', error);
     } finally {

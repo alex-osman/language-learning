@@ -3,7 +3,16 @@ import { BaseAiService } from './base-ai.service';
 import { ChatRequestDto } from '../dto/chat-request.dto';
 import { ChatResponseDto } from '../dto/chat-response.dto';
 import { ConversationService } from './conversation.service';
-import { ChineseTranslationSchema } from '../schemas/chat-response.schema';
+import {
+  ChineseTranslation,
+  ChineseTranslationSchema,
+} from '../schemas/chat-response.schema';
+import { ZodError } from 'zod';
+
+interface ChatError extends Error {
+  cause?: string;
+  conversationId?: string;
+}
 
 @Injectable()
 export class ChineseChatAiService extends BaseAiService {
@@ -94,14 +103,18 @@ export class ChineseChatAiService extends BaseAiService {
         structuredCompletion.choices[0].message.content || '{}';
       this.logger.debug(`Received structured response: ${structuredContent}`);
 
-      let structuredResponse;
+      let structuredResponse: ChineseTranslation;
       try {
-        const parsedJson = JSON.parse(structuredContent);
+        const parsedJson = JSON.parse(structuredContent) as Record<
+          string,
+          unknown
+        >;
         // Validate with Zod schema
         structuredResponse = ChineseTranslationSchema.parse(parsedJson);
       } catch (error) {
+        const parseError = error as Error | ZodError;
         this.logger.error(
-          `Failed to parse/validate structured response: ${error.message}`,
+          `Failed to parse/validate structured response: ${parseError.message}`,
         );
         this.logger.error(`Problematic content: ${structuredContent}`);
         structuredResponse = {
@@ -113,12 +126,7 @@ export class ChineseChatAiService extends BaseAiService {
 
       // Save the conversation history
       if (!request.conversationId) {
-        this.logger.debug('Adding system prompt to new conversation');
-        this.conversationService.addMessageToConversation(
-          conversationId,
-          'system',
-          this.SYSTEM_PROMPT,
-        );
+        this.logger.debug('Starting new conversation');
       }
 
       this.logger.debug('Saving conversation messages');
@@ -130,7 +138,7 @@ export class ChineseChatAiService extends BaseAiService {
       this.conversationService.addMessageToConversation(
         conversationId,
         'assistant',
-        responseContent,
+        structuredResponse.chinese,
       );
 
       const response = {
@@ -145,16 +153,15 @@ export class ChineseChatAiService extends BaseAiService {
       );
       return response;
     } catch (error) {
+      const chatError = error as ChatError;
       this.logger.error(
-        `Error generating chat response: ${error.message}`,
-        error.stack,
+        `Error generating chat response: ${chatError.message}`,
+        chatError.stack,
       );
       this.logger.error(`Request details: ${JSON.stringify(request)}`);
-      throw {
-        message: 'Failed to generate chat response',
-        cause: error.message,
-        conversationId,
-      };
+      throw new Error('Failed to generate chat response', {
+        cause: chatError,
+      });
     }
   }
 }

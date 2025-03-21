@@ -4,14 +4,15 @@ import { CritiqueRequestDto } from '../dto/critique-request.dto';
 import { CritiqueResponseDto } from '../dto/critique-response.dto';
 import { ConversationService } from './conversation.service';
 import { CritiqueResponseSchema } from '../schemas/critique-response.schema';
+import { Language } from '@shared/types/languages';
 
 @Injectable()
 export class CritiqueAiService extends BaseAiService {
   private readonly logger = new Logger(CritiqueAiService.name);
 
-  private readonly SYSTEM_PROMPT = `You are a helpful Chinese language teacher chatting with a beginner-level learner.
+  private readonly FRENCH_SYSTEM_PROMPT = `You are a helpful French language teacher chatting with a beginner-level learner. The learner is talking to sombody and you are helping them practice their French. After each learner sentence, briefly mention only clear, important grammar or vocabulary errors if they significantly affect understanding. If there are no important errors, do not mention corrections.  Always be friendly, encouraging, and concise. Keep the conversation flowing naturally, and avoid unnecessary corrections or overly detailed explanations.  Answer in French.  Do not worry about the other person's responses, only critique the learner's French.  Do not include any minor errors or lack of punctuation.  If no response is required, just say "OK".`;
 
-  The learner is talking to sombody and you are helping them practice their Chinese. After each learner sentence, briefly mention only clear, important grammar or vocabulary errors if they significantly affect understanding. If there are no important errors, do not mention corrections.  Always be friendly, encouraging, and concise. Keep the conversation flowing naturally, and avoid unnecessary corrections or overly detailed explanations.  Do not worry about the other person's responses, only critique the learner's Chinese.  Do not include any minor errors or lack of punctuation.  Answer in English, but feel free to use chinese characters and always provide the pinyin and english translation. If no response is required, just say "OK".`;
+  private readonly CHINESE_SYSTEM_PROMPT = `You are a helpful Chinese language teacher chatting with a beginner-level learner. The learner is talking to sombody and you are helping them practice their Chinese. After each learner sentence, briefly mention only clear, important grammar or vocabulary errors if they significantly affect understanding. If there are no important errors, do not mention corrections.  Always be friendly, encouraging, and concise. Keep the conversation flowing naturally, and avoid unnecessary corrections or overly detailed explanations.  Do not worry about the other person's responses, only critique the learner's Chinese.  Do not include any minor errors or lack of punctuation.  Answer in English, but feel free to use chinese characters and always provide the pinyin and english translation. If no response is required, just say "OK".`;
 
   constructor(private readonly conversationService: ConversationService) {
     super();
@@ -54,21 +55,26 @@ export class CritiqueAiService extends BaseAiService {
             'Unable to retrieve the main conversation messages.';
         }
       }
+      const systemPrompt =
+        request.language === Language.CHINESE
+          ? this.CHINESE_SYSTEM_PROMPT
+          : this.FRENCH_SYSTEM_PROMPT;
 
       // Build the messages array for the API call
       const apiMessages = [
-        { role: 'system' as const, content: this.SYSTEM_PROMPT },
+        {
+          role: 'system' as const,
+          content: systemPrompt,
+        },
         ...critiqueMessages,
         {
           role: 'user' as const,
-          content: request.isFollowup
-            ? `User Question/Comment: ${request.text}`
-            : `${mainConversationContext}\n\nUser Question/Comment: ${request.text}`,
+          content: `${mainConversationContext}\n\nUser Question/Comment: ${request.text}`,
         },
       ];
 
       // Get completion from OpenAI
-      this.logger.debug('Requesting chat completion from OpenAI');
+      this.logger.debug('Requesting chat completion from OpenAI!');
       const completion = await this.openai.chat.completions.create({
         model: this.CHAT_MODEL,
         messages: apiMessages,
@@ -82,12 +88,7 @@ export class CritiqueAiService extends BaseAiService {
 
       // Save the conversation history
       if (!request.conversationId) {
-        this.logger.debug('Adding system prompt to new conversation');
-        this.conversationService.addMessageToConversation(
-          conversationId,
-          'system',
-          this.SYSTEM_PROMPT,
-        );
+        this.logger.debug('Starting new conversation');
       }
 
       this.logger.debug('Saving conversation messages');

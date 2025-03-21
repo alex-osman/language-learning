@@ -1,45 +1,62 @@
-<div class="message" [class.user-message]="isUser" [class.ai-message]="!isUser">
+<div
+  class="message"
+  [class.user-message]="isUser"
+  [class.ai-message]="!isUser"
+  [class.loading]="isLoading"
+>
   <div class="message-header">
     <span class="sender">{{ isUser ? 'You' : 'AI Assistant' }}</span>
     <span class="timestamp">{{ formatTime(timestamp) }}</span>
   </div>
   <div class="message-content">
     <div class="message-text">
-      <!-- Multi-language support -->
-      <ng-container *ngIf="multiLanguageSupport && !isUser">
-        <div
-          class="target"
-          *ngIf="config.targetLanguage && isLanguageSelected(config.targetLanguage)"
-        >
-          {{ content.target }}
-        </div>
-        <div
-          class="transliteration"
-          *ngIf="isLanguageSelected('Pinyin') && content.transliteration"
-        >
-          {{ content.transliteration }}
-        </div>
-        <div class="base" *ngIf="config.baseLanguage && isLanguageSelected(config.baseLanguage)">
-          {{ content.base }}
+      <!-- Loading indicator -->
+      <ng-container *ngIf="isLoading">
+        <div class="typing-indicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
         </div>
       </ng-container>
 
-      <!-- Single language support -->
-      <ng-container *ngIf="!multiLanguageSupport || isUser">
-        <div>{{ content.text || content.target }}</div>
-      </ng-container>
+      <!-- Regular message content -->
+      <ng-container *ngIf="!isLoading">
+        <!-- Multi-language support -->
+        <ng-container *ngIf="multiLanguageSupport && !isUser">
+          <div
+            class="target"
+            *ngIf="config.targetLanguage && isLanguageSelected(config.targetLanguage)"
+          >
+            {{ content.target }}
+          </div>
+          <div
+            class="transliteration"
+            *ngIf="isLanguageSelected('Pinyin') && content.transliteration"
+          >
+            {{ content.transliteration }}
+          </div>
+          <div class="base" *ngIf="config.baseLanguage && isLanguageSelected(config.baseLanguage)">
+            {{ content.base }}
+          </div>
+        </ng-container>
 
-      <!-- Message Actions -->
-      <div *ngIf="!isUser" class="message-actions">
-        <app-copy-button
-          *ngIf="showCopyButton"
-          [text]="(content.target || content.text || '').toString()"
-        ></app-copy-button>
-        <app-speak-button
-          *ngIf="showSpeakButton"
-          [text]="(content.target || content.text || '').toString()"
-        ></app-speak-button>
-      </div>
+        <!-- Single language support -->
+        <ng-container *ngIf="!multiLanguageSupport || isUser">
+          <div>{{ content.text || content.target }}</div>
+        </ng-container>
+
+        <!-- Message Actions -->
+        <div *ngIf="!isUser" class="message-actions">
+          <app-copy-button
+            *ngIf="showCopyButton"
+            [text]="(content.target || content.text || '').toString()"
+          ></app-copy-button>
+          <app-speak-button
+            *ngIf="showSpeakButton"
+            [text]="(content.target || content.text || '').toString()"
+          ></app-speak-button>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>

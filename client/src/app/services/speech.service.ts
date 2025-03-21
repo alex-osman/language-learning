@@ -22,24 +22,22 @@ export class SpeechService {
   }
 
   private loadVoices(): SpeechSynthesisVoice[] {
-    return this.synth
-      .getVoices()
-      .filter((voice) => voice.lang.startsWith('zh'));
+    return this.synth.getVoices().filter(voice => voice.lang.startsWith('zh'));
   }
 
   private getBestVoice(lang: string): SpeechSynthesisVoice | null {
     if (lang === 'zh-CN') {
-      return this.loadVoices().find((voice) => voice.name === 'Meijia') || null;
+      return this.loadVoices().find(voice => voice.name === 'Meijia') || null;
     }
     const voices = this.loadVoices();
     // Prefer voices with "Google" or "Premium" in the name as they tend to be better quality
     return (
       voices.find(
-        (voice) =>
+        voice =>
           voice.lang.startsWith(lang) &&
           (voice.name.includes('Google') || voice.name.includes('Premium'))
       ) ||
-      voices.find((voice) => voice.lang.startsWith(lang)) ||
+      voices.find(voice => voice.lang.startsWith(lang)) ||
       null
     );
   }
@@ -78,7 +76,7 @@ export class SpeechService {
         this.resetState();
       };
 
-      utterance.onerror = (event) => {
+      utterance.onerror = event => {
         this.resetState();
         reject(event);
       };

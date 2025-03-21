@@ -12,6 +12,11 @@ export const ChineseTranslationSchema = z.object({
   english: z.string(),
 });
 
+export const FrenchTranslationSchema = z.object({
+  french: z.string(),
+  english: z.string(),
+});
+
 export type Translation = z.infer<typeof TranslationSchema>;
 
 export const ChatResponseSchema = z.object({
@@ -22,3 +27,6 @@ export const ChatResponseSchema = z.object({
 });
 
 export type ChatResponse = z.infer<typeof ChatResponseSchema>;
+
+export type ChineseTranslation = z.infer<typeof ChineseTranslationSchema>;
+export type FrenchTranslation = z.infer<typeof FrenchTranslationSchema>;

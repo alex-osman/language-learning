@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Language } from '@shared/types/languages';
 
 export interface CritiqueRequest {
   text: string;
   conversationId?: string;
   mainConversationId?: string;
   isFollowUp?: boolean;
+  language?: Language;
 }
 
 export interface CritiqueResponse {

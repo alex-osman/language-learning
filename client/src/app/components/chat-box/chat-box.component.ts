@@ -56,6 +56,10 @@ export class ChatBoxComponent implements OnInit {
   error: string | null = null;
   selectedLanguages: string[] = [];
 
+  get now(): Date {
+    return new Date();
+  }
+
   ngOnInit() {
     // Always show target language by default
     if (this.config.targetLanguage) {

@@ -213,7 +213,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
     try {
       this.updatePlaybackState(PlaybackState.PlayingTts);
-      await this.ttsService.generateSpeech(this.sentence.chinese, Language.CHINESE);
+      await this.ttsService.generateSpeech(this.sentence.chinese);
       this.updatePlaybackState(PlaybackState.Stopped);
     } catch (error) {
       console.error('Failed to play TTS:', error);

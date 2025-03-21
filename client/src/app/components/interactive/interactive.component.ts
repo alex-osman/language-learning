@@ -19,7 +19,7 @@ export class InteractiveComponent {
   targetLanguage: Language = Language.CHINESE;
   textInput: string = '';
   speed: 'normal' | 'slow' = 'normal';
-  isLoading: boolean = false;
+  isTtsLoading: boolean = false;
   isChatLoading: boolean = false;
   isCritiqueLoading: boolean = false;
   error: string | null = null;
@@ -66,14 +66,14 @@ export class InteractiveComponent {
   async onSubmit() {
     if (this.textInput.trim()) {
       try {
-        this.isLoading = true;
+        this.isTtsLoading = true;
         this.error = null;
-        await this.ttsService.generateSpeech(this.textInput, this.targetLanguage);
+        await this.ttsService.generateSpeech(this.textInput);
       } catch (error) {
         console.error('Failed to generate speech:', error);
         this.error = 'Failed to generate speech. Please try again.';
       } finally {
-        this.isLoading = false;
+        this.isTtsLoading = false;
       }
     }
   }
@@ -106,7 +106,7 @@ export class InteractiveComponent {
 
         // Play TTS
         await this.ttsService
-          .generateSpeech(chatResponse.target, this.targetLanguage)
+          .generateSpeech(chatResponse.target)
           .catch(error => console.error('Failed to generate speech:', error));
       }
     } finally {
@@ -121,6 +121,7 @@ export class InteractiveComponent {
           text,
           conversationId: this.currentCritiqueId,
           mainConversationId: this.currentConversationId,
+          language: this.targetLanguage,
         })
       );
 
@@ -185,6 +186,7 @@ export class InteractiveComponent {
           conversationId: this.currentCritiqueId,
           mainConversationId: this.currentConversationId,
           isFollowUp: true,
+          language: this.targetLanguage,
         })
       );
 

@@ -25,6 +25,15 @@
         [selectedLanguages]="selectedLanguages"
         [config]="{ baseLanguage: config.baseLanguage, targetLanguage: config.targetLanguage }"
       ></app-chat-message>
+
+      <!-- Loading Message -->
+      <app-chat-message
+        *ngIf="isLoading"
+        [content]="{}"
+        [isUser]="false"
+        [timestamp]="now"
+        [isLoading]="true"
+      ></app-chat-message>
     </div>
   </div>
 

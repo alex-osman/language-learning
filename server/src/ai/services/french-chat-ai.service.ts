@@ -3,6 +3,11 @@ import { ChatRequestDto } from '../dto/chat-request.dto';
 import { ChatResponseDto } from '../dto/chat-response.dto';
 import { BaseAiService } from './base-ai.service';
 import { ConversationService } from './conversation.service';
+import {
+  FrenchTranslation,
+  FrenchTranslationSchema,
+} from '../schemas/chat-response.schema';
+import { ZodError } from 'zod';
 
 interface ChatError extends Error {
   cause?: string;
@@ -12,10 +17,18 @@ interface ChatError extends Error {
 @Injectable()
 export class FrenchChatAiService extends BaseAiService {
   private readonly logger = new Logger(FrenchChatAiService.name);
-  private readonly SYSTEM_PROMPT = `You are a helpful French language tutor. Respond in both French and English. Keep responses natural, conversational, and helpful for language learning. Format your responses as:
+  private readonly SYSTEM_PROMPT = `You are a helpful French language tutor. Respond in both French and English. Keep responses natural, conversational, and helpful for language learning. Make sure to keep the conversation flowing. Answer in 1-3 sentences.`;
 
-French: [French text]
-English: [English translation]`;
+  private readonly STRUCTURE_PROMPT = `Please convert the following response into a JSON format with these fields:
+1. french: The French text
+2. english: The English translation
+
+Return only a valid JSON object without any additional text or explanation.
+Example:
+{
+  "french": "Bonjour, comment allez-vous?",
+  "english": "Hello, how are you?"
+}`;
 
   constructor(private readonly conversationService: ConversationService) {
     super();
@@ -46,30 +59,61 @@ English: [English translation]`;
         { role: 'user' as const, content: request.text },
       ];
 
-      // Get completion from OpenAI
+      // Get initial completion from OpenAI
       this.logger.debug('Requesting chat completion from OpenAI');
       const completion = await this.openai.chat.completions.create({
         model: this.CHAT_MODEL,
         messages: apiMessages,
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 150,
       });
 
       const responseContent =
         completion.choices[0].message.content || 'No response generated.';
       this.logger.debug(`Received response: ${responseContent}`);
 
-      // Parse the response to extract French and English parts
-      const [french, english] = this.parseResponse(responseContent);
+      // Get structured format
+      this.logger.debug('Requesting structured format conversion');
+      const structureMessages = [
+        { role: 'system' as const, content: this.STRUCTURE_PROMPT },
+        { role: 'user' as const, content: responseContent },
+      ];
+
+      const structuredCompletion = await this.openai.chat.completions.create({
+        model: this.CHAT_MODEL,
+        messages: structureMessages,
+        temperature: 0,
+        max_tokens: 2000,
+        response_format: { type: 'json_object' },
+      });
+
+      const structuredContent =
+        structuredCompletion.choices[0].message.content || '{}';
+      this.logger.debug(`Received structured response: ${structuredContent}`);
+
+      let structuredResponse: FrenchTranslation;
+      try {
+        const parsedJson = JSON.parse(structuredContent) as Record<
+          string,
+          unknown
+        >;
+        // Validate with Zod schema
+        structuredResponse = FrenchTranslationSchema.parse(parsedJson);
+      } catch (error) {
+        const parseError = error as Error | ZodError;
+        this.logger.error(
+          `Failed to parse/validate structured response: ${parseError.message}`,
+        );
+        this.logger.error(`Problematic content: ${structuredContent}`);
+        structuredResponse = {
+          french: responseContent,
+          english: responseContent,
+        };
+      }
 
       // Save the conversation history
       if (!request.conversationId) {
-        this.logger.debug('Adding system prompt to new conversation');
-        this.conversationService.addMessageToConversation(
-          conversationId,
-          'system',
-          this.SYSTEM_PROMPT,
-        );
+        this.logger.debug('Starting new conversation');
       }
 
       this.logger.debug('Saving conversation messages');
@@ -81,12 +125,12 @@ English: [English translation]`;
       this.conversationService.addMessageToConversation(
         conversationId,
         'assistant',
-        responseContent,
+        structuredResponse.french,
       );
 
       return {
-        base: english,
-        target: french,
+        base: structuredResponse.english,
+        target: structuredResponse.french,
         conversationId,
       };
     } catch (error) {
@@ -104,28 +148,5 @@ English: [English translation]`;
       err.conversationId = conversationId;
       throw err;
     }
-  }
-
-  private parseResponse(response: string): [string, string] {
-    // Default values in case parsing fails
-    let french = response;
-    let english = response;
-
-    try {
-      // Try to find French and English parts
-      // Common patterns: "French: ... English: ..." or "French text\nEnglish text"
-      const frenchMatch = response.match(/French:\s*([\s\S]*?)(?=English:|$)/i);
-      const englishMatch = response.match(/English:\s*([\s\S]*?)$/i);
-
-      if (frenchMatch && englishMatch) {
-        french = frenchMatch[1].trim();
-        english = englishMatch[1].trim();
-      }
-    } catch (error) {
-      const parseError = error as Error;
-      this.logger.warn('Failed to parse response parts:', parseError);
-    }
-
-    return [french, english];
   }
 }

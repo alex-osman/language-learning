@@ -7,9 +7,9 @@ export class TtsAiService extends BaseAiService {
   async generateSpeech(request: TtsRequestDto): Promise<Buffer> {
     const response = await this.openai.audio.speech.create({
       model: 'tts-1',
-      voice: 'coral',
+      voice: 'echo',
       input: request.text,
-      speed: 0.9,
+      speed: request.speed === 'slow' ? 0.7 : 1,
     });
 
     const buffer = Buffer.from(await response.arrayBuffer());

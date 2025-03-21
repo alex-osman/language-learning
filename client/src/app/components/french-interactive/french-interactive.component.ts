@@ -51,7 +51,7 @@ import { ChatService } from 'src/app/services/chat.service';
 export class FrenchInteractiveComponent {
   textInput: string = '';
   targetLanguage: Language = Language.FRENCH;
-  isLoading: boolean = false;
+  isTtsLoading: boolean = false;
   isChatLoading: boolean = false;
   isCritiqueLoading: boolean = false;
   error: string | null = null;
@@ -98,14 +98,14 @@ export class FrenchInteractiveComponent {
   async onSubmit() {
     if (this.textInput.trim()) {
       try {
-        this.isLoading = true;
+        this.isTtsLoading = true;
         this.error = null;
-        await this.ttsService.generateSpeech(this.textInput, this.targetLanguage);
+        await this.ttsService.generateSpeech(this.textInput);
       } catch (error) {
         console.error('Failed to generate speech:', error);
         this.error = 'Failed to generate speech. Please try again.';
       } finally {
-        this.isLoading = false;
+        this.isTtsLoading = false;
       }
     }
   }
@@ -135,9 +135,10 @@ export class FrenchInteractiveComponent {
         this.chatHistory.push(aiMessage);
         this.currentConversationId = chatResponse.conversationId;
 
+        this.isChatLoading = false;
         // Play TTS
         await this.ttsService
-          .generateSpeech(chatResponse.target, Language.FRENCH)
+          .generateSpeech(chatResponse.target)
           .catch(error => console.error('Failed to generate speech:', error));
       }
     } finally {
@@ -152,6 +153,7 @@ export class FrenchInteractiveComponent {
           text,
           conversationId: this.currentCritiqueId,
           mainConversationId: this.currentConversationId,
+          language: this.targetLanguage,
         })
       );
 
@@ -216,6 +218,7 @@ export class FrenchInteractiveComponent {
           conversationId: this.currentCritiqueId,
           mainConversationId: this.currentConversationId,
           isFollowUp: true,
+          language: this.targetLanguage,
         })
       );
 
