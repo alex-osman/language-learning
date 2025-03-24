@@ -1,0 +1,44 @@
+<div class="section characters">
+  <h2>Characters Progress</h2>
+  <div class="progress-stats">{{ charactersProgress }}</div>
+  <div class="grid">
+    <ng-container *ngFor="let char of filteredCharacters">
+      <div
+        class="cell"
+        [class.has-data]="hasCharacterData(char)"
+        [class.no-data]="!hasCharacterData(char)"
+        (mouseenter)="onCharacterHover(char)"
+      >
+        <div class="cell-content">
+          <div class="character">{{ char.character }}</div>
+          <ng-container *ngIf="hasCharacterData(char)">
+            <div class="pinyin">{{ getCharacterPinyin(char) }}</div>
+            <div class="definition">{{ getCharacterDefinition(char) }}</div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Movie Scene Info Panel -->
+  <div *ngIf="selectedCharacter && movieScene" class="movie-scene-panel">
+    <div class="panel-header">
+      <h3>{{ selectedCharacter.character }} - {{ movieScene.initial }}{{ movieScene.final }}</h3>
+      <button class="close-btn" (click)="clearSelection()">×</button>
+    </div>
+    <div class="panel-content">
+      <div class="info-section">
+        <h4>Actor</h4>
+        <p>{{ movieScene.actor }}</p>
+      </div>
+      <div class="info-section">
+        <h4>Set Location</h4>
+        <p>{{ movieScene.set }}</p>
+      </div>
+      <div class="info-section">
+        <h4>Tone Location (Tone {{ movieScene.tone }})</h4>
+        <p>{{ blueprint.tones[movieScene.tone] }}</p>
+      </div>
+    </div>
+  </div>
+</div>
