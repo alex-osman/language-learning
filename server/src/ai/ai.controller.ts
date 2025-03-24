@@ -45,12 +45,12 @@ export class AiController {
       const buffer = await this.ttsService.generateSpeech(request);
       return new StreamableFile(buffer);
     } catch (error: any) {
-      this.logger.error(`TTS generation failed: ${error.message}`, error.stack);
+      this.logger.error(`TTS generation failed:`);
+      console.log(error);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to generate speech',
-          details: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -67,16 +67,12 @@ export class AiController {
       }
       return await this.chineseChatService.generateChineseChatResponse(request);
     } catch (error: any) {
-      this.logger.error(
-        `Chat generation failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Chat generation failed:`);
+      console.log(error);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to generate chat response',
-          details: error.message,
-          conversationId: error.conversationId,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -90,16 +86,12 @@ export class AiController {
     try {
       return await this.critiqueService.generateCritiqueResponse(request);
     } catch (error: any) {
-      this.logger.error(
-        `Critique generation failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Critique generation failed:`);
+      console.log(error);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to generate critique response',
-          details: error.message,
-          conversationId: error.conversationId,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -111,7 +103,6 @@ export class AiController {
     @Body() request: MovieGenerationRequestDto,
   ): Promise<MovieGenerationResponseDto> {
     try {
-      console.log('request', request);
       return await this.movieService.generateMovie(request);
     } catch (error) {
       const errorMessage =
