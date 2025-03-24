@@ -21,6 +21,7 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     '2': 'Kitchen or inside entrance',
     '3': 'Bedroom or living room',
     '4': 'Bathroom or outside/yard',
+    '5': 'On the roof',
   },
   actors: [
     { initial: 'b', name: 'Bill Murray', type: 'male' },
@@ -63,7 +64,7 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { radical: '兑', prop: 'deal with the devil/wad of cash' },
     { radical: '讠', prop: 'microphone' },
     { radical: '㇉', prop: 'toilet' },
-    { radical: '马' },
+    { radical: '马', prop: 'Horse' },
     { radical: '乙' },
     { radical: '乞' },
     { radical: '气' },
@@ -401,9 +402,15 @@ The scene is oddly enchanting, blending the power and freedom of a horse (马 - 
     },
     {
       character: '吗',
+      pinyin: 'ma',
+      definition: 'Question Mark (yes/no)',
+      props: [{ radical: '口' }, { radical: '马' }],
     },
     {
       character: '骂',
+      pinyin: 'mà',
+      definition: 'Scold',
+      props: [{ radical: '口' }, { radical: '口' }, { radical: '马' }],
     },
     {
       character: '乙',
