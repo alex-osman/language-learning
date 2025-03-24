@@ -6,8 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "rm -rf src/shared && cp -r ../shared src/shared",
+    "prebuild": "rimraf dist",
     "build": "nest build",
+    "postbuild": "cp src/data.json dist/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

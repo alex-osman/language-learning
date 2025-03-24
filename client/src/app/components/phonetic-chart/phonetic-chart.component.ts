@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MANDARIN_BLUEPRINT_DATA } from '../../data/mandarin-blueprint.data';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../../services/data.service';
 import {
   INITIALS,
   ORDERED_FINALS,
   ORDERED_INITIALS,
   VALID_COMBINATIONS,
 } from '../../data/pinyin.constants';
-import { MandarinBlueprint, Actor } from '../../interfaces/mandarin-blueprint.interface';
 
 interface PhoneticCell {
   initial: string;
@@ -22,12 +21,30 @@ interface PhoneticCell {
   templateUrl: './phonetic-chart.component.html',
   styleUrls: ['./phonetic-chart.component.scss'],
 })
-export class PhoneticChartComponent {
-  blueprint = MANDARIN_BLUEPRINT_DATA;
+export class PhoneticChartComponent implements OnInit {
   selectedCell: { initial: string; final: string } | null = null;
   orderedInitials = ORDERED_INITIALS;
   orderedFinals = ORDERED_FINALS;
   initials = INITIALS;
+  private actors: { initial: string; name: string }[] = [];
+  private sets: { [key: string]: string } = {};
+
+  constructor(private dataService: DataService) {}
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  private loadData() {
+    // Load actors and sets data
+    this.dataService.getActors().subscribe(actors => {
+      this.actors = actors;
+    });
+
+    this.dataService.getSets().subscribe(sets => {
+      this.sets = sets;
+    });
+  }
 
   // Check if a combination exists based on the table
   hasCombination(initial: string, final: string): boolean {
@@ -48,7 +65,7 @@ export class PhoneticChartComponent {
   // Get actor for an initial
   getActor(initial: string): string {
     const cleanInitial = initial.replace('-', '').toUpperCase();
-    const actor = this.blueprint.actors.find(a => a.initial === cleanInitial);
+    const actor = this.actors.find(a => a.initial === cleanInitial);
     if (!actor) {
       return '(No actor assigned)';
     }
@@ -58,10 +75,10 @@ export class PhoneticChartComponent {
   // Get set location for a final
   getSet(final: string): string {
     const key = `-${final}`;
-    if (!(key in this.blueprint.sets)) {
+    if (!(key in this.sets)) {
       return '(No location assigned)';
     }
-    return this.blueprint.sets[key] || this.blueprint.sets['null'];
+    return this.sets[key] || this.sets['null'];
   }
 
   // Handle cell click

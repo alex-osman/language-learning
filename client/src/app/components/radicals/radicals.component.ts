@@ -1,25 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Actor } from '../../interfaces/mandarin-blueprint.interface';
 import { DataService } from '../../services/data.service';
+import { RadicalProp } from '../../interfaces/mandarin-blueprint.interface';
 
 @Component({
-  selector: 'app-actors',
+  selector: 'app-radicals',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="section actors">
-      <h2>Actors</h2>
+    <div class="section radicals">
+      <h2>Radical Props</h2>
       <div *ngIf="isLoading" class="loading">
         <div class="loading-spinner"></div>
-        <p>Loading actors...</p>
+        <p>Loading radicals...</p>
       </div>
       <div *ngIf="!isLoading" class="grid">
-        <ng-container *ngFor="let actor of actors">
+        <ng-container *ngFor="let radical of radicals">
           <div class="cell has-data">
             <div class="cell-content">
-              <div class="symbol">{{ actor.initial }}</div>
-              <div class="value">{{ actor.name }}</div>
+              <div class="symbol">{{ radical.radical }}</div>
+              <div class="value">{{ radical.prop || 'No prop assigned' }}</div>
             </div>
           </div>
         </ng-container>
@@ -104,31 +104,31 @@ import { DataService } from '../../services/data.service';
     `,
   ],
 })
-export class ActorsComponent implements OnInit {
-  actors: Actor[] = [];
+export class RadicalsComponent implements OnInit {
+  radicals: RadicalProp[] = [];
   isLoading = true;
   error: string | null = null;
 
   constructor(private dataService: DataService) {}
 
   ngOnInit() {
-    this.loadActors();
+    this.loadRadicals();
   }
 
-  private loadActors() {
+  private loadRadicals() {
     this.isLoading = true;
     this.error = null;
 
-    this.dataService.getActors().subscribe({
-      next: actors => {
-        this.actors = actors
-          .filter(actor => actor.initial !== 'null')
-          .sort((a, b) => a.initial.localeCompare(b.initial));
+    this.dataService.getRadicalProps().subscribe({
+      next: (radicals: RadicalProp[]) => {
+        this.radicals = radicals.sort((a: RadicalProp, b: RadicalProp) =>
+          a.radical.localeCompare(b.radical)
+        );
         this.isLoading = false;
       },
-      error: error => {
-        console.error('Error fetching actors:', error);
-        this.error = 'Failed to load actors. Please try again later.';
+      error: (error: Error) => {
+        console.error('Error fetching radicals:', error);
+        this.error = 'Failed to load radicals. Please try again later.';
         this.isLoading = false;
       },
     });

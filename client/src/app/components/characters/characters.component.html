@@ -1,8 +1,8 @@
 <div class="section characters">
   <h2>Characters Progress</h2>
-  <div class="progress-stats">{{ charactersProgress }}</div>
+  <h4>{{ characters.length }} characters</h4>
   <div class="grid">
-    <ng-container *ngFor="let char of filteredCharacters">
+    <ng-container *ngFor="let char of characters">
       <div
         class="cell"
         [class.has-data]="hasCharacterData(char)"
@@ -12,8 +12,8 @@
         <div class="cell-content">
           <div class="character">{{ char.character }}</div>
           <ng-container *ngIf="hasCharacterData(char)">
-            <div class="pinyin">{{ getCharacterPinyin(char) }}</div>
-            <div class="definition">{{ getCharacterDefinition(char) }}</div>
+            <div class="pinyin">{{ char.pinyin }}</div>
+            <div class="definition">{{ char.definition }}</div>
           </ng-container>
         </div>
       </div>
@@ -42,13 +42,13 @@
       </div>
       <div class="info-section">
         <h4>Tone Location (Tone {{ movieScene.tone }})</h4>
-        <p>{{ blueprint.tones[movieScene.tone] }}</p>
+        <p>{{ tones ? tones[movieScene.tone] : 'No tone location found' }}</p>
       </div>
       <div class="info-section">
         <h4>Radical Props</h4>
         <p>
-          <ng-container *ngFor="let prop of getCharacterRadicalProps(selectedCharacter)">
-            <div>
+          <ng-container *ngFor="let prop of getRadicalProps(selectedCharacter.radicals)">
+            <div *ngIf="prop">
               <span class="prop-item">{{ prop.radical }}</span> &nbsp;&nbsp;&nbsp;&nbsp; (
               <span class="prop-item">{{ prop.prop }}</span
               >)

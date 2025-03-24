@@ -1,6 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface';
+import { DataService } from '../../services/data.service';
+
+interface SetEntry {
+  final: string;
+  location: string;
+}
+
+type Sets = { [key: string]: string };
 
 @Component({
   selector: 'app-sets',
@@ -9,7 +16,11 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
   template: `
     <div class="section sets">
       <h2>Sets</h2>
-      <div class="grid">
+      <div *ngIf="isLoading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading sets...</p>
+      </div>
+      <div *ngIf="!isLoading" class="grid">
         <ng-container *ngFor="let set of definedSets">
           <div class="cell has-data">
             <div class="cell-content">
@@ -18,6 +29,9 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
             </div>
           </div>
         </ng-container>
+      </div>
+      <div *ngIf="error" class="error">
+        <p>{{ error }}</p>
       </div>
     </div>
   `,
@@ -49,20 +63,84 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
           word-break: break-word;
         }
       }
+
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #81c784;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 1rem;
+        }
+
+        p {
+          color: #2e7d32;
+          font-size: 1rem;
+        }
+      }
+
+      .error {
+        padding: 1rem;
+        background-color: #ffebee;
+        border: 1px solid #ef9a9a;
+        border-radius: 6px;
+        margin-top: 1rem;
+
+        p {
+          color: #c62828;
+          margin: 0;
+        }
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     `,
   ],
 })
-export class SetsComponent {
-  @Input() blueprint!: MandarinBlueprint;
+export class SetsComponent implements OnInit {
+  definedSets: SetEntry[] = [];
+  isLoading = true;
+  error: string | null = null;
 
-  get definedSets(): { final: string; location: string }[] {
-    if (!this.blueprint?.sets) return [];
-    return Object.entries(this.blueprint.sets)
-      .filter(([key]) => key !== 'null') // Exclude the fallback set
-      .map(([key, location]) => ({
-        final: key.replace('-', ''), // Remove the hyphen prefix
-        location,
-      }))
-      .sort((a, b) => a.final.localeCompare(b.final)); // Sort by final
+  constructor(private dataService: DataService) {}
+
+  ngOnInit() {
+    this.loadSets();
+  }
+
+  private loadSets() {
+    this.isLoading = true;
+    this.error = null;
+
+    this.dataService.getSets().subscribe({
+      next: (sets: Sets) => {
+        this.definedSets = Object.entries(sets)
+          .filter(([key]) => key !== 'null') // Exclude the fallback set
+          .map(([key, location]) => ({
+            final: key.replace('-', ''), // Remove the hyphen prefix
+            location,
+          }))
+          .sort((a, b) => a.final.localeCompare(b.final)); // Sort by final
+        this.isLoading = false;
+      },
+      error: (error: Error) => {
+        console.error('Error fetching sets:', error);
+        this.error = 'Failed to load sets. Please try again later.';
+        this.isLoading = false;
+      },
+    });
   }
 }

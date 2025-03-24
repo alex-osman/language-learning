@@ -1,0 +1,319 @@
+{
+  "sets": {
+    "-an": "Anrenee's apartment, outside area with a buzzer and inside area with mailroom and then a lobby hallway that we go up a flight of stairs to her apartment.  Inside is the bedroom and bathroom and living area and kitchen.",
+    "-en": "Cosmos - the name of our college house we lived in",
+    "-ong": "Bellevue Gym (The nice gym in philly with a lobby and smoothie bar and lots of classes and a workout room and a pool area with a hot tub and sauna)",
+    "-e": "Eric's place in Maine (beautiful house in Bath Maine, decent sized yard with a blackstone grill and cold in the winter with a fireplace)",
+    "-ou": "Current Philly house with roommates (in center city philly)",
+    "-a": "Scottsdale coworking space in Arizona (tone 2 use coffee shop, tone 3 use actual office, tone 4 use parking lot,)",
+    "-ao": "15 ft travel trailer (currently parked in a warehouse in Philly, toured across US/Canada to Las Vegas and Nova Scotia)",
+    "-ei": "High school",
+    "-o": "Iowa - Jean's house (Jean was into funny jesus things so there were random jesus pictures and bobbleheads around the house.  Two dogs, a backyard with a broken airstream in it that Jean wanted to fix up.  A larger nicer bathroom on the ground floor.)",
+    "null": "Bridgewater home (the home I grew up in, my parents home in new jersey)"
+  },
+  "tones": {
+    "1": "Outside the entrance",
+    "2": "Kitchen or inside entrance",
+    "3": "Bedroom or living room",
+    "4": "Bathroom or outside/yard",
+    "5": "On the roof"
+  },
+  "actors": [
+    { "initial": "b", "name": "Bill Murray", "type": "male" },
+    { "initial": "r", "name": "The Rock", "type": "male" },
+    { "initial": "g", "name": "Gordon Ramsay", "type": "male" },
+    { "initial": "k", "name": "Kim Jong Un", "type": "male" },
+    { "initial": "c", "name": "Christopher Walken", "type": "male" },
+    { "initial": "s", "name": "Snoop Dogg", "type": "male" },
+    { "initial": "zh", "name": "Jim Carrey", "type": "male" },
+    { "initial": "ø", "name": "Jackie Chan", "type": "male" },
+    { "initial": "sh", "name": "Shaq", "type": "male" },
+    { "initial": "m", "name": "Michael Jackson", "type": "male" },
+    { "initial": "xi", "name": "Shakira", "type": "female" },
+    { "initial": "ni", "name": "Nicole Oringer", "type": "female" },
+    { "initial": "ji", "name": "Jamie (your sister)", "type": "female" },
+    { "initial": "ru", "name": "Ron Weasley", "type": "fictional" },
+    { "initial": "du", "name": "Darth Vader", "type": "fictional" },
+    { "initial": "w", "name": "Woody", "type": "fictional" },
+    { "initial": "shu", "name": "Shrek", "type": "fictional" }
+  ],
+  "radicalProps": [
+    { "radical": "一", "prop": "Razorblade" },
+    { "radical": "二", "prop": "Twins" },
+    { "radical": "三" },
+    { "radical": "丨", "prop": "Gandalf staff" },
+    { "radical": "十", "prop": "Cross" },
+    {
+      "radical": "____?____",
+      "prop": "devil's ears/horns (like on top of 兄 in 兑）"
+    },
+    { "radical": "半" },
+    { "radical": "八", "prop": "Magic 8 Ball" },
+    { "radical": "人", "prop": "Person doing a split" },
+    { "radical": "亻", "prop": "Mr. T (variant of 人)" },
+    { "radical": "从", "prop": "Two people" },
+    { "radical": "午", "prop": "Sundial" },
+    { "radical": "𠃍", "prop": "Horse Head" },
+    { "radical": "口", "prop": "Rolling Stones mouth" },
+    { "radical": "中", "prop": "Chinese scepter" },
+    { "radical": "儿", "prop": "Patrick Star's big black boots" },
+    { "radical": "只", "prop": "Lone droid" },
+    { "radical": "兄", "prop": "Older brother Eric" },
+    { "radical": "兑", "prop": "deal with the devil/wad of cash" },
+    { "radical": "讠", "prop": "microphone" },
+    { "radical": "㇉", "prop": "toilet" },
+    { "radical": "马", "prop": "Horse" },
+    { "radical": "乙" },
+    { "radical": "乞" },
+    { "radical": "气" },
+    { "radical": "又" },
+    { "radical": "日" },
+    { "radical": "旦" },
+    { "radical": "早" }
+  ],
+  "characters": [
+    {
+      "character": "一",
+      "pinyin": "yī",
+      "definition": "One"
+    },
+    {
+      "character": "二",
+      "pinyin": "èr",
+      "definition": "Two"
+    },
+    {
+      "character": "三",
+      "pinyin": "sān",
+      "definition": "Three"
+    },
+    {
+      "character": "十",
+      "pinyin": "shí",
+      "definition": "Ten"
+    },
+    {
+      "character": "干",
+      "pinyin": "gān",
+      "definition": "Dry"
+    },
+    {
+      "character": "半",
+      "pinyin": "bàn",
+      "definition": "Half"
+    },
+    {
+      "character": "人",
+      "pinyin": "rén",
+      "definition": "Person"
+    },
+    {
+      "character": "从",
+      "pinyin": "cóng",
+      "definition": "Follow"
+    },
+    {
+      "character": "个",
+      "pinyin": "gè",
+      "definition": "Individual"
+    },
+    {
+      "character": "入",
+      "pinyin": "rù",
+      "definition": "Enter"
+    },
+    {
+      "character": "什",
+      "pinyin": "shén",
+      "definition": "What"
+    },
+    {
+      "character": "午",
+      "pinyin": "wǔ",
+      "definition": "Noon"
+    },
+    {
+      "character": "年",
+      "pinyin": "nián",
+      "definition": "Year"
+    },
+    {
+      "character": "口",
+      "pinyin": "kǒu",
+      "definition": "Mouth"
+    },
+    {
+      "character": "中",
+      "pinyin": "zhōng",
+      "definition": "Center"
+    },
+    {
+      "character": "叫",
+      "pinyin": "jiào",
+      "definition": "Call"
+    },
+    {
+      "character": "八",
+      "pinyin": "bā",
+      "definition": "Eight"
+    },
+    {
+      "character": "只",
+      "pinyin": "zhǐ",
+      "definition": "Only"
+    },
+    {
+      "character": "介",
+      "pinyin": "jiè",
+      "definition": "Introduction"
+    },
+    {
+      "character": "儿",
+      "pinyin": "ér",
+      "definition": "Child/Kid"
+    },
+    {
+      "character": "四",
+      "pinyin": "sì",
+      "definition": "Four"
+    },
+    {
+      "character": "兄",
+      "pinyin": "xiōng",
+      "definition": "Elder brother"
+    },
+    {
+      "character": "兑",
+      "pinyin": "duì",
+      "definition": "Exchange"
+    },
+    {
+      "character": "说",
+      "pinyin": "shuō",
+      "definition": "Speak"
+    },
+    {
+      "character": "计",
+      "pinyin": "jì",
+      "definition": "Plan",
+      "movie": "Jamie is pacing inside the Bridgewater bathroom, deep in thought.\nShe holds a microphone (讠), speaking softly to herself like she's dictating her next brilliant idea.\nBut taped to the wall in front of her is a big red Cross (十) — like a target or goal.\nShe stares at it, clicks her pen, and says into the mic:\n“Phase one: wake up early. Phase two: coffee. Phase three: world domination.”\nThe mic glows each time she speaks a bullet point. The cross lights up every time a new step in the plan is added — like a checklist being burned into reality.\nJust as she says “step ten,” the bathroom lights flicker like a conspiracy board is about to explode.Phase one: wake up early. Phase two: coffee. Phase three: world domination.\nThe mic glows each time she speaks a bullet point. The cross lights up every time a new step in the plan is added — like a checklist being burned into reality."
+    },
+    {
+      "character": "认",
+      "pinyin": "rèn",
+      "definition": "Recognize"
+    },
+    {
+      "character": "识",
+      "pinyin": "shí",
+      "definition": "Knowledge",
+      "radicals": ["讠", "只"]
+    },
+    {
+      "character": "马",
+      "pinyin": "mǎ",
+      "definition": "Horse",
+      "radicals": ["𠃍", "一", "㇉"]
+    },
+    {
+      "character": "吗",
+      "pinyin": "ma",
+      "definition": "Question Mark (yes/no)",
+      "radicals": ["口", "马"]
+    },
+    {
+      "character": "骂",
+      "pinyin": "mà",
+      "definition": "Scold",
+      "radicals": ["口", "口", "马"],
+      "movie": "In Jean's house in Iowa, amidst an eclectic mix of Jesus pictures and bobbleheads, Michael Jackson is attempting to moonwalk with the two resident dogs in the backyard, right next to the broken airstream. However, every time he tries to slide gracefully, he ends up stepping on a misplaced bobblehead of Jesus, causing him to trip and softly scold the bobbleheads with a \"Hee-hee\" and a playful wag of his finger, saying, \"You've been hit by, you've been struck by, a smooth criminal.\"\n\nThis unexpected scene is watched from the large, nicer bathroom window by the dogs, who seem to be judging Michael's moonwalking skills, leading Michael to playfully '骂' (mà), or scold, them in a light, humorous tone for their silent judgment. \n\nHere, in the Tone 4 location of Jean's backyard, Michael's playful scolding amidst the religious and quirky decor, under the watchful eyes of bobbleheads and dogs, creates a memorable tableau that vividly encapsulates the meaning of '骂' (mà) - to scold or berate, all while keeping a light and humorous air."
+    },
+    {
+      "character": "乙"
+    },
+    {
+      "character": "乞"
+    },
+    {
+      "character": "吃"
+    },
+    {
+      "character": "气"
+    },
+    {
+      "character": "飞"
+    },
+    {
+      "character": "况"
+    },
+    {
+      "character": "日"
+    },
+    {
+      "character": "旧"
+    },
+    {
+      "character": "旦"
+    },
+    {
+      "character": "但"
+    },
+    {
+      "character": "早"
+    },
+    {
+      "character": "唱"
+    },
+    {
+      "character": "电"
+    },
+    {
+      "character": "七"
+    },
+    {
+      "character": "化"
+    },
+    {
+      "character": "白"
+    },
+    {
+      "character": "百"
+    },
+    {
+      "character": "今"
+    },
+    {
+      "character": "千"
+    },
+    {
+      "character": "舌"
+    },
+    {
+      "character": "话"
+    },
+    {
+      "character": "活"
+    },
+    {
+      "character": "乱"
+    },
+    {
+      "character": "汽"
+    },
+    {
+      "character": "月"
+    },
+    {
+      "character": "用"
+    },
+    {
+      "character": "胖"
+    },
+    {
+      "character": "朋"
+    },
+    {
+      "character": "明"
+    }
+  ]
+}

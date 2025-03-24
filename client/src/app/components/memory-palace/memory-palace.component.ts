@@ -1,25 +1,21 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface';
-import { ActorsComponent } from '../actors/actors.component';
-import { SetsComponent } from '../sets/sets.component';
-import { CharactersComponent } from '../characters/characters.component';
-import { PropsComponent } from '../props/props.component';
+import { Component } from '@angular/core';
 import { ORDERED_FINALS, ORDERED_INITIALS } from '../../data/pinyin.constants';
-import { MANDARIN_BLUEPRINT_DATA } from '../../data/mandarin-blueprint.data';
+import { ActorsComponent } from '../actors/actors.component';
+import { CharactersComponent } from '../characters/characters.component';
+import { RadicalsComponent } from '../radicals/radicals.component';
+import { SetsComponent } from '../sets/sets.component';
 
 @Component({
   selector: 'app-memory-palace',
   standalone: true,
-  imports: [CommonModule, ActorsComponent, SetsComponent, CharactersComponent, PropsComponent],
+  imports: [CommonModule, ActorsComponent, SetsComponent, CharactersComponent, RadicalsComponent],
   template: `
     <div class="memory-palace">
-      <app-actors [blueprint]="blueprint"> </app-actors>
-      <app-sets [blueprint]="blueprint"> </app-sets>
-
-      <app-characters [blueprint]="blueprint"> </app-characters>
-
-      <app-props [blueprint]="blueprint"> </app-props>
+      <app-actors> </app-actors>
+      <app-sets> </app-sets>
+      <app-radicals />
+      <app-characters> </app-characters>
     </div>
   `,
   styles: [
@@ -41,8 +37,6 @@ import { MANDARIN_BLUEPRINT_DATA } from '../../data/mandarin-blueprint.data';
   ],
 })
 export class MemoryPalaceComponent {
-  blueprint: MandarinBlueprint = MANDARIN_BLUEPRINT_DATA;
-
   orderedInitials = ORDERED_INITIALS;
   orderedFinals = ORDERED_FINALS;
 }

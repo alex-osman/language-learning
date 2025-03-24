@@ -9,7 +9,7 @@ export interface MovieGenerationRequest {
   set: string;
   tone: string;
   toneLocation: string;
-  radicalProps: { radical: string; prop?: string }[];
+  radicalProps: string[];
 }
 
 interface MovieGenerationResponse {
