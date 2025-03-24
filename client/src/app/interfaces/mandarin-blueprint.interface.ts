@@ -3,7 +3,13 @@ export interface MandarinBlueprint {
   tones: { [key: string]: string };
   actors: Actor[];
   radicalProps: { radical: string; prop?: string }[];
-  characters: { character: string; pinyin?: string; definition?: string }[];
+  characters: {
+    character: string;
+    pinyin?: string;
+    definition?: string;
+    movie?: string;
+    props?: { radical: string; prop?: string }[];
+  }[];
 }
 
 export interface PhoneticSet {

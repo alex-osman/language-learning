@@ -2,22 +2,25 @@ import { MandarinBlueprint } from '../interfaces/mandarin-blueprint.interface';
 
 export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
   sets: {
-    '-an': "Anrenee's apartment",
-    '-en': 'Cosmos college house (danny cooking chickEN)',
-    '-ong': 'Bellevue Gym',
-    '-e': "Eric's place in Maine",
-    '-ou': 'Current Philly house with roommates',
-    '-a': 'Scottsdale coworking space in Arizona',
-    '-ao': '15 ft travel trailer (currently in warehouse, toured across US/Canada)',
-    '-ei': 'Eisenhower school/high school',
-    '-o': "Iowa - Jean's house",
-    null: 'Bridgewater home (fallback)',
+    '-an':
+      "Anrenee's apartment, outside area with a buzzer and inside area with mailroom and then a lobby hallway that we go up a flight of stairs to her apartment.  Inside is the bedroom and bathroom and living area and kitchen.",
+    '-en': 'Cosmos - the name of our college house we lived in',
+    '-ong':
+      'Bellevue Gym (The nice gym in philly with a lobby and smoothie bar and lots of classes and a workout room and a pool area with a hot tub and sauna)',
+    '-e': "Eric's place in Maine (beautiful house in Bath Maine, decent sized yard with a blackstone grill and cold in the winter with a fireplace)",
+    '-ou': 'Current Philly house with roommates (in center city philly)',
+    '-a': 'Scottsdale coworking space in Arizona (tone 2 use coffee shop, tone 3 use actual office, tone 4 use parking lot,)',
+    '-ao':
+      '15 ft travel trailer (currently parked in a warehouse in Philly, toured across US/Canada to Las Vegas and Nova Scotia)',
+    '-ei': 'High school',
+    '-o': "Iowa - Jean's house (Jean was into funny jesus things so there were random jesus pictures and bobbleheads around the house.  Two dogs, a backyard with a broken airstream in it that Jean wanted to fix up.  A larger nicer bathroom on the ground floor.)",
+    null: 'Bridgewater home (the home I grew up in, my parents home in new jersey)',
   },
   tones: {
     '1': 'Outside the entrance',
     '2': 'Kitchen or inside entrance',
     '3': 'Bedroom or living room',
-    '4': 'Bathroom',
+    '4': 'Bathroom or outside/yard',
   },
   actors: [
     { initial: 'b', name: 'Bill Murray', type: 'male' },
@@ -29,6 +32,7 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { initial: 'zh', name: 'Jim Carrey', type: 'male' },
     { initial: 'ø', name: 'Jackie Chan', type: 'male' },
     { initial: 'sh', name: 'Shaq', type: 'male' },
+    { initial: 'm', name: 'Michael Jackson', type: 'male' },
     { initial: 'xi', name: 'Shakira', type: 'female' },
     { initial: 'ni', name: 'Nicole Oringer', type: 'female' },
     { initial: 'ji', name: 'Jamie (your sister)', type: 'female' },
@@ -43,14 +47,14 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { radical: '三' },
     { radical: '丨', prop: 'Gandalf staff' },
     { radical: '十', prop: 'Cross' },
-    { radical: '丶' },
+    { radical: '____?____', prop: "devil's ears/horns (like on top of 兄 in 兑）" },
     { radical: '半' },
     { radical: '八', prop: 'Magic 8 Ball' },
     { radical: '人', prop: 'Person doing a split' },
     { radical: '亻', prop: 'Mr. T (variant of 人)' },
     { radical: '从', prop: 'Two people' },
     { radical: '午', prop: 'Sundial' },
-    { radical: '乛', prop: 'Fishing hook' },
+    { radical: `𠃍`, prop: 'Horse Head' },
     { radical: '口', prop: 'Rolling Stones mouth' },
     { radical: '中', prop: 'Chinese scepter' },
     { radical: '儿', prop: 'Patrick Star’s big black boots' },
@@ -58,6 +62,7 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { radical: '兄', prop: 'Older brother Eric' },
     { radical: '兑', prop: 'deal with the devil/wad of cash' },
     { radical: '讠', prop: 'microphone' },
+    { radical: '㇉', prop: 'toilet' },
     { radical: '马' },
     { radical: '乙' },
     { radical: '乞' },
@@ -137,7 +142,6 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { radical: '主' },
     { radical: '玉' },
     { radical: '因' },
-    { radical: '讠' },
     { radical: '钅' },
     { radical: '天' },
     { radical: '关' },
@@ -333,19 +337,67 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
       character: '计',
       pinyin: 'jì',
       definition: 'Plan',
+      movie: `Jamie is pacing inside the Bridgewater bathroom, deep in thought.
+
+She holds a microphone (讠), speaking softly to herself like she’s dictating her next brilliant idea.
+
+But taped to the wall in front of her is a big red Cross (十) — like a target or goal.
+
+She stares at it, clicks her pen, and says into the mic:
+
+“Phase one: wake up early. Phase two: coffee. Phase three: world domination.”
+
+The mic glows each time she speaks a bullet point. The cross lights up every time a new step in the plan is added — like a checklist being burned into reality.
+
+Just as she says “step ten,” the bathroom lights flicker like a conspiracy board is about to explode.
+
+`,
     },
     {
       character: '认',
       pinyin: 'rèn',
       definition: 'Recognize',
+      movie: `It's loud in the Cosmos house bathroom — bass thumping from a show downstairs.
+
+The Rock is standing at the mirror, holding a microphone, practicing how to introduce himself at the house party.
+
+Suddenly, one of the housemates slides into the bathroom doing a perfect split (人), balancing a drink on their head.
+
+The Rock freezes, stunned.
+
+He lifts the mic and says:
+
+"Respect. I recognize that move."
+
+The person grins and disappears back into the party, leaving The Rock nodding with newfound admiration — and the mirror fogs up with one glowing word: 认.`,
     },
     {
       character: '识',
       pinyin: 'shí',
       definition: 'Knowledge',
+      props: [{ radical: '讠' }, { radical: '只' }],
+      movie: `In the cozy kitchen of the Bridgewater home in New Jersey, Shaq is hilariously oversized, ducking under doorframes. He's on a peculiar mission: to learn something new using a microphone and a lone, somewhat confused droid that keeps bumping into chairs.
+
+"Okay, little buddy," Shaq says, holding the microphone like a teacher with a pointer, "teach me the secret family recipe."
+
+The droid, programmed only for basic tasks, blinks its lights in perplexity, spinning in circles.
+
+Shaq chuckles, glancing at the microphone, then nods, "Aight, I got it. We'll learn through song," he decides, turning the kitchen into an impromptu stage. The scene becomes a hilarious blend of cooking show and concert, with Shaq's deep voice echoing off the walls, singing about ingredients, while the droid records every moment, finally understanding its purpose.
+
+The scene memorably ties to "识" (shí), symbolizing recognition and knowledge, with Shaq's unique approach to learning in the familiar setting of a home kitchen.`,
     },
     {
       character: '马',
+      pinyin: 'mǎ',
+      definition: 'Horse',
+      props: [{ radical: '𠃍' }, { radical: '一' }, { radical: '㇉' }],
+      movie: `In the bustling coworking space of Scottsdale, Arizona, Michael Jackson finds himself in an actual office, transformed into a cozy living room for a creative brainstorming session.
+
+Eager to add a touch of magic, he decides to incorporate a life-sized horse head prop into his performance, placing it delicately on a razorblade-thin coffee table, a bold move that screams moonwalk-level daring.
+
+Suddenly, the King of Pop, with his signature flair, moonwalks towards a gold-plated toilet stationed right in the corner of the room, using it as his throne while brainstorming his next hit.
+
+The scene is oddly enchanting, blending the power and freedom of a horse (马 - mǎ) with Michael's unmatched creativity, all within the confines of a living room turned makeshift office, making "horse" unforgettable.`,
     },
     {
       character: '吗',

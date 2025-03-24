@@ -1,11 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface';
+import { MandarinBlueprint, RadicalProp } from '../../interfaces/mandarin-blueprint.interface';
+import { MovieGenerationRequest, MovieService } from '../../services/movie.service';
 
 interface CharacterData {
   character: string;
   pinyin?: string;
   definition?: string;
+  movie?: string;
+  props?: { radical: string; prop?: string }[];
 }
 
 interface MovieScene {
@@ -29,6 +32,10 @@ export class CharactersComponent {
   private readonly MAX_INCOMPLETE_ITEMS = 20;
   selectedCharacter: CharacterData | null = null;
   movieScene: MovieScene | null = null;
+  isGeneratingMovie = false;
+  radicalProps: RadicalProp[] = [];
+
+  constructor(private movieService: MovieService) {}
 
   // Common two-letter initials in Mandarin
   private readonly TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru', 'shu'];
@@ -77,6 +84,21 @@ export class CharactersComponent {
 
   getCharacterDefinition(char: CharacterData): string {
     return char?.definition || '';
+  }
+
+  getCharacterRadicalProps(char: CharacterData): RadicalProp[] {
+    const characterRadicals = char.props || [];
+    this.radicalProps = characterRadicals
+      .map(charRadical => {
+        const fullProp = this.blueprint.radicalProps.find(bp => bp.radical === charRadical.radical);
+        return fullProp ? { radical: fullProp.radical, prop: fullProp.prop } : null;
+      })
+      .filter(
+        (prop): prop is { radical: string; prop: string } =>
+          prop !== null && prop.prop !== undefined
+      );
+
+    return this.radicalProps;
   }
 
   clearSelection(): void {
@@ -131,7 +153,6 @@ export class CharactersComponent {
 
     // Parse pinyin to get initial and final
     const pinyin = char.pinyin.toLowerCase();
-    console.log('Original pinyin:', pinyin);
     let initial = '';
     let final = '';
 
@@ -165,7 +186,6 @@ export class CharactersComponent {
       };
       return toneToBase[match] || match;
     });
-    console.log('Pinyin without tones:', pinyinNoTones);
 
     // Split into initial and final
     if (pinyinNoTones.startsWith('shu')) {
@@ -220,5 +240,41 @@ export class CharactersComponent {
       set: set || this.blueprint.sets['null'],
       tone,
     };
+  }
+
+  generateMovie(): void {
+    if (!this.selectedCharacter || !this.movieScene) return;
+
+    this.isGeneratingMovie = true;
+
+    const request: MovieGenerationRequest = {
+      character: this.selectedCharacter.character,
+      pinyin: this.selectedCharacter.pinyin || '',
+      actor: this.movieScene.actor,
+      set: this.movieScene.set,
+      tone: this.movieScene.tone,
+      toneLocation: this.blueprint.tones[this.movieScene.tone],
+      radicalProps: this.radicalProps,
+    };
+
+    this.movieService.generateMovie(request).subscribe({
+      next: response => {
+        if (this.selectedCharacter && this.blueprint.characters) {
+          // Find and update the character in the blueprint data
+          const charIndex = this.blueprint.characters.findIndex(
+            c => c.character === this.selectedCharacter?.character
+          );
+          if (charIndex !== -1) {
+            this.blueprint.characters[charIndex].movie = response.movie;
+            this.selectedCharacter.movie = response.movie;
+          }
+        }
+        this.isGeneratingMovie = false;
+      },
+      error: error => {
+        console.error('Error generating movie:', error);
+        this.isGeneratingMovie = false;
+      },
+    });
   }
 }

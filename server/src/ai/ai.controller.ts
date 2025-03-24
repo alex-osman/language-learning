@@ -18,6 +18,11 @@ import { TtsAiService } from './services/tts-ai.service';
 import { TtsRequestDto } from './dto/tts-request.dto';
 import { CritiqueRequestDto } from './dto/critique-request.dto';
 import { CritiqueResponseDto } from './dto/critique-response.dto';
+import {
+  MovieGenerationRequestDto,
+  MovieGenerationResponseDto,
+} from './dto/movie-generation.dto';
+import { MovieAiService } from './services/movie.service';
 
 @Controller('api/ai')
 export class AiController {
@@ -28,6 +33,7 @@ export class AiController {
     private readonly chineseChatService: ChineseChatAiService,
     private readonly frenchChatService: FrenchChatAiService,
     private readonly critiqueService: CritiqueAiService,
+    private readonly movieService: MovieAiService,
   ) {}
 
   @Post('tts')
@@ -94,6 +100,29 @@ export class AiController {
           error: 'Failed to generate critique response',
           details: error.message,
           conversationId: error.conversationId,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('movie')
+  async generateMovie(
+    @Body() request: MovieGenerationRequestDto,
+  ): Promise<MovieGenerationResponseDto> {
+    try {
+      console.log('request', request);
+      return await this.movieService.generateMovie(request);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Movie generation failed: ${errorMessage}`, errorStack);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to generate movie scene',
+          details: errorMessage,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

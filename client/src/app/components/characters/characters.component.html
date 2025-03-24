@@ -23,8 +23,13 @@
   <!-- Movie Scene Info Panel -->
   <div *ngIf="selectedCharacter && movieScene" class="movie-scene-panel">
     <div class="panel-header">
-      <h3>{{ selectedCharacter.character }} - {{ movieScene.initial }}{{ movieScene.final }}</h3>
-      <button class="close-btn" (click)="clearSelection()">×</button>
+      <div class="panel-header-top">
+        <h3>{{ selectedCharacter.character }} - {{ selectedCharacter.pinyin }}</h3>
+        <button class="close-btn" (click)="clearSelection()">×</button>
+      </div>
+      <div class="panel-sub-header">
+        <h4>{{ movieScene.initial }}{{ movieScene.final }}</h4>
+      </div>
     </div>
     <div class="panel-content">
       <div class="info-section">
@@ -38,6 +43,34 @@
       <div class="info-section">
         <h4>Tone Location (Tone {{ movieScene.tone }})</h4>
         <p>{{ blueprint.tones[movieScene.tone] }}</p>
+      </div>
+      <div class="info-section">
+        <h4>Radical Props</h4>
+        <p>
+          <ng-container *ngFor="let prop of getCharacterRadicalProps(selectedCharacter)">
+            <div>
+              <span class="prop-item">{{ prop.radical }}</span> &nbsp;&nbsp;&nbsp;&nbsp; (
+              <span class="prop-item">{{ prop.prop }}</span
+              >)
+            </div>
+          </ng-container>
+        </p>
+      </div>
+      <div class="info-section">
+        <h4>Movie</h4>
+        <ng-container *ngIf="selectedCharacter.movie">
+          <p class="movie-text">{{ selectedCharacter.movie }}</p>
+        </ng-container>
+        <ng-container *ngIf="!selectedCharacter.movie">
+          <button
+            class="generate-movie-btn"
+            (click)="generateMovie()"
+            [disabled]="isGeneratingMovie"
+          >
+            <ng-container *ngIf="!isGeneratingMovie">Generate Movie</ng-container>
+            <ng-container *ngIf="isGeneratingMovie">Generating...</ng-container>
+          </button>
+        </ng-container>
       </div>
     </div>
   </div>
