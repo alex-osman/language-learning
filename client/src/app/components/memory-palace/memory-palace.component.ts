@@ -15,8 +15,7 @@ import { MANDARIN_BLUEPRINT_DATA } from '../../data/mandarin-blueprint.data';
   template: `
     <div class="memory-palace">
       <app-actors [blueprint]="blueprint"> </app-actors>
-
-      <app-sets [blueprint]="blueprint" [orderedFinals]="orderedFinals"> </app-sets>
+      <app-sets [blueprint]="blueprint"> </app-sets>
 
       <app-characters [blueprint]="blueprint"> </app-characters>
 

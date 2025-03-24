@@ -2,14 +2,15 @@ import { MandarinBlueprint } from '../interfaces/mandarin-blueprint.interface';
 
 export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
   sets: {
-    '-an': "Anrenee's apartment (entrance, mailroom, hallway, 2F)",
-    '-en': 'Cosmos college house (5 friends, house shows)',
+    '-an': "Anrenee's apartment",
+    '-en': 'Cosmos college house (danny cooking chickEN)',
     '-ong': 'Bellevue Gym',
     '-e': "Eric's place in Maine",
     '-ou': 'Current Philly house with roommates',
     '-a': 'Scottsdale coworking space in Arizona',
     '-ao': '15 ft travel trailer (currently in warehouse, toured across US/Canada)',
-    ei: 'Eisenhower school/high school',
+    '-ei': 'Eisenhower school/high school',
+    '-o': "Iowa - Jean's house",
     null: 'Bridgewater home (fallback)',
   },
   tones: {
@@ -34,6 +35,7 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { initial: 'ru', name: 'Ron Weasley', type: 'fictional' },
     { initial: 'du', name: 'Darth Vader', type: 'fictional' },
     { initial: 'w', name: 'Woody', type: 'fictional' },
+    { initial: 'shu', name: 'Shrek', type: 'fictional' },
   ],
   radicalProps: [
     { radical: '一', prop: 'Razorblade' },
@@ -54,7 +56,8 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     { radical: '儿', prop: 'Patrick Star’s big black boots' },
     { radical: '只', prop: 'Lone droid' },
     { radical: '兄', prop: 'Older brother Eric' },
-    { radical: '允' },
+    { radical: '兑', prop: 'deal with the devil/wad of cash' },
+    { radical: '讠', prop: 'microphone' },
     { radical: '马' },
     { radical: '乙' },
     { radical: '乞' },
@@ -323,15 +326,23 @@ export const MANDARIN_BLUEPRINT_DATA: MandarinBlueprint = {
     },
     {
       character: '说',
+      pinyin: 'shuō',
+      definition: 'Speak',
     },
     {
       character: '计',
+      pinyin: 'jì',
+      definition: 'Plan',
     },
     {
       character: '认',
+      pinyin: 'rèn',
+      definition: 'Recognize',
     },
     {
       character: '识',
+      pinyin: 'shí',
+      definition: 'Knowledge',
     },
     {
       character: '马',

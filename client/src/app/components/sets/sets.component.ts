@@ -10,15 +10,11 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
     <div class="section sets">
       <h2>Sets</h2>
       <div class="grid">
-        <ng-container *ngFor="let final of orderedFinals">
-          <div
-            class="cell"
-            [class.has-data]="hasSetData(final)"
-            [class.no-data]="!hasSetData(final)"
-          >
+        <ng-container *ngFor="let set of definedSets">
+          <div class="cell has-data">
             <div class="cell-content">
-              <div class="symbol">{{ final }}</div>
-              <div class="value">{{ getSet(final) || 'Not Assigned' }}</div>
+              <div class="symbol">{{ set.final }}</div>
+              <div class="value">{{ set.location }}</div>
             </div>
           </div>
         </ng-container>
@@ -37,42 +33,18 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
         border-radius: 6px;
         padding: 1rem;
         transition: all 0.2s ease;
+        background-color: #c8e6c9;
+        border: 1px solid #81c784;
 
-        &.has-data {
-          background-color: #c8e6c9;
-          border: 1px solid #81c784;
-
-          .symbol {
-            color: #2e7d32;
-          }
-
-          .value {
-            color: #1b5e20;
-          }
-        }
-
-        &.no-data {
-          background-color: #ffcdd2;
-          border: 1px solid #e57373;
-
-          .symbol {
-            color: #c62828;
-          }
-
-          .value {
-            color: #b71c1c;
-          }
-        }
-      }
-
-      .cell-content {
         .symbol {
+          color: #2e7d32;
           font-size: 1.2rem;
           font-weight: bold;
           margin-bottom: 0.5rem;
         }
 
         .value {
+          color: #1b5e20;
           font-size: 0.9rem;
           word-break: break-word;
         }
@@ -82,15 +54,15 @@ import { MandarinBlueprint } from '../../interfaces/mandarin-blueprint.interface
 })
 export class SetsComponent {
   @Input() blueprint!: MandarinBlueprint;
-  @Input() orderedFinals!: string[];
 
-  getSet(final: string): string | null {
-    if (!this.blueprint?.sets) return null;
-    const key = `-${final}`;
-    return this.blueprint.sets[key] || null;
-  }
-
-  hasSetData(final: string): boolean {
-    return this.getSet(final) !== null;
+  get definedSets(): { final: string; location: string }[] {
+    if (!this.blueprint?.sets) return [];
+    return Object.entries(this.blueprint.sets)
+      .filter(([key]) => key !== 'null') // Exclude the fallback set
+      .map(([key, location]) => ({
+        final: key.replace('-', ''), // Remove the hyphen prefix
+        location,
+      }))
+      .sort((a, b) => a.final.localeCompare(b.final)); // Sort by final
   }
 }

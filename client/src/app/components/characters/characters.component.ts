@@ -20,202 +20,8 @@ interface MovieScene {
   selector: 'app-characters',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="section characters">
-      <h2>Characters Progress</h2>
-      <div class="progress-stats">{{ charactersProgress }}</div>
-      <div class="grid">
-        <ng-container *ngFor="let char of filteredCharacters">
-          <div
-            class="cell"
-            [class.has-data]="hasCharacterData(char)"
-            [class.no-data]="!hasCharacterData(char)"
-            (mouseenter)="onCharacterHover(char)"
-            (mouseleave)="clearSelection()"
-          >
-            <div class="cell-content">
-              <div class="character">{{ char.character }}</div>
-              <ng-container *ngIf="hasCharacterData(char)">
-                <div class="pinyin">{{ getCharacterPinyin(char) }}</div>
-                <div class="definition">{{ getCharacterDefinition(char) }}</div>
-              </ng-container>
-            </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <!-- Movie Scene Info Panel -->
-      <div *ngIf="selectedCharacter && movieScene" class="movie-scene-panel">
-        <div class="panel-header">
-          <h3>
-            {{ selectedCharacter.character }} - {{ movieScene.initial }}{{ movieScene.final }}
-          </h3>
-          <button class="close-btn" (click)="clearSelection()">×</button>
-        </div>
-        <div class="panel-content">
-          <div class="info-section">
-            <h4>Actor</h4>
-            <p>{{ movieScene.actor }}</p>
-          </div>
-          <div class="info-section">
-            <h4>Set Location</h4>
-            <p>{{ movieScene.set }}</p>
-          </div>
-          <div class="info-section">
-            <h4>Tone Location (Tone {{ movieScene.tone }})</h4>
-            <p>{{ blueprint.tones[movieScene.tone] }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-      }
-
-      .progress-stats {
-        text-align: center;
-        padding: 0.5rem;
-        margin: 1rem 0;
-        border-top: 1px solid #e0e0e0;
-        border-bottom: 1px solid #e0e0e0;
-        color: #666;
-      }
-
-      .cell {
-        border-radius: 6px;
-        padding: 1rem;
-        transition: all 0.2s ease;
-        cursor: pointer;
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        &.has-data {
-          background-color: #e3f2fd;
-          border: 1px solid #90caf9;
-
-          .character {
-            color: #1565c0;
-          }
-
-          .pinyin {
-            color: #1976d2;
-          }
-
-          .definition {
-            color: #0d47a1;
-          }
-        }
-
-        &.no-data {
-          background-color: #f5f5f5;
-          border: 1px solid #e0e0e0;
-
-          .character {
-            color: #757575;
-          }
-        }
-      }
-
-      .cell-content {
-        .character {
-          font-size: 2rem;
-          font-weight: bold;
-          text-align: center;
-          margin-bottom: 0.5rem;
-        }
-
-        .pinyin {
-          font-size: 0.9rem;
-          text-align: center;
-          margin-bottom: 0.25rem;
-        }
-
-        .definition {
-          font-size: 0.8rem;
-          text-align: center;
-          word-break: break-word;
-        }
-      }
-
-      .movie-scene-panel {
-        position: fixed;
-        right: 2rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        width: 300px;
-        max-height: 80vh;
-        overflow-y: auto;
-        z-index: 1000;
-
-        .panel-header {
-          padding: 1rem;
-          border-bottom: 1px solid #e0e0e0;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: sticky;
-          top: 0;
-          background-color: white;
-
-          h3 {
-            margin: 0;
-            font-size: 1.25rem;
-            color: #1565c0;
-          }
-
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #666;
-            cursor: pointer;
-            padding: 0.25rem;
-            line-height: 1;
-            border-radius: 4px;
-
-            &:hover {
-              background-color: #f5f5f5;
-            }
-          }
-        }
-
-        .panel-content {
-          padding: 1rem;
-
-          .info-section {
-            margin-bottom: 1.5rem;
-
-            &:last-child {
-              margin-bottom: 0;
-            }
-
-            h4 {
-              font-size: 1rem;
-              color: #666;
-              margin: 0 0 0.5rem;
-            }
-
-            p {
-              margin: 0;
-              color: #333;
-              line-height: 1.5;
-            }
-          }
-        }
-      }
-    `,
-  ],
+  templateUrl: './characters.component.html',
+  styleUrls: ['./characters.component.scss'],
 })
 export class CharactersComponent {
   @Input() blueprint!: MandarinBlueprint;
@@ -225,11 +31,12 @@ export class CharactersComponent {
   movieScene: MovieScene | null = null;
 
   // Common two-letter initials in Mandarin
-  private readonly TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru'];
+  private readonly TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru', 'shu'];
 
   // Special case mappings for finals that don't directly match sets
   private readonly FINAL_MAPPINGS: { [key: string]: string } = {
     i: 'e', // Map 'i' to '-e' set (yi -> -e)
+    ie: 'e', // Map 'ie' to '-e' set (jie -> -e)
     r: 'er', // Map 'r' to '-er' set (er -> -er)
     u: 'ou', // Map 'u' to '-ou' set (bu -> -ou)
     ü: 'ou', // Map 'ü' to '-ou' set
@@ -361,13 +168,27 @@ export class CharactersComponent {
     console.log('Pinyin without tones:', pinyinNoTones);
 
     // Split into initial and final
-    if (this.TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
+    if (pinyinNoTones.startsWith('shu')) {
+      initial = 'shu';
+      final = pinyinNoTones.substring(3);
+    } else if (
+      pinyinNoTones.startsWith('shi') ||
+      pinyinNoTones.startsWith('chi') ||
+      pinyinNoTones.startsWith('zhi')
+    ) {
+      // Special case: treat shi/chi/zhi as complete initials with no final
+      initial = pinyinNoTones.substring(0, 2);
+      final = '';
+    } else if (this.TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
       initial = pinyinNoTones.substring(0, 2);
       final = pinyinNoTones.substring(2);
     } else {
       const firstChar = pinyinNoTones[0];
-      // Special handling for syllables starting with 'd' or 'r' followed by 'u'
-      if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
+      // Special handling for w/y initials - use just the first letter and no final
+      if (firstChar === 'w' || firstChar === 'y') {
+        initial = firstChar;
+        final = ''; // Empty final will use null set (Bridgewater)
+      } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
         initial = pinyinNoTones.substring(0, 2);
         final = pinyinNoTones.substring(2);
       } else if (firstChar in this.INITIAL_MAPPINGS) {
@@ -378,23 +199,17 @@ export class CharactersComponent {
         final = pinyinNoTones.substring(1);
       }
     }
-    console.log('Extracted initial:', initial);
-    console.log('Extracted final:', final);
 
     // Map special case finals to their corresponding sets
     const mappedFinal = this.FINAL_MAPPINGS[final] || final;
-    console.log('Mapped final:', mappedFinal);
 
     // Get actor and set from blueprint
-    console.log('Looking for actor with initial:', initial);
-    console.log('Available actors:', this.blueprint.actors);
     const matchingActor = this.blueprint.actors.find(a => a.initial === initial);
-    console.log('Found matching actor:', matchingActor);
-    const fallbackActor = this.blueprint.actors.find(a => a.initial === 'null');
-    console.log('Fallback actor:', fallbackActor);
+    const fallbackActor = this.blueprint.actors.find(a => a.initial === 'ø');
     const actor = matchingActor?.name || fallbackActor?.name || '(No actor assigned)';
-    console.log('Final actor choice:', actor);
-    const setKey = `-${mappedFinal}`;
+
+    // For w/y initials or empty finals, use the null set (Bridgewater)
+    const setKey = final ? `-${mappedFinal}` : 'null';
     const set = this.blueprint.sets[setKey];
     const tone = this.getToneNumber(pinyin);
 
