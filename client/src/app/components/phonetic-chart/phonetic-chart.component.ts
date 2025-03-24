@@ -28,6 +28,7 @@ export class PhoneticChartComponent implements OnInit {
   initials = INITIALS;
   private actors: { initial: string; name: string }[] = [];
   private sets: { [key: string]: string } = {};
+  tones: { [key: string]: string } = {};
 
   constructor(private dataService: DataService) {}
 
@@ -43,6 +44,10 @@ export class PhoneticChartComponent implements OnInit {
 
     this.dataService.getSets().subscribe(sets => {
       this.sets = sets;
+    });
+
+    this.dataService.getTones().subscribe(tones => {
+      this.tones = tones;
     });
   }
 

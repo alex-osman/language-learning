@@ -70,7 +70,7 @@
         <div class="info-section">
           <h3>Tone Locations</h3>
           <ul>
-            <li *ngFor="let tone of blueprint.tones | keyvalue">
+            <li *ngFor="let tone of tones | keyvalue">
               <strong>Tone {{ tone.key }}:</strong> {{ tone.value }}
             </li>
           </ul>
