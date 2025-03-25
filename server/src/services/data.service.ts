@@ -32,7 +32,7 @@ export class DataService {
     } catch (error) {
       console.error('Error loading data:', error);
       this.data = {
-        sets: {},
+        sets: [],
         tones: {},
         actors: [],
         radicalProps: [],
@@ -51,7 +51,7 @@ export class DataService {
     }
   }
 
-  getSets(): Set {
+  getSets(): Set[] {
     return this.data.sets;
   }
 

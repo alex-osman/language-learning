@@ -1,16 +1,26 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { Actor, RadicalProp } from '../interfaces/mandarin-blueprint.interface';
 import {
-  TWO_LETTER_INITIALS,
   FINAL_MAPPINGS,
-  INITIAL_MAPPINGS,
   TONE_MAP,
+  TWO_LETTER_INITIALS,
   VOWEL_MAP,
 } from '../constants/pinyin.constants';
+import { Actor, RadicalProp } from '../interfaces/mandarin-blueprint.interface';
 
-type Sets = { [key: string]: string };
+export type SetDTO = {
+  final: string;
+  name: string;
+  toneLocations: ToneLocationDTO[];
+};
+
+export type ToneLocationDTO = {
+  name: string;
+  toneNumber: number;
+  description?: string;
+};
+
 export type Tone = { [key: string]: string };
 
 export interface Character {
@@ -44,8 +54,8 @@ export class DataService {
     return this.http.get<Actor[]>(`${this.apiUrl}/actors`);
   }
 
-  getSets(): Observable<Sets> {
-    return this.http.get<Sets>(`${this.apiUrl}/sets`);
+  getSets(): Observable<SetDTO[]> {
+    return this.http.get<SetDTO[]>(`${this.apiUrl}/sets`);
   }
 
   getTones(): Observable<Tone> {
@@ -140,9 +150,11 @@ export class DataService {
   }
 
   // Helper function to get the appropriate set
-  private getSetLocation(final: string, sets: Sets): string {
+  private getSetLocation(final: string, sets: SetDTO[]): string {
     const setKey = final ? `-${final}` : 'null';
-    return sets[setKey] || sets['null'];
+    const matchingSet = sets.find(set => set.final === setKey.substring(1)); // Remove the leading '-'
+    const defaultSet = sets.find(set => set.final === 'null');
+    return matchingSet?.name || defaultSet?.name || '(No set assigned)';
   }
 
   // Main function to get movie scene data
@@ -153,7 +165,7 @@ export class DataService {
         firstValueFrom(this.getSets()),
       ]);
 
-      if (!actors?.length || !sets) return null;
+      if (!actors?.length || !sets?.length) return null; // Check for array length
 
       const pinyinNoTones = this.removeToneMarks(pinyin);
       const { initial, final } = this.parsePinyin(pinyinNoTones);

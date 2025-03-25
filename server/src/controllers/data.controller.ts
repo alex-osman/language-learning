@@ -13,7 +13,7 @@ export class DataController {
   constructor(private readonly dataService: DataService) {}
 
   @Get('sets')
-  getSets(): Set {
+  getSets(): Set[] {
     return this.dataService.getSets();
   }
 

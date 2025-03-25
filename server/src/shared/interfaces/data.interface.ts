@@ -1,5 +1,13 @@
 export interface Set {
-  [key: string]: string;
+  final: string;
+  name: string;
+  toneLocations: ToneLocation[];
+}
+
+export interface ToneLocation {
+  name: string;
+  description?: string;
+  toneNumber: number;
 }
 
 export interface Tone {
@@ -27,7 +35,7 @@ export interface Character {
 }
 
 export interface DataStructure {
-  sets: Set;
+  sets: Set[];
   tones: Tone;
   actors: Actor[];
   radicalProps: RadicalProp[];

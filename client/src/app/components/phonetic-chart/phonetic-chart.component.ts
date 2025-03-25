@@ -43,7 +43,10 @@ export class PhoneticChartComponent implements OnInit {
     });
 
     this.dataService.getSets().subscribe(sets => {
-      this.sets = sets;
+      this.sets = sets.reduce((acc, set) => {
+        acc[set.final] = set.name;
+        return acc;
+      }, {} as { [key: string]: string });
     });
 
     this.dataService.getTones().subscribe(tones => {

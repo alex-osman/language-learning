@@ -1,13 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataService } from '../../services/data.service';
-
-interface SetEntry {
-  final: string;
-  location: string;
-}
-
-type Sets = { [key: string]: string };
+import { DataService, SetDTO } from '../../services/data.service';
 
 @Component({
   selector: 'app-sets',
@@ -17,7 +10,7 @@ type Sets = { [key: string]: string };
   styleUrls: ['./sets.component.scss'],
 })
 export class SetsComponent implements OnInit {
-  definedSets: SetEntry[] = [];
+  definedSets: SetDTO[] = [];
   isLoading = true;
   error: string | null = null;
 
@@ -32,14 +25,10 @@ export class SetsComponent implements OnInit {
     this.error = null;
 
     this.dataService.getSets().subscribe({
-      next: (sets: Sets) => {
-        this.definedSets = Object.entries(sets)
-          .map(([key, location]) => ({
-            final: key,
-            location,
-          }))
-          .sort((a, b) => a.final.localeCompare(b.final));
+      next: (sets: SetDTO[]) => {
+        this.definedSets = sets;
         this.isLoading = false;
+        console.log(this.definedSets);
       },
       error: (error: Error) => {
         console.error('Error fetching sets:', error);
