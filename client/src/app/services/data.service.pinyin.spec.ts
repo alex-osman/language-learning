@@ -2,9 +2,27 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DataService } from './data.service';
 import { of, throwError } from 'rxjs';
+import { HttpTestingController } from '@angular/common/http/testing';
 
 describe('DataService - Pinyin Functions', () => {
   let service: DataService;
+  let httpMock: HttpTestingController;
+
+  const mockActors = [
+    { initial: 'b', name: 'Bill Murray', type: 'male' },
+    { initial: 'r', name: 'The Rock', type: 'male' },
+    { initial: 'sh', name: 'Shaq', type: 'male' },
+    { initial: 'xi', name: 'Shakira', type: 'female' },
+    { initial: 'yi', name: 'Yoa', type: 'male' },
+    { initial: 'ø', name: 'Jackie Chan', type: 'male' },
+  ];
+
+  const mockSets = {
+    '-a': 'Set A',
+    '-e': 'Set E',
+    '-ao': 'Set AO',
+    null: 'Default Set',
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -12,6 +30,7 @@ describe('DataService - Pinyin Functions', () => {
       providers: [DataService],
     });
     service = TestBed.inject(DataService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   describe('removeToneMarks', () => {
@@ -71,7 +90,40 @@ describe('DataService - Pinyin Functions', () => {
 
       // Special cases with 'w' and 'y'
       expect(service['parsePinyin']('wu')).toEqual({ initial: 'w', final: '' });
-      expect(service['parsePinyin']('yi')).toEqual({ initial: 'y', final: '' });
+    });
+
+    it('should correctly parse yi initial (乙 - yī)', async () => {
+      const promise = service.getMovieScene('yī');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('yi');
+      expect(result?.final).toBe('');
+      expect(result?.actor).toBe('Yoa');
+      expect(result?.set).toBe(mockSets['null']);
+      expect(result?.tone).toBe('1');
+    });
+
+    it('should correctly parse ri (日 - rì)', async () => {
+      const promise = service.getMovieScene('rì');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('r');
+      expect(result?.final).toBe('');
+      expect(result?.actor).toBe('The Rock');
+      expect(result?.set).toBe(mockSets['null']);
+      expect(result?.tone).toBe('4');
     });
   });
 
@@ -125,13 +177,6 @@ describe('DataService - Pinyin Functions', () => {
   });
 
   describe('findActor', () => {
-    const mockActors = [
-      { initial: 'b', name: 'Bill Murray', type: 'male' },
-      { initial: 'sh', name: 'Shaq', type: 'male' },
-      { initial: 'xi', name: 'Shakira', type: 'female' },
-      { initial: 'ø', name: 'Jackie Chan', type: 'male' },
-    ];
-
     it('should find exact matching actor', () => {
       expect(service['findActor']('b', mockActors)).toBe('Bill Murray');
       expect(service['findActor']('sh', mockActors)).toBe('Shaq');
@@ -144,13 +189,6 @@ describe('DataService - Pinyin Functions', () => {
   });
 
   describe('getSetLocation', () => {
-    const mockSets = {
-      '-a': 'Set A',
-      '-e': 'Set E',
-      '-ao': 'Set AO',
-      null: 'Default Set',
-    };
-
     it('should find matching set', () => {
       expect(service['getSetLocation']('a', mockSets)).toBe('Set A');
       expect(service['getSetLocation']('e', mockSets)).toBe('Set E');

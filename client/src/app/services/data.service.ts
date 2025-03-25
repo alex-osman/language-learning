@@ -107,6 +107,9 @@ export class DataService {
       } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
         initial = pinyinNoTones.substring(0, 2);
         final = pinyinNoTones.substring(2);
+      } else if (firstChar === 'r' && pinyinNoTones === 'ri') {
+        initial = 'r';
+        final = '';
       } else {
         // For non-standard inputs, don't apply INITIAL_MAPPINGS
         initial = firstChar;

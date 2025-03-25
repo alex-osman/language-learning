@@ -86,9 +86,9 @@ describe('DataService', () => {
       const result = await promise;
       expect(result).toBeTruthy();
       expect(result?.initial).toBe('sh');
-      expect(result?.final).toBe('i');
+      expect(result?.final).toBe('');
       expect(result?.actor).toBe('Shaq');
-      expect(result?.set).toBe(mockSets['-ei']);
+      expect(result?.set).toBe(mockSets['null']);
       expect(result?.tone).toBe('2');
     });
 
