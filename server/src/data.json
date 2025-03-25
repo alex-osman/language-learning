@@ -141,6 +141,11 @@
       "type": "fictional"
     },
     {
+      "initial": "hu",
+      "name": "Homer Simpson",
+      "type": "fictional"
+    },
+    {
       "initial": "ku",
       "name": "Mr. Krabs",
       "type": "fictional"
@@ -272,6 +277,10 @@
     {
       "radical": "七",
       "prop": "Seven Dwarfs"
+    },
+    {
+      "radical": "化",
+      "prop": "Transformer Optimus Prime"
     }
   ],
   "characters": [
@@ -538,49 +547,10 @@
       "radicals": ["一", "乚"]
     },
     {
-      "character": "化"
-    },
-    {
-      "character": "白"
-    },
-    {
-      "character": "百"
-    },
-    {
-      "character": "今"
-    },
-    {
-      "character": "千"
-    },
-    {
-      "character": "舌"
-    },
-    {
-      "character": "话"
-    },
-    {
-      "character": "活"
-    },
-    {
-      "character": "乱"
-    },
-    {
-      "character": "汽"
-    },
-    {
-      "character": "月"
-    },
-    {
-      "character": "用"
-    },
-    {
-      "character": "胖"
-    },
-    {
-      "character": "朋"
-    },
-    {
-      "character": "明"
+      "character": "化",
+      "pinyin": "huà",
+      "definition": "Transform",
+      "radicals": ["七", "亻"]
     }
   ]
 }
