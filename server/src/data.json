@@ -266,7 +266,12 @@
       "prop": "Rooster (representation of daybreak)"
     },
     {
-      "radical": "早"
+      "radical": "早",
+      "prop": "Sunflower"
+    },
+    {
+      "radical": "七",
+      "prop": "Seven Dwarfs"
     }
   ],
   "characters": [
@@ -527,7 +532,10 @@
       "radicals": ["日", "乚"]
     },
     {
-      "character": "七"
+      "character": "七",
+      "pinyin": "qī",
+      "definition": "Seven",
+      "radicals": ["一", "乚"]
     },
     {
       "character": "化"
