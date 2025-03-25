@@ -46,6 +46,7 @@ describe('DataService - Pinyin Functions', () => {
       { input: 'shi', expected: { initial: 'sh', final: '' } },
       { input: 'xiao', expected: { initial: 'xi', final: 'ao' } },
       { input: 'shuang', expected: { initial: 'shu', final: 'ang' } },
+      { input: 'kuang', expected: { initial: 'ku', final: 'ang' } },
       { input: 'zhi', expected: { initial: 'zh', final: '' } },
       { input: 'jia', expected: { initial: 'ji', final: 'a' } },
       { input: 'ru', expected: { initial: 'ru', final: '' } },

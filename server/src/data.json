@@ -9,6 +9,7 @@
     "-ao": "15 ft travel trailer (currently parked in a warehouse in Philly, toured across US/Canada to Las Vegas and Nova Scotia)",
     "-ei": "High school",
     "-o": "Iowa - Jean's house (Jean was into funny jesus things so there were random jesus pictures and bobbleheads around the house.  Two dogs, a backyard with a broken airstream in it that Jean wanted to fix up.  A larger nicer bathroom on the ground floor.)",
+    "-ang": "Rish's apartment in New Delhi (a large apartment with a balcony where he would do woodworking and leathworking, a studio where my air mattress was, a bathroom with a shower and bidet and bucket, and a closed kitchen area and a living room with two small cats and a record player.  Occasionally Rish's girlfriend would be giving tattoos in the open area)",
     "null": "Bridgewater home (the home I grew up in, my parents home in new jersey)"
   },
   "tones": {
@@ -52,6 +53,11 @@
     {
       "initial": "s",
       "name": "Snoop Dogg",
+      "type": "male"
+    },
+    {
+      "initial": "f",
+      "name": "Freddy Mercury",
       "type": "male"
     },
     {
@@ -117,6 +123,11 @@
     {
       "initial": "shu",
       "name": "Shrek",
+      "type": "fictional"
+    },
+    {
+      "initial": "ku",
+      "name": "Mr. Krabs",
       "type": "fictional"
     }
   ],
@@ -219,6 +230,10 @@
     {
       "radical": "乞",
       "prop": "A beggar"
+    },
+    {
+      "radical": "冫",
+      "prop": "icicle"
     },
     {
       "radical": "气"
@@ -428,10 +443,17 @@
       "movie": "In the serene yard of your childhood home in Bridgewater, Aria Trueblood is seen attempting to teach your Uncle Jeff, the infamous loser, how to channel his inner \"qi\" or air through yoga. Despite the peaceful setting, Aria balances precariously on one foot, mimicking a swan's grace, while Uncle Jeff flails about, knocking over a razorblade that had been inexplicably left on the garden table, symbolizing the character's first stroke.\n\nIn the midst of this chaos, Aria, ever the optimist, elevates her voice to remind everyone that it's okay to be a bit \"off\" today, her words floating through the air like a soothing breeze. This peculiar scene, with Aria's patience rivaling that of a saint and Uncle Jeff's antics, ensures you'll never forget \"气\" represents \"air,\" with the swan's elegance and the razor's precision mirroring its radical components."
     },
     {
-      "character": "飞"
+      "character": "飞",
+      "pinyin": "fēi",
+      "definition": "Fly",
+      "radicals": ["乙", "冫"],
+      "movie": "Outside the high school entrance, Freddy Mercury, wearing his iconic outfit, is preparing for an extraordinary performance. With a swan gracefully perched on his shoulder, he strums his guitar made of icicles, enchanting the swan to start flapping its wings. \n\nAs the melody reaches its crescendo, both Freddy and the swan begin to lift off the ground, defying gravity - they're flying! The sight of rock legend Freddy Mercury levitating with a swan outside a high school, all thanks to his icy guitar, makes \"飞\" (fēi) - \"Fly\" unforgettable."
     },
     {
-      "character": "况"
+      "character": "况",
+      "pinyin": "kuàng",
+      "definition": "Situation",
+      "radicals": ["冫", "兄"]
     },
     {
       "character": "日"
