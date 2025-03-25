@@ -24,6 +24,7 @@ describe('DataService', () => {
     { initial: 'du', name: 'Darth Vader', type: 'fictional' },
     { initial: 'w', name: 'Woody', type: 'fictional' },
     { initial: 'shu', name: 'Shrek', type: 'fictional' },
+    { initial: 'yi', name: 'Yoa', type: 'male' },
   ];
 
   const mockSets = {
@@ -172,6 +173,23 @@ describe('DataService', () => {
       expect(result?.initial).toBe('zh');
       expect(result?.final).toBe('');
       expect(result?.actor).toBe('Jim Carrey');
+      expect(result?.set).toBe(mockSets['null']);
+      expect(result?.tone).toBe('1');
+    });
+
+    it('should correctly parse yi initial (乙 - yī)', async () => {
+      const promise = service.getMovieScene('yī');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('yi');
+      expect(result?.final).toBe('');
+      expect(result?.actor).toBe('Yoa');
       expect(result?.set).toBe(mockSets['null']);
       expect(result?.tone).toBe('1');
     });

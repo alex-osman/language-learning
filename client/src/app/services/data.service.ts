@@ -89,7 +89,7 @@ export class DataService {
     if (pinyinNoTones.startsWith('shu')) {
       initial = 'shu';
       final = pinyinNoTones.substring(3);
-    } else if (['shi', 'chi', 'zhi'].some(i => pinyinNoTones.startsWith(i))) {
+    } else if (['shi', 'chi', 'zhi', 'yi'].some(i => pinyinNoTones.startsWith(i))) {
       initial = pinyinNoTones.substring(0, 2);
       final = '';
     } else if (TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
@@ -97,7 +97,7 @@ export class DataService {
       final = pinyinNoTones.substring(2);
     } else {
       const firstChar = pinyinNoTones[0];
-      if (firstChar === 'w' || firstChar === 'y') {
+      if (firstChar === 'w') {
         initial = firstChar;
         final = '';
       } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {

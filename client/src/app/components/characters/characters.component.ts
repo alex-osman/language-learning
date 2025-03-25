@@ -74,11 +74,12 @@ export class CharactersComponent implements OnInit {
     const request: MovieGenerationRequest = {
       character: this.selectedCharacter.character,
       pinyin: this.selectedCharacter.pinyin || '',
+      definition: this.selectedCharacter.definition || '',
       actor: this.movieScene.actor,
       set: this.movieScene.set,
       tone: this.movieScene.tone,
       toneLocation: this.movieScene.tone,
-      radicalProps: this.selectedCharacter.radicals || [],
+      radicalProps: this.getRadicalProps(this.selectedCharacter.radicals),
     };
 
     this.movieService.generateMovie(request).subscribe({
@@ -103,9 +104,11 @@ export class CharactersComponent implements OnInit {
     });
   }
 
-  public getRadicalProps(props?: string[]) {
+  public getRadicalProps(props?: string[]): RadicalProp[] {
     if (!props) return [];
 
-    return props.map(radical => this.radicalProps.find(prop => prop.radical === radical));
+    return props.map(
+      radical => this.radicalProps.find(prop => prop.radical === radical) || { radical, prop: '' }
+    );
   }
 }

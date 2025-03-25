@@ -19,57 +19,222 @@
     "5": "On the roof"
   },
   "actors": [
-    { "initial": "b", "name": "Bill Murray", "type": "male" },
-    { "initial": "r", "name": "The Rock", "type": "male" },
-    { "initial": "g", "name": "Gordon Ramsay", "type": "male" },
-    { "initial": "k", "name": "Kim Jong Un", "type": "male" },
-    { "initial": "c", "name": "Christopher Walken", "type": "male" },
-    { "initial": "s", "name": "Snoop Dogg", "type": "male" },
-    { "initial": "zh", "name": "Jim Carrey", "type": "male" },
-    { "initial": "ø", "name": "Jackie Chan", "type": "male" },
-    { "initial": "sh", "name": "Shaq", "type": "male" },
-    { "initial": "m", "name": "Michael Jackson", "type": "male" },
-    { "initial": "xi", "name": "Shakira", "type": "female" },
-    { "initial": "ni", "name": "Nicole Oringer", "type": "female" },
-    { "initial": "ji", "name": "Jamie (your sister)", "type": "female" },
-    { "initial": "yi", "name": "Yoa", "type": "female" },
-    { "initial": "ru", "name": "Ron Weasley", "type": "fictional" },
-    { "initial": "du", "name": "Darth Vader", "type": "fictional" },
-    { "initial": "w", "name": "Woody", "type": "fictional" },
-    { "initial": "shu", "name": "Shrek", "type": "fictional" }
+    {
+      "initial": "b",
+      "name": "Bill Murray",
+      "type": "male"
+    },
+    {
+      "initial": "ch",
+      "name": "Charlie Sheen",
+      "type": "male"
+    },
+    {
+      "initial": "r",
+      "name": "The Rock",
+      "type": "male"
+    },
+    {
+      "initial": "g",
+      "name": "Gordon Ramsay",
+      "type": "male"
+    },
+    {
+      "initial": "k",
+      "name": "Kim Jong Un",
+      "type": "male"
+    },
+    {
+      "initial": "c",
+      "name": "Christopher Walken",
+      "type": "male"
+    },
+    {
+      "initial": "s",
+      "name": "Snoop Dogg",
+      "type": "male"
+    },
+    {
+      "initial": "zh",
+      "name": "Jim Carrey",
+      "type": "male"
+    },
+    {
+      "initial": "ø",
+      "name": "Jackie Chan",
+      "type": "male"
+    },
+    {
+      "initial": "sh",
+      "name": "Shaq",
+      "type": "male"
+    },
+    {
+      "initial": "m",
+      "name": "Michael Jackson",
+      "type": "male"
+    },
+    {
+      "initial": "xi",
+      "name": "Shakira",
+      "type": "female"
+    },
+    {
+      "initial": "ni",
+      "name": "Nicole Oringer",
+      "type": "female"
+    },
+    {
+      "initial": "ji",
+      "name": "Jamie (your sister)",
+      "type": "female"
+    },
+    {
+      "initial": "yi",
+      "name": "Yoa (Born in Paris to a Swiss father and Cameroonian mother, YOA is a singer, songwriter and musician who has emerged as one of France’s most exciting pop talents. Her exquisite voice and cinematic songwriting are evident throughout her discography, from her 2021 debut EP ‘Attente’ to her more recent EPs ‘Chansons (+) tristes’ (2022) and ‘Nulle’ (2024), both of which showcase her penchant for witty pop arrangements and soaring vocals)",
+      "type": "female"
+    },
+    {
+      "initial": "qi",
+      "name": "Aria Trueblood (the yoga instructor at the gym.  She is chosen because 'chi' as energy relates to 'qi' the sound.  Aria starts her yoga class with a brief intro where she usually rambles a bit about being in touch with your emotions and it's a very safe space, she mentions therapy and if you're not having the best day she says thats okay.  Then she usually starts the routine which occasionally will include harder poses like a handstand or crow.)",
+      "type": "female"
+    },
+    {
+      "initial": "ru",
+      "name": "Ron Weasley",
+      "type": "fictional"
+    },
+    {
+      "initial": "du",
+      "name": "Darth Vader",
+      "type": "fictional"
+    },
+    {
+      "initial": "wu",
+      "name": "Woody",
+      "type": "fictional"
+    },
+    {
+      "initial": "shu",
+      "name": "Shrek",
+      "type": "fictional"
+    }
   ],
   "radicalProps": [
-    { "radical": "一", "prop": "Razorblade" },
-    { "radical": "二", "prop": "Twins" },
-    { "radical": "丨", "prop": "Gandalf staff" },
-    { "radical": "十", "prop": "Cross" },
+    {
+      "radical": "一",
+      "prop": "Razorblade"
+    },
+    {
+      "radical": "二",
+      "prop": "Twins"
+    },
+    {
+      "radical": "丨",
+      "prop": "Gandalf staff"
+    },
+    {
+      "radical": "十",
+      "prop": "Cross"
+    },
     {
       "radical": "丷",
       "prop": "devil's horns (like on top of 兄 in 兑）"
     },
-    { "radical": "半" },
-    { "radical": "八", "prop": "Magic 8 Ball" },
-    { "radical": "人", "prop": "Person doing a split" },
-    { "radical": "亻", "prop": "Mr. T (variant of 人)" },
-    { "radical": "从", "prop": "Two people" },
-    { "radical": "午", "prop": "Sundial" },
-    { "radical": "𠃍", "prop": "Horse Head" },
-    { "radical": "口", "prop": "Rolling Stones mouth" },
-    { "radical": "中", "prop": "Chinese scepter" },
-    { "radical": "儿", "prop": "Patrick Star's big black boots" },
-    { "radical": "只", "prop": "Lone droid" },
-    { "radical": "兄", "prop": "Older brother Eric" },
-    { "radical": "兑", "prop": "deal with the devil/wad of cash" },
-    { "radical": "讠", "prop": "microphone" },
-    { "radical": "㇉", "prop": "toilet" },
-    { "radical": "马", "prop": "Horse" },
-    { "radical": "乙" },
-    { "radical": "乞" },
-    { "radical": "气" },
-    { "radical": "又" },
-    { "radical": "日" },
-    { "radical": "旦" },
-    { "radical": "早" }
+    {
+      "radical": "半"
+    },
+    {
+      "radical": "八",
+      "prop": "Magic 8 Ball"
+    },
+    {
+      "radical": "人",
+      "prop": "Person doing a split"
+    },
+    {
+      "radical": "亻",
+      "prop": "Mr. T (variant of 人)"
+    },
+    {
+      "radical": "从",
+      "prop": "Two people"
+    },
+    {
+      "radical": "𠂉",
+      "prop": "Uncle Jeff (loser)"
+    },
+    {
+      "radical": "午",
+      "prop": "Sundial"
+    },
+    {
+      "radical": "𠃍",
+      "prop": "Horse Head"
+    },
+    {
+      "radical": "口",
+      "prop": "Rolling Stones mouth"
+    },
+    {
+      "radical": "中",
+      "prop": "Chinese scepter"
+    },
+    {
+      "radical": "乚",
+      "prop": "Hook"
+    },
+    {
+      "radical": "儿",
+      "prop": "Patrick Star's big black boots"
+    },
+    {
+      "radical": "只",
+      "prop": "Lone droid"
+    },
+    {
+      "radical": "兄",
+      "prop": "Older brother Eric"
+    },
+    {
+      "radical": "兑",
+      "prop": "deal with the devil/wad of cash"
+    },
+    {
+      "radical": "讠",
+      "prop": "microphone"
+    },
+    {
+      "radical": "㇉",
+      "prop": "toilet"
+    },
+    {
+      "radical": "马",
+      "prop": "Horse"
+    },
+    {
+      "radical": "乙",
+      "prop": "Swan"
+    },
+    {
+      "radical": "乞",
+      "prop": "A beggar"
+    },
+    {
+      "radical": "气"
+    },
+    {
+      "radical": "又"
+    },
+    {
+      "radical": "日"
+    },
+    {
+      "radical": "旦"
+    },
+    {
+      "radical": "早"
+    }
   ],
   "characters": [
     {
@@ -207,35 +372,70 @@
       "character": "识",
       "pinyin": "shí",
       "definition": "Knowledge",
-      "radicals": ["讠", "只"]
+      "radicals": [
+        "讠",
+        "只"
+      ]
     },
     {
       "character": "马",
       "pinyin": "mǎ",
       "definition": "Horse",
-      "radicals": ["𠃍", "一", "㇉"]
+      "radicals": [
+        "𠃍",
+        "一",
+        "㇉"
+      ]
     },
     {
       "character": "吗",
       "pinyin": "ma",
       "definition": "Question Mark (yes/no)",
-      "radicals": ["口", "马"]
+      "radicals": [
+        "口",
+        "马"
+      ]
     },
     {
       "character": "骂",
       "pinyin": "mà",
       "definition": "Scold",
-      "radicals": ["口", "口", "马"],
+      "radicals": [
+        "口",
+        "口",
+        "马"
+      ],
       "movie": "In Jean's house in Iowa, amidst an eclectic mix of Jesus pictures and bobbleheads, Michael Jackson is attempting to moonwalk with the two resident dogs in the backyard, right next to the broken airstream. However, every time he tries to slide gracefully, he ends up stepping on a misplaced bobblehead of Jesus, causing him to trip and softly scold the bobbleheads with a \"Hee-hee\" and a playful wag of his finger, saying, \"You've been hit by, you've been struck by, a smooth criminal.\"\n\nThis unexpected scene is watched from the large, nicer bathroom window by the dogs, who seem to be judging Michael's moonwalking skills, leading Michael to playfully '骂' (mà), or scold, them in a light, humorous tone for their silent judgment. \n\nHere, in the Tone 4 location of Jean's backyard, Michael's playful scolding amidst the religious and quirky decor, under the watchful eyes of bobbleheads and dogs, creates a memorable tableau that vividly encapsulates the meaning of '骂' (mà) - to scold or berate, all while keeping a light and humorous air."
     },
     {
-      "character": "乙"
+      "character": "乙",
+      "pinyin": "yǐ",
+      "definition": "Second",
+      "radicals": [
+        "一",
+        "乚"
+      ],
+      "movie": "At the heart of your childhood home in Bridgewater, Yoa stands in the cozy, yet slightly cluttered living room, a space imbued with nostalgia. In her quest to find a second career as a magician, she's hilariously attempting to use a razorblade (一) to slice through the air, aiming to magically produce music notes. \n\nBut with a swift, comedic slip of her hand, she instead hooks (乚) onto the family’s antique, slightly off-tune piano, causing a single, resonant note to echo through the room, marking her second failed attempt at magic, yet somehow filling the space with her signature, soaring vocals by accident. \n\nThis scene of Yoa, amidst laughter and music, engraves the character 乙 (yǐ), meaning \"second\", in your memory, symbolized by her second, unintended musical triumph in the comfort of your childhood home."
     },
     {
-      "character": "乞"
+      "character": "乞",
+      "pinyin": "qǐ",
+      "definition": "Beg",
+      "radicals": [
+        "乙",
+        "𠂉"
+      ],
+      "movie": "In the serene living room of my childhood home in Bridgewater, Aria Trueblood is attempting to teach Uncle Jeff, the family's acknowledged loser, a particularly difficult yoga pose. As she gracefully balances in a handstand, trying to inspire Uncle Jeff, a swan waddles in, somehow embodying more grace than Jeff could ever hope to muster.\n\nAria, never missing a beat, transitions into a therapeutic speech about acceptance and reaching out for help when needed, directly addressing the swan as if it's a part of the class. Uncle Jeff, now sitting on the floor looking defeated, extends his arms towards the swan in a gesture that screams \"I beg for the grace and balance you possess,\" creating a perfect tableau of the word \"乞\" - to beg, with Aria's teachings echoing as a backdrop."
     },
     {
-      "character": "吃"
+      "character": "吃",
+      "pinyin": "chī",
+      "definition": "Eat",
+      "radicals": [
+        "口",
+        "乞"
+      ],
+      "movie": "Outside the entrance of your childhood home in Bridgewater, Charlie Sheen is engaged in a peculiar standoff. In one hand, he holds a giant, inflatable version of the Rolling Stones mouth, symbolizing the radical \"口,\" and in the other, he extends a slice of pizza towards a cardboard cutout of a beggar, representing the \"乞\" radical. \n\nHe theatrically declares, \"To eat or not to eat, that is the question!\" before taking a huge bite out of the pizza, the beggar cutout seemingly looking on in envy. This humorous scene, with Charlie's exaggerated antics and the iconic backdrop of your home, embeds the character \"吃\" (chī) - \"Eat\" into your memory through the visuals of eating and the included radicals."
     },
     {
       "character": "气"
