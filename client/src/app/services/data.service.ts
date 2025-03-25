@@ -19,6 +19,7 @@ export interface Character {
   definition?: string;
   radicals?: string[];
   movie?: string;
+  imgUrl?: string;
 }
 
 export interface MovieScene {

@@ -23,6 +23,7 @@ export interface Character {
   definition?: string;
   props?: string[];
   movie?: string;
+  imgUrl?: string;
 }
 
 export interface DataStructure {

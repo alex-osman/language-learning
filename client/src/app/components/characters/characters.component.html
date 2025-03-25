@@ -24,7 +24,7 @@
   <div *ngIf="selectedCharacter && movieScene" class="movie-scene-panel">
     <div class="panel-header">
       <div class="panel-header-top">
-        <h3>{{ selectedCharacter.character }} - {{ selectedCharacter.pinyin }}</h3>
+        <h3>{{ selectedCharacter.character }} - {{ movieScene.initial }}{{ movieScene.final }}</h3>
         <button class="close-btn" (click)="clearSelection()">×</button>
       </div>
       <div class="panel-sub-header">
@@ -32,6 +32,13 @@
       </div>
     </div>
     <div class="panel-content">
+      <div *ngIf="selectedCharacter.imgUrl" class="info-section image-section">
+        <img
+          [src]="selectedCharacter.imgUrl"
+          [alt]="selectedCharacter.character"
+          class="character-image"
+        />
+      </div>
       <div class="info-section">
         <h4>Actor</h4>
         <p>{{ movieScene.actor }}</p>
