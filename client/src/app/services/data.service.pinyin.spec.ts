@@ -21,6 +21,7 @@ describe('DataService - Pinyin Functions', () => {
     '-a': 'Set A',
     '-e': 'Set E',
     '-ao': 'Set AO',
+    '-an': 'Set AN',
     null: 'Default Set',
   };
 
@@ -125,6 +126,40 @@ describe('DataService - Pinyin Functions', () => {
       expect(result?.set).toBe(mockSets['null']);
       expect(result?.tone).toBe('4');
     });
+
+    it('should correctly parse si (四 - sì)', async () => {
+      const promise = service.getMovieScene('sì');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('s');
+      expect(result?.final).toBe('');
+      expect(result?.actor).toBe(mockActors.find(a => a.initial === 's')?.name || 'Jackie Chan');
+      expect(result?.set).toBe(mockSets['null']);
+      expect(result?.tone).toBe('4');
+    });
+
+    it('should correctly parse dian (电 - diàn)', async () => {
+      const promise = service.getMovieScene('diàn');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('di');
+      expect(result?.final).toBe('an');
+      expect(result?.actor).toBe(mockActors.find(a => a.initial === 'di')?.name || 'Jackie Chan');
+      expect(result?.set).toBe(mockSets['-an']);
+      expect(result?.tone).toBe('4');
+    });
   });
 
   describe('getToneNumber', () => {
@@ -216,6 +251,7 @@ describe('DataService - Pinyin Functions', () => {
       '-a': 'Set A',
       '-e': 'Set E',
       '-ao': 'Set AO',
+      '-an': 'Set AN',
       null: 'Default Set',
     };
 

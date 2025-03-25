@@ -90,8 +90,15 @@ export class DataService {
     if (pinyinNoTones.startsWith('shu')) {
       initial = 'shu';
       final = pinyinNoTones.substring(3);
-    } else if (['shi', 'chi', 'zhi', 'yi'].some(i => pinyinNoTones.startsWith(i))) {
-      initial = pinyinNoTones.substring(0, 2);
+    } else if (pinyinNoTones.startsWith('di')) {
+      initial = 'di';
+      final = pinyinNoTones.substring(2);
+    } else if (['shi', 'chi', 'zhi', 'yi', 'si'].some(i => pinyinNoTones.startsWith(i))) {
+      if (pinyinNoTones === 'si') {
+        initial = 's';
+      } else {
+        initial = pinyinNoTones.substring(0, 2);
+      }
       final = '';
     } else if (pinyinNoTones.startsWith('ku')) {
       initial = 'ku';
