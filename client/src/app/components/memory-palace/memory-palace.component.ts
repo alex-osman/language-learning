@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ORDERED_FINALS, ORDERED_INITIALS } from '../../data/pinyin.constants';
 import { ActorsComponent } from '../actors/actors.component';
 import { CharactersComponent } from '../characters/characters.component';
 import { RadicalsComponent } from '../radicals/radicals.component';
@@ -36,7 +35,4 @@ import { SetsComponent } from '../sets/sets.component';
     `,
   ],
 })
-export class MemoryPalaceComponent {
-  orderedInitials = ORDERED_INITIALS;
-  orderedFinals = ORDERED_FINALS;
-}
+export class MemoryPalaceComponent {}

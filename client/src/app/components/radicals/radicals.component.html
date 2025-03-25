@@ -1,0 +1,20 @@
+<div class="section radicals">
+  <h2>Radical Props</h2>
+  <div *ngIf="isLoading" class="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading radicals...</p>
+  </div>
+  <div *ngIf="!isLoading" class="grid">
+    <ng-container *ngFor="let radical of radicals">
+      <div class="cell has-data">
+        <div class="cell-content">
+          <div class="symbol">{{ radical.radical }}</div>
+          <div class="value">{{ radical.prop || 'No prop assigned' }}</div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+</div>

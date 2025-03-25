@@ -1,0 +1,20 @@
+<div class="section actors">
+  <h2>Actors</h2>
+  <div *ngIf="isLoading" class="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading actors...</p>
+  </div>
+  <div *ngIf="!isLoading" class="grid">
+    <ng-container *ngFor="let actor of actors">
+      <div class="cell has-data">
+        <div class="cell-content">
+          <div class="symbol">{{ actor.initial }}</div>
+          <div class="value">{{ actor.name }}</div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+</div>
