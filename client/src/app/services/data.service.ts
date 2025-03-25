@@ -100,8 +100,8 @@ export class DataService {
         initial = pinyinNoTones.substring(0, 2);
       }
       final = '';
-    } else if (pinyinNoTones.startsWith('ku')) {
-      initial = 'ku';
+    } else if (pinyinNoTones.startsWith('ku') || pinyinNoTones.startsWith('hu')) {
+      initial = pinyinNoTones.substring(0, 2);
       final = pinyinNoTones.substring(2);
     } else if (TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
       initial = pinyinNoTones.substring(0, 2);

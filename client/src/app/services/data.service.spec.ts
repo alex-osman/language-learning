@@ -193,5 +193,22 @@ describe('DataService', () => {
       expect(result?.set).toBe(mockSets['null']);
       expect(result?.tone).toBe('1');
     });
+
+    it('should correctly parse hu initial with a final (化 - huà)', async () => {
+      const promise = service.getMovieScene('huà');
+      const actorsReq = httpMock.expectOne('/api/data/actors');
+      actorsReq.flush(mockActors);
+
+      const setsReq = httpMock.expectOne('/api/data/sets');
+      setsReq.flush(mockSets);
+
+      const result = await promise;
+      expect(result).toBeTruthy();
+      expect(result?.initial).toBe('hu');
+      expect(result?.final).toBe('a');
+      expect(result?.actor).toBe(mockActors.find(a => a.initial === 'hu')?.name || 'Jackie Chan');
+      expect(result?.set).toBe(mockSets['-a']);
+      expect(result?.tone).toBe('4');
+    });
   });
 });

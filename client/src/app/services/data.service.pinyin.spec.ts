@@ -70,6 +70,7 @@ describe('DataService - Pinyin Functions', () => {
       { input: 'zhi', expected: { initial: 'zh', final: '' } },
       { input: 'jia', expected: { initial: 'ji', final: 'a' } },
       { input: 'ru', expected: { initial: 'ru', final: '' } },
+      { input: 'hua', expected: { initial: 'hu', final: 'a' } },
     ];
 
     cases.forEach(({ input, expected }) => {

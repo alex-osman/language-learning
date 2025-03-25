@@ -1,5 +1,6 @@
 {
   "sets": {
+    "-ai": "Meyer's - The dorm on Drexel Campus (a large dorm with long hallways of rooms and shared bathrooms and a small work area)",
     "-an": "Anrenee's apartment, entrance area with a buzzer and inside area with mailroom and then a lobby hallway that we go up a flight of stairs to her apartment.  Inside is the bedroom and bathroom and living area and kitchen.  Use the bathroom for tone 4",
     "-en": "Cosmos - the name of our college house we lived in",
     "-ong": "Bellevue Gym (The nice gym in philly with a lobby and smoothie bar and lots of classes and a workout room and a pool area with a hot tub and sauna)",
@@ -14,7 +15,7 @@
   },
   "tones": {
     "1": "Outside the entrance",
-    "2": "Kitchen or inside entrance",
+    "2": "Kitchen or inside entrance or hallway",
     "3": "Bedroom or living room",
     "4": "Bathroom or outside/yard",
     "5": "On the roof"
@@ -281,6 +282,10 @@
     {
       "radical": "化",
       "prop": "Transformer Optimus Prime"
+    },
+    {
+      "radical": "丶",
+      "prop": "eyedropper or waterdropper"
     }
   ],
   "characters": [
@@ -388,7 +393,10 @@
       "character": "四",
       "pinyin": "sì",
       "definition": "Four",
-      "radicals": ["口", "儿"],
+      "radicals": [
+        "口",
+        "儿"
+      ],
       "movie": "Snoop Dogg is chilling in the bathroom at the Bridgewater house. He’s leaning over the sink, brushing his teeth, when he notices something weird in the mirror.\nThe mirror opens like a mouth (口), and out steps two pairs of shiny black boots — Patrick Star’s boots, marching toward him.\nThey stomp loudly on the tile floor:\n'ONE! TWO! THREE! FOUR!'\nSnoop backs up, throws on his shades, and says\n'Damn… this bathroom got rhythm.'\nThe boots march in sync, each stomp echoing the number four."
     },
     {
@@ -423,25 +431,39 @@
       "character": "识",
       "pinyin": "shí",
       "definition": "Knowledge",
-      "radicals": ["讠", "只"]
+      "radicals": [
+        "讠",
+        "只"
+      ]
     },
     {
       "character": "马",
       "pinyin": "mǎ",
       "definition": "Horse",
-      "radicals": ["𠃍", "一", "㇉"]
+      "radicals": [
+        "𠃍",
+        "一",
+        "㇉"
+      ]
     },
     {
       "character": "吗",
       "pinyin": "ma",
       "definition": "Question Mark (yes/no)",
-      "radicals": ["口", "马"]
+      "radicals": [
+        "口",
+        "马"
+      ]
     },
     {
       "character": "骂",
       "pinyin": "mà",
       "definition": "Scold",
-      "radicals": ["口", "口", "马"],
+      "radicals": [
+        "口",
+        "口",
+        "马"
+      ],
       "imgUrl": "assets/images/ma4.jpg",
       "movie": "In Jean's house in Iowa, amidst an eclectic mix of Jesus pictures and bobbleheads, Michael Jackson is attempting to moonwalk with the two resident dogs in the backyard, right next to the broken airstream. However, every time he tries to slide gracefully, he ends up stepping on a misplaced bobblehead of Jesus, causing him to trip and softly scold the bobbleheads with a \"Hee-hee\" and a playful wag of his finger, saying, \"You've been hit by, you've been struck by, a smooth criminal.\"\n\nThis unexpected scene is watched from the large, nicer bathroom window by the dogs, who seem to be judging Michael's moonwalking skills, leading Michael to playfully '骂' (mà), or scold, them in a light, humorous tone for their silent judgment. \n\nHere, in the Tone 4 location of Jean's backyard, Michael's playful scolding amidst the religious and quirky decor, under the watchful eyes of bobbleheads and dogs, creates a memorable tableau that vividly encapsulates the meaning of '骂' (mà) - to scold or berate, all while keeping a light and humorous air."
     },
@@ -449,7 +471,10 @@
       "character": "乙",
       "pinyin": "yǐ",
       "definition": "Second",
-      "radicals": ["一", "乚"],
+      "radicals": [
+        "一",
+        "乚"
+      ],
       "movie": "At the heart of your childhood home in Bridgewater, Yoa stands in the cozy, yet slightly cluttered living room, a space imbued with nostalgia. In her quest to find a second career as a magician, she's hilariously attempting to use a razorblade (一) to slice through the air, aiming to magically produce music notes. \n\nBut with a swift, comedic slip of her hand, she instead hooks (乚) onto the family’s antique, slightly off-tune piano, causing a single, resonant note to echo through the room, marking her second failed attempt at magic, yet somehow filling the space with her signature, soaring vocals by accident. \n\nThis scene of Yoa, amidst laughter and music, engraves the character 乙 (yǐ), meaning \"second\", in your memory, symbolized by her second, unintended musical triumph in the comfort of your childhood home."
     },
     {
@@ -457,7 +482,10 @@
       "pinyin": "qǐ",
       "definition": "Beg",
       "imgUrl": "assets/images/qi3.webp",
-      "radicals": ["乙", "𠂉"],
+      "radicals": [
+        "乙",
+        "𠂉"
+      ],
       "movie": "In the serene living room of my childhood home in Bridgewater, Aria Trueblood is attempting to teach Uncle Jeff, the family's acknowledged loser, a particularly difficult yoga pose. As she gracefully balances in a handstand, trying to inspire Uncle Jeff, a swan waddles in, somehow embodying more grace than Jeff could ever hope to muster.\n\nAria, never missing a beat, transitions into a therapeutic speech about acceptance and reaching out for help when needed, directly addressing the swan as if it's a part of the class. Uncle Jeff, now sitting on the floor looking defeated, extends his arms towards the swan in a gesture that screams \"I beg for the grace and balance you possess,\" creating a perfect tableau of the word \"乞\" - to beg, with Aria's teachings echoing as a backdrop."
     },
     {
@@ -465,7 +493,10 @@
       "pinyin": "chī",
       "definition": "Eat",
       "imgUrl": "assets/images/chi1.jpg",
-      "radicals": ["口", "乞"],
+      "radicals": [
+        "口",
+        "乞"
+      ],
       "movie": "Outside the entrance of your childhood home in Bridgewater, Charlie Sheen is engaged in a peculiar standoff. In one hand, he holds a giant, inflatable version of the Rolling Stones mouth, symbolizing the radical \"口,\" and in the other, he extends a slice of pizza towards a cardboard cutout of a beggar, representing the \"乞\" radical. \n\nHe theatrically declares, \"To eat or not to eat, that is the question!\" before taking a huge bite out of the pizza, the beggar cutout seemingly looking on in envy. This humorous scene, with Charlie's exaggerated antics and the iconic backdrop of your home, embeds the character \"吃\" (chī) - \"Eat\" into your memory through the visuals of eating and the included radicals."
     },
     {
@@ -473,7 +504,11 @@
       "pinyin": "qì",
       "imgUrl": "assets/images/qi4.webp",
       "definition": "Air",
-      "radicals": ["𠂉", "乙", "一"],
+      "radicals": [
+        "𠂉",
+        "乙",
+        "一"
+      ],
       "movie": "In the serene yard of your childhood home in Bridgewater, Aria Trueblood is seen attempting to teach your Uncle Jeff, the infamous loser, how to channel his inner \"qi\" or air through yoga. Despite the peaceful setting, Aria balances precariously on one foot, mimicking a swan's grace, while Uncle Jeff flails about, knocking over a razorblade that had been inexplicably left on the garden table, symbolizing the character's first stroke.\n\nIn the midst of this chaos, Aria, ever the optimist, elevates her voice to remind everyone that it's okay to be a bit \"off\" today, her words floating through the air like a soothing breeze. This peculiar scene, with Aria's patience rivaling that of a saint and Uncle Jeff's antics, ensures you'll never forget \"气\" represents \"air,\" with the swan's elegance and the razor's precision mirroring its radical components."
     },
     {
@@ -481,7 +516,10 @@
       "pinyin": "fēi",
       "imgUrl": "assets/images/fei1.jpg",
       "definition": "Fly",
-      "radicals": ["乙", "冫"],
+      "radicals": [
+        "乙",
+        "冫"
+      ],
       "movie": "Outside the high school entrance, Freddy Mercury, wearing his iconic outfit, is preparing for an extraordinary performance. With a swan gracefully perched on his shoulder, he strums his guitar made of icicles, enchanting the swan to start flapping its wings. \n\nAs the melody reaches its crescendo, both Freddy and the swan begin to lift off the ground, defying gravity - they're flying! The sight of rock legend Freddy Mercury levitating with a swan outside a high school, all thanks to his icy guitar, makes \"飞\" (fēi) - \"Fly\" unforgettable."
     },
     {
@@ -489,68 +527,112 @@
       "pinyin": "kuàng",
       "imgUrl": "assets/images/kuang4.jpg",
       "definition": "Situation",
-      "radicals": ["冫", "兄"],
+      "radicals": [
+        "冫",
+        "兄"
+      ],
       "movie": "In the bustling bathroom of Rish's New Delhi apartment, Mr. Krabs finds himself in a slippery situation. While attempting to navigate the icy floor, caused by an enormous icicle (冫) that somehow found its way indoors during a freak weather phenomenon, he calls out for help. His older brother Eric (兄), who was in the middle of giving a tattoo in the living area, rushes in with a bucket of warm water to melt the chaos-creating ice. This odd rescue scenario, happening against a backdrop of a bathroom where modern fixtures meet traditional methods, perfectly encapsulates the \"situation\" (况) they find themselves in, with Mr. Krabs humorously slipping and sliding every time he attempts to articulate his gratitude."
     },
     {
       "character": "日",
       "pinyin": "rì",
       "definition": "Day",
-      "radicals": ["口", "一"],
+      "radicals": [
+        "口",
+        "一"
+      ],
       "movie": "In the yard of your childhood Bridgewater home, The Rock is hosting the most electrifying barbecue the neighborhood has ever seen. To kick off the day, he uses a massive, shining razorblade (一) to expertly slice veggies and meats. However, he's momentarily distracted by the iconic Rolling Stones mouth (口) decoration hanging above the grill, which comically starts singing \"Start Me Up\" as the sun (日) rises, casting a spotlight on him. Chuckling, The Rock quips, \"Looks like it's my day to shine,\" as he flips burgers with the precision of a superstar, making the whole scene an unforgettable daylight spectacle."
     },
     {
       "character": "旧",
       "pinyin": "jiù",
       "definition": "Old",
-      "radicals": ["日", "丨"],
+      "radicals": [
+        "日",
+        "丨"
+      ],
       "movie": "In the center city Philly house's yard, Jamie discovers a curious spectacle: a small sun, floating just above the well-worn, old patio tiles, casting an intense, ancient light over everything.\n\nArmed with nothing but a Gandalf staff she found leaning against the house's faded siding, she theatrically declares herself the guardian of all things vintage and cherished in this space.\n\nAs she waves the staff, the sun's light seems to age everything it touches, turning new plants old and giving the garden an air of venerable wisdom.\n\nThis humorous scene of Jamie, defending the old with a staff and a miniature sun, makes \"旧\" unforgettable, as it brings together the essence of \"old\" with a touch of magic in the heart of Philly."
     },
     {
       "character": "旦",
       "pinyin": "dàn",
       "definition": "Daybreak",
-      "radicals": ["日", "一"],
+      "radicals": [
+        "日",
+        "一"
+      ],
       "movie": "In the early hours of daybreak, Donald Trump finds himself in Anrenee's bathroom, a place he never expected to greet the sun. He's holding a small, intensely glowing orb, no bigger than a golf ball, symbolizing the sun, and a razorblade, which he uses in an attempt to shave by the dim, celestial light. \n\nSuddenly, the orb illuminates the entire room with the first light of dawn, casting long shadows and providing Trump with a surprisingly good shave. The moment captures the essence of \"旦\" (dàn) - daybreak, with the razorblade (一) slicing through the night's darkness, just as the sun (日) rises to herald a new day."
     },
     {
       "character": "但",
       "pinyin": "dàn",
       "definition": "But",
-      "radicals": ["旦", "亻"],
+      "radicals": [
+        "旦",
+        "亻"
+      ],
       "movie": "In the early morning light, Donald Trump, wearing his signature red tie, strides confidently into Anrenee's apartment bathroom, where the daybreak (represented by a rooster perched atop the shower curtain) is in full crow. \n\nBeside the sink stands Mr. T, flexing his muscles and embodying the radical of a manly man, holding a luxurious golden toilet brush. Trump, about to boast about his latest real estate conquest, pauses, glances at the rooster, then at Mr. T, and sighs, \"But,\" realizing no matter his success, he can't escape the mundane task of cleaning the bathroom after the rooster's mess. \n\nThis unexpected humility in such a glamorous figure, amidst the clash of daybreak and masculinity in the bathroom, creates a vivid and slightly humorous image that anchors the meaning of \"但\" (dàn) - \"But\"."
     },
     {
       "character": "早",
       "pinyin": "zǎo",
       "definition": "Early",
-      "radicals": ["日", "十"],
+      "radicals": [
+        "日",
+        "十"
+      ],
       "movie": "In the cozy living room of a 15 ft travel trailer, parked amidst the breathtaking mountains of Colorado, Mark Zuckerberg, wearing pajamas adorned with tiny suns, wakes up with a start. \n\nHe notices a small, intensely bright orb floating above his makeshift coffee table, casting an early morning glow that's impossible to ignore. In his grogginess, Zuckerberg attempts to swipe away the floating sun like a notification on his phone, only to accidentally knock over a decorative cross that had been perfectly balanced on the edge of the table. \n\nChuckling at the absurdity of trying to \"mute\" the sun, he remarks, \"Guess it's an early start today,\" acknowledging both the literal sunrise that beckoned him awake and the unplanned early morning adventure in his travel trailer."
     },
     {
       "character": "唱",
       "pinyin": "chàng",
       "definition": "Sing",
-      "radicals": ["口", "日", "日"],
+      "radicals": [
+        "口",
+        "日",
+        "日"
+      ],
       "movie": "In the eclectic bathroom of Rish’s New Delhi apartment, amidst the aroma of cedarwood from his woodworking projects lingering in the air, Charlie Sheen finds himself in an unusual singing lesson. With the shower running in the background, setting a rhythm, Charlie uses the bidet as his impromptu stage, a Rolling Stones mouth towel wrapped around his neck like a rockstar scarf. \n\nAbove him, instead of regular light bulbs, two small, intense orbs of light hang from the ceiling - not just any lights, but miniature suns that cast dramatic shadows, creating a spotlight effect as he belts out tunes with exaggerated mouth movements, practicing his \"唱\" (chàng) or singing. Every now and then, the two small cats join in with their meows, creating a bizarre yet unforgettable choir that echoes the essence of singing in the most eccentrically memorable way."
     },
     {
       "character": "电",
       "pinyin": "diàn",
       "definition": "Electricity",
-      "radicals": ["日", "乚"]
+      "radicals": [
+        "日",
+        "乚"
+      ],
+      "movie": "In Anrenee's apartment, Dua Lipa finds herself in the bathroom, faced with a perplexing dilemma: the sun (a small floating orb with intense heat and light) has somehow made its way indoors, precariously hovering above the bathtub. In a swift attempt to hook it using a bizarrely oversized fish hook (乚), she accidentally taps the orb, sending a burst of electric sparks ricocheting off the walls.\n\nThe electric display illuminates the bathroom in a rhythmic dance, reminiscent of her stage performances, but with a domestic twist. Amidst this luminous chaos, the bathroom light flickers in defeat, surrendering to the superior power of the sun orb, now crackling with raw electricity (电), casting shadows that playfully dance across Dua Lipa's bewildered face."
     },
     {
       "character": "七",
       "pinyin": "qī",
       "definition": "Seven",
-      "radicals": ["一", "乚"]
+      "radicals": [
+        "一",
+        "乚"
+      ],
+      "movie": "Outside the entrance of my childhood home in Bridgewater, Aria Trueblood is setting a peculiar scene for her latest outdoor yoga class. Today, she's balancing precariously on a giant razorblade, her mat snugly placed atop it, as she preaches the virtues of emotional balance and the power of 'qi', with a handstand demonstration looming. Nearby, a curious hook dangles from the mailbox, which she uses to hang her yoga bag, humorously quipping, \"Even our belongings need to find their zen today.\"\n\nHer class, intrigued by this blend of danger and serenity, can't help but count the days of the week on their fingers, realizing it's the perfect metaphor for surviving a full week—balancing gracefully through seven days, with Aria's unconventional methods reminding them that life, much like yoga on a razorblade, requires a keen sense of balance and a good hook for support."
     },
     {
       "character": "化",
       "pinyin": "huà",
       "definition": "Transform",
-      "radicals": ["七", "亻"]
+      "radicals": [
+        "七",
+        "亻"
+      ],
+      "movie": "In the bustling parking lot of a Scottsdale coworking space, Homer Simpson, bewildered by the Arizona heat, stumbles upon a magical bathroom hidden between two SUVs. Inside, he finds the Seven Dwarfs experimenting with a sparkling potion that promises to \"transform\" anyone into the epitome of manliness. \n\nCurious, Homer drinks the potion, and in a puff of smoke, he instantly sprouts a thick gold chain and a mohawk, a hilarious nod to Mr. T, the symbol of manliness. \n\nOutside, the transformed Homer, now embodying both the strength of Mr. T and the whimsy of the Seven Dwarfs, struts around the yard, chuckling, \"I pity the fool who doesn't believe in magic!\" This scene links the character \"化\" (huà) with transformation in a memorable tableau."
+    },
+    {
+      "character": "白",
+      "pinyin": "bái",
+      "definition": "White",
+      "radicals": [
+        "丶",
+        "日"
+      ],
+      "movie": "In the bustling kitchen of Meyer's dorm on Drexel Campus, Bill Murray, dressed in an immaculate white chef's outfit, is attempting a peculiar culinary experiment.\n\nWith an eyedropper (丶), he meticulously drips water onto a small, intensely bright floating orb that resembles the Sun (日), causing steam to rise dramatically, which he claims will \"purify\" the water.\n\nAs bewildered students gather, he announces, \"Only the purest of white steam, like the essence of 白, can create the ultimate boiled egg.\" The scene is both bizarre and unforgettable as Bill, with a mischievous grin, manages to turn even boiling water into an event worthy of a white chef's coat."
     }
   ]
 }
