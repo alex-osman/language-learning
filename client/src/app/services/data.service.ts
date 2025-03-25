@@ -12,6 +12,7 @@ import { Actor, RadicalProp } from '../interfaces/mandarin-blueprint.interface';
 export type SetDTO = {
   final: string;
   name: string;
+  description?: string;
   toneLocations: ToneLocationDTO[];
 };
 

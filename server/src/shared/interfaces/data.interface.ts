@@ -1,6 +1,7 @@
 export interface Set {
   final: string;
   name: string;
+  description?: string;
   toneLocations: ToneLocation[];
 }
 

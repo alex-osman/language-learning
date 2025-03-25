@@ -3,11 +3,12 @@
     {
       "final": "ai",
       "name": "Meyer's Dorm",
+      "description": "Meyer's dorm was a large dormitory at Drexel University with a main entrance lobby, hallways, bedrooms, and a shared bathroom.  It was a constant flow of students.",
       "toneLocations": [
         {
           "toneNumber": 1,
           "name": "Entrance Lobby",
-          "description": "The main entrance lobby with security desk and sign-in area. Constant flow of students."
+          "description": "The main entrance lobby with security desk and sign-in area."
         },
         {
           "toneNumber": 2,
