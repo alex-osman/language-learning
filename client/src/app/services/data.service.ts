@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Actor, RadicalProp } from '../interfaces/mandarin-blueprint.interface';
+import {
+  TWO_LETTER_INITIALS,
+  FINAL_MAPPINGS,
+  INITIAL_MAPPINGS,
+  TONE_MAP,
+  VOWEL_MAP,
+} from '../constants/pinyin.constants';
 
 type Sets = { [key: string]: string };
 export type Tone = { [key: string]: string };
@@ -27,26 +34,11 @@ export interface MovieScene {
   providedIn: 'root',
 })
 export class DataService {
-  private apiUrl = '/api/data'; // Update this URL based on your backend configuration
-
-  // Special case mappings that were previously in the component
-  private readonly TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru', 'shu'];
-  private readonly FINAL_MAPPINGS: { [key: string]: string } = {
-    i: 'e',
-    ie: 'e',
-    r: 'er',
-    u: 'ou',
-    ü: 'ou',
-  };
-  private readonly INITIAL_MAPPINGS: { [key: string]: string } = {
-    n: 'ni',
-    j: 'ji',
-    q: 'qi',
-    x: 'xi',
-  };
+  private apiUrl = '/api/data';
 
   constructor(private http: HttpClient) {}
 
+  // API methods
   getActors(): Observable<Actor[]> {
     return this.http.get<Actor[]>(`${this.apiUrl}/actors`);
   }
@@ -69,114 +61,97 @@ export class DataService {
 
   // Helper method to get tone number from pinyin
   getToneNumber(pinyin: string): string {
-    const toneMap: { [key: string]: string } = {
-      ā: '1',
-      ē: '1',
-      ī: '1',
-      ō: '1',
-      ū: '1',
-      ǖ: '1',
-      á: '2',
-      é: '2',
-      í: '2',
-      ó: '2',
-      ú: '2',
-      ǘ: '2',
-      ǎ: '3',
-      ě: '3',
-      ǐ: '3',
-      ǒ: '3',
-      ǔ: '3',
-      ǚ: '3',
-      à: '4',
-      è: '4',
-      ì: '4',
-      ò: '4',
-      ù: '4',
-      ǜ: '4',
-    };
-
     for (const char of pinyin) {
-      if (char in toneMap) {
-        return toneMap[char];
-      }
+      const tone = TONE_MAP[char];
+      if (tone) return tone;
     }
     return '5';
   }
 
-  // Helper method to parse pinyin and get movie scene data
-  async getMovieScene(pinyin: string): Promise<MovieScene | null> {
-    try {
-      const [actors, sets] = await Promise.all([
-        this.getActors().toPromise(),
-        this.getSets().toPromise(),
-      ]);
+  // Helper function to remove tone marks from pinyin
+  private removeToneMarks(pinyin: string): string {
+    return pinyin
+      .toLowerCase()
+      .split('')
+      .map(char => VOWEL_MAP[char] || char)
+      .join('');
+  }
 
-      if (!actors || !sets) return null;
+  // Helper function to parse pinyin into initial and final
+  private parsePinyin(pinyinNoTones: string): { initial: string; final: string } {
+    if (!pinyinNoTones) return { initial: '', final: '' };
+    if (pinyinNoTones === 'er') return { initial: 'ø', final: 'er' };
 
-      // Remove tone marks from pinyin
-      const pinyinNoTones = pinyin
-        .toLowerCase()
-        .replace(
-          /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g,
-          match => 'aeiouü'['āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'.indexOf(match) % 5]
-        );
+    let initial = '';
+    let final = '';
 
-      let initial = '';
-      let final = '';
-
-      // Parse initial and final using the same logic as before
-      if (pinyinNoTones.startsWith('shu')) {
-        initial = 'shu';
-        final = pinyinNoTones.substring(3);
-      } else if (
-        pinyinNoTones.startsWith('shi') ||
-        pinyinNoTones.startsWith('chi') ||
-        pinyinNoTones.startsWith('zhi')
-      ) {
-        initial = pinyinNoTones.substring(0, 2);
+    // Handle special cases first
+    if (pinyinNoTones.startsWith('shu')) {
+      initial = 'shu';
+      final = pinyinNoTones.substring(3);
+    } else if (['shi', 'chi', 'zhi'].some(i => pinyinNoTones.startsWith(i))) {
+      initial = pinyinNoTones.substring(0, 2);
+      final = '';
+    } else if (TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
+      initial = pinyinNoTones.substring(0, 2);
+      final = pinyinNoTones.substring(2);
+    } else {
+      const firstChar = pinyinNoTones[0];
+      if (firstChar === 'w' || firstChar === 'y') {
+        initial = firstChar;
         final = '';
-      } else if (this.TWO_LETTER_INITIALS.some(i => pinyinNoTones.startsWith(i))) {
+      } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
         initial = pinyinNoTones.substring(0, 2);
         final = pinyinNoTones.substring(2);
       } else {
-        const firstChar = pinyinNoTones[0];
-        if (firstChar === 'w' || firstChar === 'y') {
-          initial = firstChar;
-          final = '';
-        } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
-          initial = pinyinNoTones.substring(0, 2);
-          final = pinyinNoTones.substring(2);
-        } else if (firstChar in this.INITIAL_MAPPINGS) {
-          initial = this.INITIAL_MAPPINGS[firstChar];
-          final = pinyinNoTones.substring(1);
-        } else {
-          initial = firstChar;
-          final = pinyinNoTones.substring(1);
-        }
+        // For non-standard inputs, don't apply INITIAL_MAPPINGS
+        initial = firstChar;
+        final = pinyinNoTones.substring(1);
       }
+    }
 
-      const mappedFinal = this.FINAL_MAPPINGS[final] || final;
-      const matchingActor = actors.find(a => a.initial === initial);
-      const fallbackActor = actors.find(a => a.initial === 'ø');
-      const actor = matchingActor?.name || fallbackActor?.name || '(No actor assigned)';
+    return { initial, final };
+  }
 
-      const setKey = final ? `-${mappedFinal}` : 'null';
-      const set = sets[setKey] || sets['null'];
+  // Helper function to map finals to their correct form
+  private mapFinal(final: string): string {
+    return FINAL_MAPPINGS[final] || final;
+  }
+
+  // Helper function to find the appropriate actor
+  private findActor(initial: string, actors: Actor[]): string {
+    const matchingActor = actors.find(a => a.initial === initial);
+    const fallbackActor = actors.find(a => a.initial === 'ø');
+    return matchingActor?.name || fallbackActor?.name || '(No actor assigned)';
+  }
+
+  // Helper function to get the appropriate set
+  private getSetLocation(final: string, sets: Sets): string {
+    const setKey = final ? `-${final}` : 'null';
+    return sets[setKey] || sets['null'];
+  }
+
+  // Main function to get movie scene data
+  async getMovieScene(pinyin: string): Promise<MovieScene | null> {
+    try {
+      const [actors, sets] = await Promise.all([
+        firstValueFrom(this.getActors()),
+        firstValueFrom(this.getSets()),
+      ]);
+
+      if (!actors?.length || !sets) return null;
+
+      const pinyinNoTones = this.removeToneMarks(pinyin);
+      const { initial, final } = this.parsePinyin(pinyinNoTones);
+      const mappedFinal = this.mapFinal(final);
+      const actor = this.findActor(initial, actors);
+      const set = this.getSetLocation(mappedFinal, sets);
       const tone = this.getToneNumber(pinyin);
 
-      return {
-        initial,
-        final: mappedFinal,
-        actor,
-        set,
-        tone,
-      };
+      return { initial, final: mappedFinal, actor, set, tone };
     } catch (error) {
       console.error('Error getting movie scene:', error);
       return null;
     }
   }
-
-  // Add other methods as needed for tones, characters, etc.
 }
