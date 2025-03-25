@@ -1,3 +1,4 @@
+@use '../../styles/variables' as v;
 @use '../../styles/shared';
 
 .grid {
@@ -6,24 +7,107 @@
   gap: 1rem;
 }
 
+.type-header {
+  grid-column: 1 / -1;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  &.male {
+    border-color: v.$male-border;
+    h3 {
+      color: v.$male-text;
+    }
+  }
+
+  &.female {
+    border-color: v.$female-border;
+    h3 {
+      color: v.$female-text;
+    }
+  }
+
+  &.fictional {
+    border-color: v.$fictional-border;
+    h3 {
+      color: v.$fictional-text;
+    }
+  }
+}
+
 .cell {
   border-radius: 6px;
   padding: 1rem;
   transition: all 0.2s ease;
-  background-color: #c8e6c9;
-  border: 1px solid #81c784;
+  cursor: pointer;
 
-  .symbol {
-    color: #2e7d32;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
-  .value {
-    color: #1b5e20;
-    font-size: 0.9rem;
-    word-break: break-word;
+  &.male {
+    background-color: v.$male-bg;
+    border: 1px solid v.$male-border;
+
+    .symbol {
+      color: v.$male-text;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .value {
+      color: v.$male-text;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+  }
+
+  &.female {
+    background-color: v.$female-bg;
+    border: 1px solid v.$female-border;
+
+    .symbol {
+      color: v.$female-text;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .value {
+      color: v.$female-text;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+  }
+
+  &.fictional {
+    background-color: v.$fictional-bg;
+    border: 1px solid v.$fictional-border;
+
+    .symbol {
+      color: v.$fictional-text;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .value {
+      color: v.$fictional-text;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
   }
 }
 
@@ -36,28 +120,28 @@
   .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #81c784;
+    border: 4px solid v.$spinner-background;
+    border-top: 4px solid v.$male-border;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
   }
 
   p {
-    color: #2e7d32;
+    color: v.$male-text;
     font-size: 1rem;
   }
 }
 
 .error {
   padding: 1rem;
-  background-color: #ffebee;
-  border: 1px solid #ef9a9a;
+  background-color: v.$error-light;
+  border: 1px solid v.$error-border;
   border-radius: 6px;
   margin-top: 1rem;
 
   p {
-    color: #c62828;
+    color: v.$error-text;
     margin: 0;
   }
 }

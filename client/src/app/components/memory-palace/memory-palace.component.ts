@@ -11,10 +11,10 @@ import { SetsComponent } from '../sets/sets.component';
   imports: [CommonModule, ActorsComponent, SetsComponent, CharactersComponent, RadicalsComponent],
   template: `
     <div class="memory-palace">
+      <app-characters> </app-characters>
+      <app-radicals />
       <app-actors> </app-actors>
       <app-sets> </app-sets>
-      <app-radicals />
-      <app-characters> </app-characters>
     </div>
   `,
   styles: [

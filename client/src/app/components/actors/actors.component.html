@@ -5,13 +5,20 @@
     <p>Loading actors...</p>
   </div>
   <div *ngIf="!isLoading" class="grid">
-    <ng-container *ngFor="let actor of actors">
-      <div class="cell has-data">
-        <div class="cell-content">
-          <div class="symbol">{{ actor.initial }}</div>
-          <div class="value">{{ actor.name }}</div>
-        </div>
+    <ng-container *ngFor="let group of actorGroups">
+      <!-- Group Header -->
+      <div class="type-header" [class]="group.type">
+        <h3>{{ group.title }}</h3>
       </div>
+      <!-- Group Actors -->
+      <ng-container *ngFor="let actor of group.actors">
+        <div class="cell" [class]="group.type">
+          <div class="cell-content">
+            <div class="symbol">{{ actor.initial }}</div>
+            <div class="value">{{ actor.name }}</div>
+          </div>
+        </div>
+      </ng-container>
     </ng-container>
   </div>
   <div *ngIf="error" class="error">
