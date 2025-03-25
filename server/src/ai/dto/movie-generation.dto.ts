@@ -10,7 +10,7 @@ export class MovieGenerationRequestDto {
   actor!: string;
   set!: string;
   tone!: string;
-  toneLocation!: string;
+  toneLocation: string;
   radicalProps!: RadicalProp[];
 }
 

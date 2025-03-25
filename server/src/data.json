@@ -40,12 +40,11 @@
   "radicalProps": [
     { "radical": "一", "prop": "Razorblade" },
     { "radical": "二", "prop": "Twins" },
-    { "radical": "三" },
     { "radical": "丨", "prop": "Gandalf staff" },
     { "radical": "十", "prop": "Cross" },
     {
-      "radical": "____?____",
-      "prop": "devil's ears/horns (like on top of 兄 in 兑）"
+      "radical": "丷",
+      "prop": "devil's horns (like on top of 兄 in 兑）"
     },
     { "radical": "半" },
     { "radical": "八", "prop": "Magic 8 Ball" },

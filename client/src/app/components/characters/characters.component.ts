@@ -77,7 +77,7 @@ export class CharactersComponent implements OnInit {
       actor: this.movieScene.actor,
       set: this.movieScene.set,
       tone: this.movieScene.tone,
-      toneLocation: this.movieScene.tone, // We'll get the actual location from the service
+      toneLocation: this.movieScene.tone,
       radicalProps: this.selectedCharacter.radicals || [],
     };
 

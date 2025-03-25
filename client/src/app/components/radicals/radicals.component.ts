@@ -120,10 +120,8 @@ export class RadicalsComponent implements OnInit {
     this.error = null;
 
     this.dataService.getRadicalProps().subscribe({
-      next: (radicals: RadicalProp[]) => {
-        this.radicals = radicals.sort((a: RadicalProp, b: RadicalProp) =>
-          a.radical.localeCompare(b.radical)
-        );
+      next: radicals => {
+        this.radicals = radicals.sort((a, b) => a.radical.localeCompare(b.radical));
         this.isLoading = false;
       },
       error: (error: Error) => {
