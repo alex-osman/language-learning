@@ -16,22 +16,21 @@ client/               # Angular frontend application
 ├── src/
 │   ├── app/
 │   │   ├── components/     # Angular components
-│   │   ├── services/       # Services for data handling
-│   │   ├── interfaces/     # TypeScript interfaces
-│   │   └── constants/      # Shared constants
-│   ├── assets/            # Static assets
+│   │   │   ├── services/       # Services for data handling
+│   │   │   ├── interfaces/     # TypeScript interfaces
+│   │   │   └── constants/      # Shared constants
+│   │   ├── assets/            # Static assets
+│   │   └── environments/      # Environment configurations
+│   ├── server/            # Node.js backend application
 │   └── environments/      # Environment configurations
 ```
 
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Node.js (v14 or higher)
 - npm (v6 or higher)
-- Angular CLI (`npm install -g @angular/cli`)
 
-### Installation
+## Getting Started
 
 1. Clone the repository:
 
@@ -43,64 +42,21 @@ cd language-learning
 2. Install dependencies:
 
 ```bash
-cd client
 npm install
 ```
 
-3. Start the development server:
+3. Start the development server (runs both frontend and backend):
 
 ```bash
-ng serve
+npm run dev
 ```
 
 4. Open your browser and navigate to `http://localhost:4200`
 
-## Development
+The frontend will be available at `http://localhost:4200` and the API at `http://localhost:3000`.
 
-### Running Tests
+## Running Tests
 
 ```bash
-# Run all tests
-ng test
-
-# Run specific test file
-ng test --include=src/app/services/data.service.pinyin.spec.ts
+npm test
 ```
-
-### Code Organization
-
-- **Components**: UI components are in `src/app/components/`
-- **Services**: Data and business logic in `src/app/services/`
-- **Constants**: Shared constants like pinyin mappings in `src/app/constants/`
-- **Interfaces**: TypeScript interfaces in `src/app/interfaces/`
-
-## Technical Details
-
-### Pinyin Processing
-
-The application includes sophisticated pinyin processing capabilities:
-
-- Tone mark removal and recognition
-- Initial and final parsing
-- Special case handling for complex syllables
-- Mapping to actors and sets based on phonetic components
-
-### Testing
-
-The project uses:
-
-- Jasmine for unit testing
-- Karma as the test runner
-- Angular TestBed for component testing
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
