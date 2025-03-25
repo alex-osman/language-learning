@@ -286,6 +286,10 @@
     {
       "radical": "丶",
       "prop": "eyedropper or waterdropper"
+    },
+    {
+      "radical": "白",
+      "prop": "White can of paint"
     }
   ],
   "characters": [
@@ -633,6 +637,16 @@
         "日"
       ],
       "movie": "In the bustling kitchen of Meyer's dorm on Drexel Campus, Bill Murray, dressed in an immaculate white chef's outfit, is attempting a peculiar culinary experiment.\n\nWith an eyedropper (丶), he meticulously drips water onto a small, intensely bright floating orb that resembles the Sun (日), causing steam to rise dramatically, which he claims will \"purify\" the water.\n\nAs bewildered students gather, he announces, \"Only the purest of white steam, like the essence of 白, can create the ultimate boiled egg.\" The scene is both bizarre and unforgettable as Bill, with a mischievous grin, manages to turn even boiling water into an event worthy of a white chef's coat."
+    },
+    {
+      "character": "百",
+      "pinyin": "bǎi",
+      "definition": "Hundred",
+      "radicals": [
+        "一",
+        "白"
+      ],
+      "movie": "In the spacious, somewhat cluttered living room of Meyer's dorm, Bill Murray, dressed in his iconic \"Ghostbusters\" outfit, finds a peculiar challenge. Armed only with a razorblade (一) and a white can of paint (白), he decides to embark on a quirky quest.\n\nWith the precision of a seasoned comedian-turned-artist, Bill uses the razorblade to neatly open the can, then proceeds to paint exactly one hundred ghostly figures across the walls of the living room, each more whimsical than the last. As he steps back, admiring his handiwork with a smirk, the scene leaves an indelible mark: Bill Murray, in a dorm room, transforming ordinary paint into a hundred laughs, mirroring the character \"百\" for \"hundred.\""
     }
   ]
 }
