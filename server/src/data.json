@@ -32,6 +32,7 @@
     { "initial": "xi", "name": "Shakira", "type": "female" },
     { "initial": "ni", "name": "Nicole Oringer", "type": "female" },
     { "initial": "ji", "name": "Jamie (your sister)", "type": "female" },
+    { "initial": "yi", "name": "Yoa", "type": "female" },
     { "initial": "ru", "name": "Ron Weasley", "type": "fictional" },
     { "initial": "du", "name": "Darth Vader", "type": "fictional" },
     { "initial": "w", "name": "Woody", "type": "fictional" },

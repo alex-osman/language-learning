@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   Set,
@@ -13,6 +13,7 @@ import {
 @Injectable()
 export class DataService {
   private data: DataStructure;
+  private dataFilePath: string;
 
   constructor() {
     this.loadData();
@@ -21,12 +22,12 @@ export class DataService {
   private loadData(): void {
     try {
       // Try to find the file in both development and production paths
-      let filePath = join(__dirname, '..', 'data.json');
-      if (!existsSync(filePath)) {
+      this.dataFilePath = join(__dirname, '..', 'data.json');
+      if (!existsSync(this.dataFilePath)) {
         // If not found, try the development path
-        filePath = join(__dirname, '..', '..', 'src', 'data.json');
+        this.dataFilePath = join(__dirname, '..', '..', 'src', 'data.json');
       }
-      const fileContent = readFileSync(filePath, 'utf-8');
+      const fileContent = readFileSync(this.dataFilePath, 'utf-8');
       this.data = JSON.parse(fileContent) as DataStructure;
     } catch (error) {
       console.error('Error loading data:', error);
@@ -37,6 +38,16 @@ export class DataService {
         radicalProps: [],
         characters: [],
       };
+    }
+  }
+
+  private saveData(): void {
+    try {
+      const jsonData = JSON.stringify(this.data, null, 2);
+      writeFileSync(this.dataFilePath, jsonData, 'utf-8');
+    } catch (error) {
+      console.error('Error saving data:', error);
+      throw new Error('Failed to save data');
     }
   }
 
@@ -71,5 +82,19 @@ export class DataService {
 
   getRadicalPropByRadical(radical: string): RadicalProp | undefined {
     return this.data.radicalProps.find((prop) => prop.radical === radical);
+  }
+
+  // Method to add or update a movie for a character
+  addMovieToCharacter(character: string, movie: string): void {
+    const characterIndex = this.data.characters.findIndex(
+      (char) => char.character === character,
+    );
+
+    if (characterIndex === -1) {
+      throw new Error(`Character ${character} not found`);
+    }
+
+    this.data.characters[characterIndex].movie = movie;
+    this.saveData();
   }
 }

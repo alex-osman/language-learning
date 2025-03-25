@@ -23,6 +23,7 @@ import {
   MovieGenerationResponseDto,
 } from './dto/movie-generation.dto';
 import { MovieAiService } from './services/movie.service';
+import { DataService } from 'src/services/data.service';
 
 @Controller('api/ai')
 export class AiController {
@@ -34,6 +35,7 @@ export class AiController {
     private readonly frenchChatService: FrenchChatAiService,
     private readonly critiqueService: CritiqueAiService,
     private readonly movieService: MovieAiService,
+    private readonly dataService: DataService,
   ) {}
 
   @Post('tts')
@@ -103,7 +105,14 @@ export class AiController {
     @Body() request: MovieGenerationRequestDto,
   ): Promise<MovieGenerationResponseDto> {
     try {
-      return await this.movieService.generateMovie(request);
+      const movieGenerationResponse =
+        await this.movieService.generateMovie(request);
+      // Save movie to database
+      this.dataService.addMovieToCharacter(
+        request.character,
+        movieGenerationResponse.movie,
+      );
+      return movieGenerationResponse;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
