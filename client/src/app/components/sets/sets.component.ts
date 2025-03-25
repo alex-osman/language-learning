@@ -34,12 +34,11 @@ export class SetsComponent implements OnInit {
     this.dataService.getSets().subscribe({
       next: (sets: Sets) => {
         this.definedSets = Object.entries(sets)
-          .filter(([key]) => key !== 'null') // Exclude the fallback set
           .map(([key, location]) => ({
-            final: key.replace('-', ''), // Remove the hyphen prefix
+            final: key,
             location,
           }))
-          .sort((a, b) => a.final.localeCompare(b.final)); // Sort by final
+          .sort((a, b) => a.final.localeCompare(b.final));
         this.isLoading = false;
       },
       error: (error: Error) => {
