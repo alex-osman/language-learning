@@ -7,7 +7,14 @@ import {
   TWO_LETTER_INITIALS,
   VOWEL_MAP,
 } from '../constants/pinyin.constants';
-import { Actor, RadicalProp } from '../interfaces/mandarin-blueprint.interface';
+import { RadicalProp } from '../interfaces/mandarin-blueprint.interface';
+
+export type ActorDTO = {
+  initial: string;
+  name: string;
+  description?: string;
+  type: 'male' | 'female' | 'fictional';
+};
 
 export type SetDTO = {
   final: string;
@@ -36,7 +43,7 @@ export interface Character {
 export interface MovieScene {
   initial: string;
   final: string;
-  actor: string;
+  actor: ActorDTO;
   set: SetDTO;
   tone: string;
   movie?: string;
@@ -51,8 +58,8 @@ export class DataService {
   constructor(private http: HttpClient) {}
 
   // API methods
-  getActors(): Observable<Actor[]> {
-    return this.http.get<Actor[]>(`${this.apiUrl}/actors`);
+  getActors(): Observable<ActorDTO[]> {
+    return this.http.get<ActorDTO[]>(`${this.apiUrl}/actors`);
   }
 
   getSets(): Observable<SetDTO[]> {
@@ -144,10 +151,10 @@ export class DataService {
   }
 
   // Helper function to find the appropriate actor
-  private findActor(initial: string, actors: Actor[]): string {
+  private findActor(initial: string, actors: ActorDTO[]): ActorDTO | undefined {
     const matchingActor = actors.find(a => a.initial === initial);
     const fallbackActor = actors.find(a => a.initial === 'ø');
-    return matchingActor?.name || fallbackActor?.name || '(No actor assigned)';
+    return matchingActor || fallbackActor;
   }
 
   // Helper function to get the appropriate set
@@ -172,6 +179,7 @@ export class DataService {
       const { initial, final } = this.parsePinyin(pinyinNoTones);
       const mappedFinal = this.mapFinal(final);
       const actor = this.findActor(initial, actors);
+      if (!actor) throw new Error('No actor found');
       const set = this.getSetLocation(mappedFinal, sets);
       const tone = this.getToneNumber(pinyin);
       if (!set) throw new Error('No set found');

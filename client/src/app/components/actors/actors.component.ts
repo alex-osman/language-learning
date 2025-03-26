@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Actor } from '../../interfaces/mandarin-blueprint.interface';
-import { DataService } from '../../services/data.service';
+import { ActorDTO, DataService } from '../../services/data.service';
 
 interface ActorGroup {
   type: string;
   title: string;
-  actors: Actor[];
+  actors: ActorDTO[];
 }
 
 @Component({

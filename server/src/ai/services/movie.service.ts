@@ -35,17 +35,21 @@ export class MovieAiService {
           toneLocation += ` - ${attemptToneLocation.description}`;
         }
       }
+      let actorName = actor.name;
+      if (actor.description) {
+        actorName += ` - ${actor.description}`;
+      }
 
       const prompt = `Create a scene for the Chinese character "${character}" (${pinyin}) - "${definition}" that incorporates:
 
-Actor: ${actor}
+Actor: ${actorName}
 Set Location: ${set.name}
 Tone Location (Tone ${tone}): ${toneLocation}
 Radical Props: ${radicalProps.map((rp) => `${rp.radical} (${rp.prop})`).join(', ')}
 
 The scene should:
 1. Take place in the specified location (${set.name})
-2. Feature ${actor} as the main actor
+2. Feature ${actor.name} as the main actor
 3. The action should happen in the tone location: ${toneLocation}
 4. Incorporate the radical props naturally into the scene
 5. Create a memorable connection to the character's meaning

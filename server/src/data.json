@@ -50,7 +50,8 @@
     },
     {
       "final": "en",
-      "name": "Cosmos - the name of our college house we lived in",
+      "name": "Cosmos (College House)",
+      "description": "Cosmos was a large house with a front door patio, a living room, a kitchen, a bathroom, and a bedroom.  We would throw basement shows and parties there.",
       "toneLocations": [
         {
           "toneNumber": 1,
@@ -233,21 +234,25 @@
     {
       "initial": "ni",
       "name": "Nicole Oringer",
+      "description": "my mother's friend",
       "type": "female"
     },
     {
       "initial": "ji",
-      "name": "Jamie (your sister)",
+      "name": "Jamie",
+      "description": "my sister",
       "type": "female"
     },
     {
       "initial": "yi",
-      "name": "Yoa (Born in Paris to a Swiss father and Cameroonian mother, YOA is a singer, songwriter and musician who has emerged as one of France’s most exciting pop talents. Her exquisite voice and cinematic songwriting are evident throughout her discography, from her 2021 debut EP ‘Attente’ to her more recent EPs ‘Chansons (+) tristes’ (2022) and ‘Nulle’ (2024), both of which showcase her penchant for witty pop arrangements and soaring vocals)",
+      "name": "Yoa",
+      "description": "Born in Paris to a Swiss father and Cameroonian mother, YOA is a singer, songwriter and musician who has emerged as one of France’s most exciting pop talents. Her exquisite voice and cinematic songwriting are evident throughout her discography, from her 2021 debut EP ‘Attente’ to her more recent EPs ‘Chansons (+) tristes’ (2022) and ‘Nulle’ (2024), both of which showcase her penchant for witty pop arrangements and soaring vocals",
       "type": "female"
     },
     {
       "initial": "qi",
-      "name": "Aria Trueblood (the yoga instructor at the gym.  She is chosen because 'chi' as energy relates to 'qi' the sound.  Aria starts her yoga class with a brief intro where she usually rambles a bit about being in touch with your emotions and it's a very safe space, she mentions therapy and if you're not having the best day she says thats okay.  Then she usually starts the routine which occasionally will include harder poses like a handstand or crow.)",
+      "name": "Aria Trueblood",
+      "description": "the yoga instructor at the gym.  She is chosen because 'chi' as energy relates to 'qi' the sound.  Aria starts her yoga class with a brief intro where she usually rambles a bit about being in touch with your emotions and it's a very safe space, she mentions therapy and if you're not having the best day she says thats okay.  Then she usually starts the routine which occasionally will include harder poses like a handstand or crow.",
       "type": "female"
     },
     {

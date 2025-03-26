@@ -25,6 +25,7 @@ export interface Tone {
 export interface Actor {
   initial: string;
   name: string;
+  description?: string;
   type: 'male' | 'female' | 'fictional';
 }
 

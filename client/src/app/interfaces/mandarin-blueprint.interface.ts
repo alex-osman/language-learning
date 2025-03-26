@@ -1,7 +1,9 @@
+import { ActorDTO } from '../services/data.service';
+
 export interface MandarinBlueprint {
   sets: { [key: string]: string };
   tones: { [key: string]: string };
-  actors: Actor[];
+  actors: ActorDTO[];
   radicalProps: { radical: string; prop?: string }[];
   characters: {
     character: string;
@@ -22,12 +24,6 @@ export interface ToneLocation {
   tone: string;
   location: string;
   description?: string;
-}
-
-export interface Actor {
-  initial: string;
-  name: string;
-  type?: string;
 }
 
 export interface RadicalProp {
