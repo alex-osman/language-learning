@@ -268,6 +268,12 @@
       "type": "female"
     },
     {
+      "initial": "yi",
+      "name": "Yoa",
+      "description": "Born in Paris to a Swiss father and Cameroonian mother, YOA is a singer, songwriter and musician who has emerged as one of France’s most exciting pop talents. Her exquisite voice and cinematic songwriting are evident throughout her discography, from her 2021 debut EP ‘Attente’ to her more recent EPs ‘Chansons (+) tristes’ (2022) and ‘Nulle’ (2024), both of which showcase her penchant for witty pop arrangements and soaring vocals",
+      "type": "female"
+    },
+    {
       "initial": "qi",
       "name": "Aria Trueblood",
       "description": "the yoga instructor at the gym.  She is chosen because 'chi' as energy relates to 'qi' the sound.  Aria starts her yoga class with a brief intro where she usually rambles a bit about being in touch with your emotions and it's a very safe space, she mentions therapy and if you're not having the best day she says thats okay.  Then she usually starts the routine which occasionally will include harder poses like a handstand or crow.",
@@ -852,7 +858,8 @@
       "character": "用",
       "pinyin": "yòng",
       "definition": "Utilize (use as a tool)",
-      "radicals": ["月", "丨"]
+      "radicals": ["月", "丨"],
+      "movie": "In the bustling locker room of Bellevue Gym, Yoa, with her distinct blend of Parisian flair and musical genius, discovers her locker jammed. \n\nSeeking a solution, she spots a small, enchanting orb, glowing like a moon, which she whimsically decides to utilize as a makeshift microphone, serenading an imaginary audience with her soaring vocals. \n\nBut when the serenade proves futile, she turns to a nearby Gandalf staff, a prop left from a fantasy-themed workout class, and with a dramatic flourish, uses it to pry the stubborn locker open. \n\nThis locker room spectacle, blending Yoa's creative adaptability with the moon's illumination and the staff's leverage, encapsulates the essence of \"用\" (yòng), to utilize, in the most unexpectedly harmonious way."
     }
   ]
 }
