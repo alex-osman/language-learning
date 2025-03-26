@@ -61,6 +61,18 @@
       ]
     },
     {
+      "final": "n",
+      "name": "Cosmos (College House)",
+      "description": "Cosmos was a large house with a front door patio, a living room, a kitchen, a bathroom, and a bedroom.  We would throw basement shows and parties there.",
+      "toneLocations": [
+        {
+          "toneNumber": 1,
+          "name": "Front Door Patio",
+          "description": "Front door patio with couches."
+        }
+      ]
+    },
+    {
       "final": "ong",
       "name": "Bellevue Gym",
       "description": "The nice gym in philly with a lobby and smoothie bar and lots of classes and a workout room and a pool area with a hot tub and sauna",
@@ -424,6 +436,14 @@
     {
       "radical": "白",
       "prop": "White can of paint"
+    },
+    {
+      "radical": "百",
+      "prop": "$100 bill"
+    },
+    {
+      "radical": "㇇",
+      "prop": "Spock Ear"
     }
   ],
   "characters": [
@@ -711,6 +731,13 @@
       "definition": "Hundred",
       "radicals": ["一", "白"],
       "movie": "In the spacious, somewhat cluttered living room of Meyer's dorm, Bill Murray, dressed in his iconic \"Ghostbusters\" outfit, finds a peculiar challenge. Armed only with a razorblade (一) and a white can of paint (白), he decides to embark on a quirky quest.\n\nWith the precision of a seasoned comedian-turned-artist, Bill uses the razorblade to neatly open the can, then proceeds to paint exactly one hundred ghostly figures across the walls of the living room, each more whimsical than the last. As he steps back, admiring his handiwork with a smirk, the scene leaves an indelible mark: Bill Murray, in a dorm room, transforming ordinary paint into a hundred laughs, mirroring the character \"百\" for \"hundred.\""
+    },
+    {
+      "character": "今",
+      "pinyin": "jīn",
+      "definition": "Today",
+      "radicals": ["㇇", "丶", "人"],
+      "movie": "At the front door patio of Cosmos, Jamie discovers a peculiar pair of Spock ears (㇇) sitting on one of the couches, which she excitedly puts on, claiming it's the perfect accessory for \"today\". As she lounges, she uses an eyedropper (丶) to meticulously water a tiny, alien-looking plant, nestled beside her.\n\nUnexpectedly, she decides to demonstrate her flexibility by doing a split (人), proclaiming it the \"move of the day\" to anyone who might be watching through the cosmos. Her combination of the Spock ears, the precise watering technique, and her spontaneous split on the couch humorously encapsulates the essence of \"今\" (today), making it a day at Cosmos no one could forget."
     }
   ]
 }
