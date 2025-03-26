@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService, Character, MovieScene, Tone } from '../../services/data.service';
 import { MovieService, MovieGenerationRequest } from '../../services/movie.service';
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
+import { PinyinService } from '../../services/pinyin.service';
 
 @Component({
   selector: 'app-characters',
@@ -17,10 +18,16 @@ export class CharactersComponent implements OnInit {
   movieScene: MovieScene | null = null;
   isLoading = true;
   isGeneratingMovie = false;
+  isPlayingAudio = false;
   error: string | null = null;
   tones: Tone | null = null;
   radicalProps: RadicalProp[] = [];
-  constructor(private dataService: DataService, private movieService: MovieService) {}
+
+  constructor(
+    private dataService: DataService,
+    private movieService: MovieService,
+    private pinyinService: PinyinService
+  ) {}
 
   ngOnInit() {
     this.loadCharacters();
@@ -110,5 +117,30 @@ export class CharactersComponent implements OnInit {
     return props.map(
       radical => this.radicalProps.find(prop => prop.radical === radical) || { radical, prop: '' }
     );
+  }
+
+  async playCharacterAudio(char: Character) {
+    if (!char.pinyin) return;
+
+    this.isPlayingAudio = true;
+    try {
+      // Get audio URLs for each syllable in the pinyin
+      const audioUrls = this.pinyinService.getAudioUrls(char.pinyin);
+
+      // Play each syllable in sequence
+      for (const url of audioUrls) {
+        await this.pinyinService.playAudioFile(url);
+      }
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      this.error = 'Failed to play audio. Please try again.';
+    } finally {
+      this.isPlayingAudio = false;
+    }
+  }
+
+  stopAudio() {
+    this.pinyinService.stop();
+    this.isPlayingAudio = false;
   }
 }

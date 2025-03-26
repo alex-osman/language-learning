@@ -8,6 +8,8 @@
         [class.has-data]="hasCharacterData(char)"
         [class.no-data]="!hasCharacterData(char)"
         (mouseenter)="onCharacterHover(char)"
+        (click)="playCharacterAudio(char)"
+        [class.playing-audio]="isPlayingAudio && selectedCharacter?.character === char.character"
       >
         <div class="cell-content">
           <div class="character">{{ char.character }}</div>
@@ -73,5 +75,23 @@
         </ng-container>
       </div>
     </div>
+  </div>
+
+  <!-- Add audio controls near the character display -->
+  <div class="character-info" *ngIf="selectedCharacter">
+    <div class="character-header">
+      <h2>{{ selectedCharacter.character }}</h2>
+      <div class="pinyin" *ngIf="selectedCharacter.pinyin">
+        {{ selectedCharacter.pinyin }}
+      </div>
+      <div class="definition" *ngIf="selectedCharacter.definition">
+        {{ selectedCharacter.definition }}
+      </div>
+    </div>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+    <button (click)="error = null">✕</button>
   </div>
 </div>
