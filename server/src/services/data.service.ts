@@ -120,4 +120,39 @@ export class DataService {
     this.saveData();
     return newRadicalProp;
   }
+
+  addCharacter(
+    character: string,
+    pinyin: string,
+    definition: string,
+    radicals?: string,
+  ): Character {
+    const newCharacter: Character = {
+      character,
+      pinyin,
+      definition,
+      radicals: radicals
+        ? radicals.split(' ').filter((r) => r.length > 0)
+        : undefined,
+    };
+
+    // Check if character already exists
+    const existingIndex = this.data.characters.findIndex(
+      (char) => char.character === character,
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing character
+      this.data.characters[existingIndex] = {
+        ...this.data.characters[existingIndex],
+        ...newCharacter,
+      };
+    } else {
+      // Add new character
+      this.data.characters.push(newCharacter);
+    }
+
+    this.saveData();
+    return newCharacter;
+  }
 }

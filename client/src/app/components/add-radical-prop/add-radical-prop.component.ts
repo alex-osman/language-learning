@@ -18,6 +18,24 @@ import { HttpClient } from '@angular/common/http';
       <div *ngIf="message" [class]="messageClass">
         {{ message }}
       </div>
+
+      <div class="character-section">
+        <h3>Add Character Using This Radical</h3>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="character" placeholder="Enter character" class="input" />
+          <input type="text" [(ngModel)]="pinyin" placeholder="Enter pinyin" class="input" />
+          <input
+            type="text"
+            [(ngModel)]="definition"
+            placeholder="Enter definition"
+            class="input"
+          />
+          <button (click)="addCharacter()" class="button">Add Character</button>
+        </div>
+        <div *ngIf="characterMessage" [class]="characterMessageClass">
+          {{ characterMessage }}
+        </div>
+      </div>
     </div>
   `,
   styles: [
@@ -58,6 +76,7 @@ import { HttpClient } from '@angular/common/http';
         cursor: pointer;
         font-size: 1rem;
         transition: background-color 0.2s;
+        white-space: nowrap;
 
         &:hover {
           background-color: #45a049;
@@ -73,14 +92,28 @@ import { HttpClient } from '@angular/common/http';
         color: #f44336;
         margin-top: 0.5rem;
       }
+
+      .character-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #ddd;
+      }
     `,
   ],
 })
 export class AddRadicalPropComponent {
+  // Radical prop fields
   radical = '';
   prop = '';
   message = '';
   messageClass = '';
+
+  // Character fields
+  character = '';
+  pinyin = '';
+  definition = '';
+  characterMessage = '';
+  characterMessageClass = '';
 
   constructor(private http: HttpClient) {}
 
@@ -100,13 +133,42 @@ export class AddRadicalPropComponent {
         next: () => {
           this.message = 'Radical prop added successfully!';
           this.messageClass = 'success';
-          this.radical = '';
+          // Don't clear the radical field as it might be needed for character creation
           this.prop = '';
-          // You might want to emit an event here to refresh the radicals list
         },
         error: error => {
           this.message = 'Error adding radical prop: ' + error.message;
           this.messageClass = 'error';
+        },
+      });
+  }
+
+  addCharacter() {
+    if (!this.character || !this.pinyin || !this.definition) {
+      this.characterMessage = 'Character, pinyin, and definition are required';
+      this.characterMessageClass = 'error';
+      return;
+    }
+
+    this.http
+      .post('/api/data/characters', {
+        character: this.character,
+        pinyin: this.pinyin,
+        definition: this.definition,
+        radicals: this.radical, // Use the radical from above if it exists
+      })
+      .subscribe({
+        next: () => {
+          this.characterMessage = 'Character added successfully!';
+          this.characterMessageClass = 'success';
+          this.character = '';
+          this.pinyin = '';
+          this.definition = '';
+          this.radical = ''; // Now we can clear the radical
+        },
+        error: error => {
+          this.characterMessage = 'Error adding character: ' + error.message;
+          this.characterMessageClass = 'error';
         },
       });
   }

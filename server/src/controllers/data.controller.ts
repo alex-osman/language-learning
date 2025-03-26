@@ -8,6 +8,7 @@ import {
   Character,
 } from '../shared/interfaces/data.interface';
 import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
+import { CreateCharacterDTO } from '../shared/dto/character.dto';
 
 @Controller('api/data')
 export class DataController {
@@ -64,6 +65,16 @@ export class DataController {
     return this.dataService.addRadicalProp(
       createRadicalPropDto.radical,
       createRadicalPropDto.prop,
+    );
+  }
+
+  @Post('characters')
+  addCharacter(@Body() createCharacterDto: CreateCharacterDTO): Character {
+    return this.dataService.addCharacter(
+      createCharacterDto.character,
+      createCharacterDto.pinyin,
+      createCharacterDto.definition,
+      createCharacterDto.radicals,
     );
   }
 }

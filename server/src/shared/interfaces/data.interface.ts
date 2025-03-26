@@ -36,11 +36,11 @@ export interface RadicalProp {
 
 export interface Character {
   character: string;
-  pinyin?: string;
-  definition?: string;
-  props?: string[];
+  pinyin: string;
+  definition: string;
   movie?: string;
   imgUrl?: string;
+  radicals?: string[];
 }
 
 export interface DataStructure {
