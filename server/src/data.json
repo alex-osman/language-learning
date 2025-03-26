@@ -301,6 +301,11 @@
       "initial": "lu",
       "name": "Luigi (Nintendo)",
       "type": "fictional"
+    },
+    {
+      "initial": "yu",
+      "name": "Ulysses S. Grant",
+      "type": "male"
     }
   ],
   "radicalProps": [
@@ -928,7 +933,8 @@
         "㇆",
         "二",
         "丿"
-      ]
+      ],
+      "movie": "In the moonlit yard of Eric's place in Maine, Ulysses S. Grant finds himself in a peculiar duel. Armed only with a scimitar (丿), he faces off against a pair of mischievous twins (二) who inexplicably wield scorpion pincers (㇆) as their weapons of choice. \n\nThe twins, darting around under the silver glow of the moon (月), attempt to pinch Grant, but he deftly parries with his scimitar, the moonlight casting long, dramatic shadows of their battle. Amidst the chaos, Grant can't help but chuckle, realizing he's fighting under a moon that looks just like the pincers and twins before him, making this surreal moonlit duel at Eric's an unforgettable monthly event."
     }
   ]
 }

@@ -1,8 +1,6 @@
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { DataService, ActorDTO, SetDTO } from './data.service';
-import { of, throwError } from 'rxjs';
-import { HttpTestingController } from '@angular/common/http/testing';
+import { DataService } from './data.service';
 
 describe('DataService - Pinyin Functions', () => {
   let service: DataService;
@@ -55,6 +53,7 @@ describe('DataService - Pinyin Functions', () => {
       { input: 'ru', expected: { initial: 'ru', final: '' } },
       { input: 'hua', expected: { initial: 'hu', final: 'a' } },
       { input: 'luan', expected: { initial: 'lu', final: 'an' } },
+      { input: 'yue', expected: { initial: 'yu', final: 'e' } },
     ];
 
     cases.forEach(({ input, expected }) => {

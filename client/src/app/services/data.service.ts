@@ -129,7 +129,10 @@ export class DataService {
       if (firstChar === 'w') {
         initial = firstChar;
         final = '';
-      } else if ((firstChar === 'd' || firstChar === 'r') && pinyinNoTones[1] === 'u') {
+      } else if (
+        (firstChar === 'd' || firstChar === 'r' || firstChar === 'y') &&
+        pinyinNoTones[1] === 'u'
+      ) {
         initial = pinyinNoTones.substring(0, 2);
         final = pinyinNoTones.substring(2);
       } else if (firstChar === 'r' && pinyinNoTones === 'ri') {
