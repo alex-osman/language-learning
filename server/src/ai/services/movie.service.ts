@@ -4,6 +4,7 @@ import {
   MovieGenerationRequestDto,
   MovieGenerationResponseDto,
 } from '../dto/movie-generation.dto';
+import { TONES_MAPPED_TO_LOCATION } from '@shared/interfaces/data.interface';
 
 @Injectable()
 export class MovieAiService {
@@ -23,27 +24,29 @@ export class MovieAiService {
       const { character, pinyin, actor, set, tone, radicalProps, definition } =
         request;
 
-      const tones = {
-        '1': 'Outside the entrance',
-        '2': 'Kitchen or inside entrance',
-        '3': 'Bedroom or living room',
-        '4': 'Bathroom or outside/yard',
-        '5': 'On the roof',
-      } as const;
+      let toneLocation =
+        TONES_MAPPED_TO_LOCATION[tone as keyof typeof TONES_MAPPED_TO_LOCATION];
+      const attemptToneLocation = set.toneLocations.find(
+        (t) => t.toneNumber === Number(tone),
+      );
+      if (attemptToneLocation) {
+        toneLocation = attemptToneLocation.name;
+        if (attemptToneLocation.description) {
+          toneLocation += ` - ${attemptToneLocation.description}`;
+        }
+      }
 
-      const actualToneLocation =
-        tone && tone in tones ? tones[tone as keyof typeof tones] : '';
       const prompt = `Create a scene for the Chinese character "${character}" (${pinyin}) - "${definition}" that incorporates:
 
 Actor: ${actor}
-Set Location: ${set}
-Tone Location (Tone ${tone}): ${actualToneLocation}
+Set Location: ${set.name}
+Tone Location (Tone ${tone}): ${toneLocation}
 Radical Props: ${radicalProps.map((rp) => `${rp.radical} (${rp.prop})`).join(', ')}
 
 The scene should:
-1. Take place in the specified location (${set})
+1. Take place in the specified location (${set.name})
 2. Feature ${actor} as the main actor
-3. The action should happen in the tone location: ${actualToneLocation}
+3. The action should happen in the tone location: ${toneLocation}
 4. Incorporate the radical props naturally into the scene
 5. Create a memorable connection to the character's meaning
 6. Be concise but vivid, no more than 4 sentences
@@ -51,6 +54,7 @@ The scene should:
 8. Be slightly humorous but not over-the-top
 
 The scene should help remember both the character's appearance and meaning through the story.`;
+      console.log(prompt);
 
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',

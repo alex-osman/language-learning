@@ -1,3 +1,5 @@
+import { SetDTO } from '@shared/interfaces/data.interface';
+
 export interface RadicalProp {
   radical: string;
   prop: string;
@@ -8,7 +10,7 @@ export class MovieGenerationRequestDto {
   pinyin!: string;
   definition!: string;
   actor!: string;
-  set!: string;
+  set: SetDTO;
   tone!: string;
   toneLocation: string;
   radicalProps!: RadicalProp[];

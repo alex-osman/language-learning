@@ -1,4 +1,11 @@
-export interface Set {
+export const TONES_MAPPED_TO_LOCATION = {
+  '1': 'Outside the entrance',
+  '2': 'Kitchen or inside entrance',
+  '3': 'Bedroom or living room',
+  '4': 'Bathroom or outside/yard',
+  '5': 'On the roof',
+};
+export interface SetDTO {
   final: string;
   name: string;
   description?: string;
@@ -36,7 +43,7 @@ export interface Character {
 }
 
 export interface DataStructure {
-  sets: Set[];
+  sets: SetDTO[];
   tones: Tone;
   actors: Actor[];
   radicalProps: RadicalProp[];

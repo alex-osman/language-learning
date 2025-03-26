@@ -29,7 +29,9 @@
       </div>
       <div class="panel-sub-header">
         <h4>Initial: {{ movieScene.initial }} - {{ movieScene.actor.substring(0, 10) }}...</h4>
-        <h4>Final: {{ movieScene.final || 'ø' }} - {{ movieScene.set.substring(0, 10) }}...</h4>
+        <h4>
+          Final: {{ movieScene.final || 'ø' }} - {{ movieScene.set.name.substring(0, 10) }}...
+        </h4>
         <h4>
           Tone: {{ movieScene.tone }} -
           {{ tones ? tones[movieScene.tone] : 'No tone location found' }}

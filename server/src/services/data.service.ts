@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
-  Set,
+  SetDTO,
   Tone,
   Actor,
   RadicalProp,
@@ -51,7 +51,7 @@ export class DataService {
     }
   }
 
-  getSets(): Set[] {
+  getSets(): SetDTO[] {
     return this.data.sets;
   }
 

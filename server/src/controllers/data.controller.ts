@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { DataService } from '../services/data.service';
 import {
-  Set,
+  SetDTO,
   Tone,
   Actor,
   RadicalProp,
@@ -13,7 +13,7 @@ export class DataController {
   constructor(private readonly dataService: DataService) {}
 
   @Get('sets')
-  getSets(): Set[] {
+  getSets(): SetDTO[] {
     return this.dataService.getSets();
   }
 

@@ -37,7 +37,7 @@ export interface MovieScene {
   initial: string;
   final: string;
   actor: string;
-  set: string;
+  set: SetDTO;
   tone: string;
   movie?: string;
 }
@@ -151,11 +151,11 @@ export class DataService {
   }
 
   // Helper function to get the appropriate set
-  private getSetLocation(final: string, sets: SetDTO[]): string {
+  private getSetLocation(final: string, sets: SetDTO[]): SetDTO | undefined {
     const setKey = final ? `-${final}` : 'null';
     const matchingSet = sets.find(set => set.final === setKey.substring(1)); // Remove the leading '-'
     const defaultSet = sets.find(set => set.final === 'null');
-    return matchingSet?.name || defaultSet?.name || '(No set assigned)';
+    return matchingSet || defaultSet;
   }
 
   // Main function to get movie scene data
@@ -174,6 +174,7 @@ export class DataService {
       const actor = this.findActor(initial, actors);
       const set = this.getSetLocation(mappedFinal, sets);
       const tone = this.getToneNumber(pinyin);
+      if (!set) throw new Error('No set found');
 
       return { initial, final: mappedFinal, actor, set, tone };
     } catch (error) {
