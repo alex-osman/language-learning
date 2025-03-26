@@ -54,7 +54,6 @@ The scene should:
 8. Be slightly humorous but not over-the-top
 
 The scene should help remember both the character's appearance and meaning through the story.`;
-      console.log(prompt);
 
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
