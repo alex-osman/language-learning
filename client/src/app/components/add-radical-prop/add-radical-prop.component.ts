@@ -30,6 +30,7 @@ import { HttpClient } from '@angular/common/http';
             placeholder="Enter definition"
             class="input"
           />
+          <input type="text" [(ngModel)]="radical" placeholder="Enter radicals" class="input" />
           <button (click)="addCharacter()" class="button">Add Character</button>
         </div>
         <div *ngIf="characterMessage" [class]="characterMessageClass">

@@ -460,6 +460,10 @@
     {
       "radical": "舌",
       "prop": "Lickitongue (Pokemon)"
+    },
+    {
+      "radical": "氵",
+      "prop": "shower water spray"
     }
   ],
   "characters": [
@@ -777,6 +781,31 @@
       "definition": "Talk",
       "radicals": ["舌", "讠"],
       "movie": "In the sun-drenched parking lot of the Scottsdale Coworking Space, surrounded by imposing cacti, Homer Simpson stands out like a sore thumb. He's engaged in a heated debate with a Lickitung Pokémon, each taking turns to \"talk\" using the only microphone available, which Homer mistakenly believes amplifies his thoughts directly to his opponent's mind. \n\nHomer, ever the orator, tries to illustrate his points by excessively licking a giant, inflatable microphone prop, mimicking the Pokémon's movements, believing it to be the secret to winning the argument. Onlookers from the coworking space can't help but gather at the windows, chuckling at the spectacle, forever associating Homer's ludicrous method of communication with the concept of \"talk.\""
+    },
+    {
+      "character": "说话",
+      "pinyin": "shuōhuà",
+      "definition": "speak;talk;say",
+      "radicals": ["说", "话"]
+    },
+    {
+      "character": "电话",
+      "pinyin": "diànhuà",
+      "definition": "telephone",
+      "radicals": ["电", "话"]
+    },
+    {
+      "character": "活",
+      "pinyin": "huó",
+      "definition": "Alive",
+      "radicals": ["氵", "舌"],
+      "movie": "In the cozy kitchen of Jean's house in Iowa, Homer Simpson is up to something unusual yet again. \n\nAs he attempts to make his famous \"alive\" sandwich, he uses a shower head, spraying water all over the lettuce to make sure it's as \"alive\" and fresh as possible. Suddenly, a Lickitung Pokémon appears, using its gigantic tongue to taste-test the sandwich, adding an unexpected yet hilarious layer of approval to Homer's culinary adventure. \n\nHomer, soaked but triumphant, declares, \"It's alive with flavor!\" as Jean walks in, bewildered by the scene but amused by the creativity."
+    },
+    {
+      "character": "乱",
+      "pinyin": "luàn",
+      "definition": "Chaos",
+      "radicals": ["舌", "乚"]
     }
   ]
 }

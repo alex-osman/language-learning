@@ -86,6 +86,8 @@ export class DataService {
 
   // Method to add or update a movie for a character
   addMovieToCharacter(character: string, movie: string): void {
+    this.loadData();
+
     const characterIndex = this.data.characters.findIndex(
       (char) => char.character === character,
     );
