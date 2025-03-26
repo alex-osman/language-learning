@@ -105,7 +105,10 @@ export class DataService {
     let final = '';
 
     // Handle special cases first
-    if (pinyinNoTones.startsWith('shu')) {
+    if (pinyinNoTones.startsWith('mi')) {
+      initial = 'mi';
+      final = `e${pinyinNoTones.substring(2)}`;
+    } else if (pinyinNoTones.startsWith('shu')) {
       initial = 'shu';
       final = pinyinNoTones.substring(3);
     } else if (pinyinNoTones.startsWith('di')) {
