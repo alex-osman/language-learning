@@ -1,3 +1,6 @@
+# Database
+server/src/data.json
+
 # compiled output
 /dist
 /node_modules
