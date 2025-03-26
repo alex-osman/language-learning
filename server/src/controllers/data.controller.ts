@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { DataService } from '../services/data.service';
 import {
   SetDTO,
@@ -7,6 +7,7 @@ import {
   RadicalProp,
   Character,
 } from '../shared/interfaces/data.interface';
+import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
 
 @Controller('api/data')
 export class DataController {
@@ -54,5 +55,15 @@ export class DataController {
     @Param('character') character: string,
   ): Character | undefined {
     return this.dataService.getCharacterByCharacter(character);
+  }
+
+  @Post('radicalProps')
+  addRadicalProp(
+    @Body() createRadicalPropDto: CreateRadicalPropDTO,
+  ): RadicalProp {
+    return this.dataService.addRadicalProp(
+      createRadicalPropDto.radical,
+      createRadicalPropDto.prop,
+    );
   }
 }

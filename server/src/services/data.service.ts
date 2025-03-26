@@ -97,4 +97,27 @@ export class DataService {
     this.data.characters[characterIndex].movie = movie;
     this.saveData();
   }
+
+  addRadicalProp(radical: string, prop: string): RadicalProp {
+    const newRadicalProp: RadicalProp = {
+      radical,
+      prop,
+    };
+
+    // Check if radical already exists
+    const existingIndex = this.data.radicalProps.findIndex(
+      (rp) => rp.radical === radical,
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing radical prop
+      this.data.radicalProps[existingIndex] = newRadicalProp;
+    } else {
+      // Add new radical prop
+      this.data.radicalProps.push(newRadicalProp);
+    }
+
+    this.saveData();
+    return newRadicalProp;
+  }
 }

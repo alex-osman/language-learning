@@ -4,14 +4,23 @@ import { ActorsComponent } from '../actors/actors.component';
 import { CharactersComponent } from '../characters/characters.component';
 import { RadicalsComponent } from '../radicals/radicals.component';
 import { SetsComponent } from '../sets/sets.component';
+import { AddRadicalPropComponent } from '../add-radical-prop/add-radical-prop.component';
 
 @Component({
   selector: 'app-memory-palace',
   standalone: true,
-  imports: [CommonModule, ActorsComponent, SetsComponent, CharactersComponent, RadicalsComponent],
+  imports: [
+    CommonModule,
+    ActorsComponent,
+    SetsComponent,
+    CharactersComponent,
+    RadicalsComponent,
+    AddRadicalPropComponent,
+  ],
   template: `
     <div class="memory-palace">
       <app-characters> </app-characters>
+      <app-add-radical-prop></app-add-radical-prop>
       <app-radicals />
       <app-actors> </app-actors>
       <app-sets> </app-sets>
