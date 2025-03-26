@@ -456,6 +456,10 @@
     {
       "radical": "千",
       "prop": "Thousand piece puzzle 🧩"
+    },
+    {
+      "radical": "舌",
+      "prop": "Lickitongue (Pokemon)"
     }
   ],
   "characters": [
@@ -846,6 +850,16 @@
         "千"
       ],
       "movie": "In Eric's cozy Maine kitchen, Shaq is hunched over a thousand-piece puzzle that, once completed, will reveal the iconic Rolling Stones mouth logo, its tongue sticking out mischievously. He glances at the puzzle, then playfully mimics the Rolling Stones' tongue expression, his own tongue exaggeratedly out, as he tries to find a piece that fits. \n\nSuddenly, he triumphantly places the final piece, but not without accidentally knocking over a nearby salt shaker with his elbow, causing him to stick out his tongue in disgust at the salty surprise. This memorable scene, with Shaq's exaggerated tongue gesture amidst the chaos of puzzle pieces and the accidental salt spill, perfectly captures the essence of \"舌\" (shé), meaning \"tongue,\" in a humorous and unforgettable way."
+    },
+    {
+      "character": "话",
+      "pinyin": "huà",
+      "definition": "Talk",
+      "radicals": [
+        "舌",
+        "讠"
+      ],
+      "movie": "In the sun-drenched parking lot of the Scottsdale Coworking Space, surrounded by imposing cacti, Homer Simpson stands out like a sore thumb. He's engaged in a heated debate with a Lickitung Pokémon, each taking turns to \"talk\" using the only microphone available, which Homer mistakenly believes amplifies his thoughts directly to his opponent's mind. \n\nHomer, ever the orator, tries to illustrate his points by excessively licking a giant, inflatable microphone prop, mimicking the Pokémon's movements, believing it to be the secret to winning the argument. Onlookers from the coworking space can't help but gather at the windows, chuckling at the spectacle, forever associating Homer's ludicrous method of communication with the concept of \"talk.\""
     }
   ]
 }
