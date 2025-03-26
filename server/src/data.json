@@ -296,6 +296,11 @@
       "initial": "ku",
       "name": "Mr. Krabs",
       "type": "fictional"
+    },
+    {
+      "initial": "lu",
+      "name": "Luigi (Nintendo)",
+      "type": "fictional"
     }
   ],
   "radicalProps": [
@@ -806,6 +811,13 @@
       "pinyin": "luàn",
       "definition": "Chaos",
       "radicals": ["舌", "乚"]
+    },
+    {
+      "character": "汽",
+      "pinyin": "qì",
+      "definition": "Vapor",
+      "radicals": ["氵", "气"],
+      "movie": "At Bridgewater Home, Aria Trueblood sets up her yoga mats in the lush yard, the sun casting a serene glow on a day that promises deep connections with one's qi. She begins her class near the garden's ornamental fountain, where water sprays gently, symbolizing the 氵radical, creating a misty vapor that wraps the session in tranquility.\n\nSuddenly, Aria, feeling whimsical, demonstrates a handstand, accidentally activating an Air rune garden decoration, intended to mimic the 气 radical, which blasts a gust, turning the water spray into a swirling dance of vapor around her. The class bursts into a mix of awe and laughter as Aria, still upside down, declares, \"Embrace the vapor of life, just like this unexpected yoga shower!\""
     }
   ]
 }

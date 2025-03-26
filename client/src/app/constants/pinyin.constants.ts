@@ -1,5 +1,5 @@
 // Two-letter initials in pinyin
-export const TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru', 'shu'];
+export const TWO_LETTER_INITIALS = ['zh', 'ch', 'sh', 'ji', 'qi', 'xi', 'du', 'ru', 'shu', 'lu'];
 
 // Mapping for finals to their correct form
 export const FINAL_MAPPINGS: { [key: string]: string } = {

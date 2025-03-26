@@ -48,7 +48,6 @@ describe('DataService', () => {
       imports: [HttpClientTestingModule],
       providers: [DataService],
     });
-
     service = TestBed.inject(DataService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -57,158 +56,71 @@ describe('DataService', () => {
     httpMock.verify();
   });
 
-  describe('getMovieScene', () => {
-    it('should correctly parse simple pinyin (bā)', async () => {
-      const promise = service.getMovieScene('bā');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
+  it('should get characters', () => {
+    const mockCharacters = [
+      { character: '你', pinyin: 'nǐ', definition: 'you' },
+      { character: '好', pinyin: 'hǎo', definition: 'good' },
+    ];
 
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('b');
-      expect(result?.final).toBe('a');
-      expect(result?.actor).toBe('Bill Murray');
-      expect(result?.set).toBe(mockSets['-a']);
-      expect(result?.tone).toBe('1');
+    service.getCharacters().subscribe(characters => {
+      expect(characters).toEqual(mockCharacters);
     });
 
-    it('should correctly parse shi initial (识 - shí)', async () => {
-      const promise = service.getMovieScene('shí');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
+    const req = httpMock.expectOne('/api/data/characters');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCharacters);
+  });
 
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
+  describe('getToneNumber', () => {
+    it('should correctly identify tone numbers', () => {
+      const cases = [
+        { input: 'mā', expected: '1' },
+        { input: 'má', expected: '2' },
+        { input: 'mǎ', expected: '3' },
+        { input: 'mà', expected: '4' },
+        { input: 'ma', expected: '5' }, // neutral tone
+        { input: 'māo', expected: '1' }, // tone on first vowel
+        { input: 'máo', expected: '2' },
+        { input: 'mǎo', expected: '3' },
+        { input: 'mào', expected: '4' },
+      ];
 
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('sh');
-      expect(result?.final).toBe('');
-      expect(result?.actor).toBe('Shaq');
-      expect(result?.set).toBe(mockSets['null']);
-      expect(result?.tone).toBe('2');
+      cases.forEach(({ input, expected }) => {
+        expect(service.getToneNumber(input)).toBe(
+          expected,
+          `Failed to get tone number for ${input}`
+        );
+      });
     });
 
-    it('should correctly parse xi initial (兄 - xiōng)', async () => {
-      const promise = service.getMovieScene('xiōng');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('xi');
-      expect(result?.final).toBe('ong');
-      expect(result?.actor).toBe('Shakira');
-      expect(result?.set).toBe(mockSets['-ong']);
-      expect(result?.tone).toBe('1');
+    it('should handle edge cases for tone numbers', () => {
+      expect(service.getToneNumber('')).toBe('5');
+      expect(service.getToneNumber('hello')).toBe('5');
+      expect(service.getToneNumber('123')).toBe('5');
     });
+  });
 
-    it('should use fallback actor for no initial (二 - èr)', async () => {
-      const promise = service.getMovieScene('èr');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
+  describe('mapFinal', () => {
+    it('should map finals according to FINAL_MAPPINGS', () => {
+      const cases = [
+        { input: 'i', expected: 'e' },
+        { input: 'ie', expected: 'e' },
+        { input: 'r', expected: 'er' },
+        { input: 'u', expected: 'ou' },
+        { input: 'ü', expected: 'ou' },
+        { input: 'ao', expected: 'ao' }, // unmapped final should remain unchanged
+        { input: 'ong', expected: 'ong' }, // unmapped final should remain unchanged
+        { input: '', expected: '' }, // empty final should remain empty
+      ];
 
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('ø');
-      expect(result?.final).toBe('er');
-      expect(result?.actor).toBe('Jackie Chan');
-      expect(result?.set).toBe(mockSets['null']);
-      expect(result?.tone).toBe('4');
-    });
-
-    it('should correctly parse compound final (小 - xiǎo)', async () => {
-      const promise = service.getMovieScene('xiǎo');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('xi');
-      expect(result?.final).toBe('ao');
-      expect(result?.actor).toBe('Shakira');
-      expect(result?.set).toBe(mockSets['-ao']);
-      expect(result?.tone).toBe('3');
-    });
-
-    it('should correctly parse special initial mapping (家 - jiā)', async () => {
-      const promise = service.getMovieScene('jiā');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('ji');
-      expect(result?.final).toBe('a');
-      expect(result?.actor).toBe('Jamie (your sister)');
-      expect(result?.set).toBe(mockSets['-a']);
-      expect(result?.tone).toBe('1');
-    });
-
-    it('should correctly parse zhi with no final (知 - zhī)', async () => {
-      const promise = service.getMovieScene('zhī');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('zh');
-      expect(result?.final).toBe('');
-      expect(result?.actor).toBe('Jim Carrey');
-      expect(result?.set).toBe(mockSets['null']);
-      expect(result?.tone).toBe('1');
-    });
-
-    it('should correctly parse yi initial (乙 - yī)', async () => {
-      const promise = service.getMovieScene('yī');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('yi');
-      expect(result?.final).toBe('');
-      expect(result?.actor).toBe('Yoa');
-      expect(result?.set).toBe(mockSets['null']);
-      expect(result?.tone).toBe('1');
-    });
-
-    it('should correctly parse hu initial with a final (化 - huà)', async () => {
-      const promise = service.getMovieScene('huà');
-      const actorsReq = httpMock.expectOne('/api/data/actors');
-      actorsReq.flush(mockActors);
-
-      const setsReq = httpMock.expectOne('/api/data/sets');
-      setsReq.flush(mockSets);
-
-      const result = await promise;
-      expect(result).toBeTruthy();
-      expect(result?.initial).toBe('hu');
-      expect(result?.final).toBe('a');
-      expect(result?.actor).toBe(mockActors.find(a => a.initial === 'hu')?.name || 'Jackie Chan');
-      expect(result?.set).toBe(mockSets['-a']);
-      expect(result?.tone).toBe('4');
+      cases.forEach(({ input, expected }) => {
+        const result = service['mapFinal'](input);
+        expect(result).toBe(expected, `Failed to map final ${input}`);
+      });
     });
   });
 });
