@@ -6,7 +6,7 @@ import {
   Tone,
   Actor,
   RadicalProp,
-  Character,
+  CharacterDTO,
   DataStructure,
 } from '../shared/interfaces/data.interface';
 
@@ -67,12 +67,12 @@ export class DataService {
     return this.data.radicalProps;
   }
 
-  getCharacters(): Character[] {
+  getCharacters(): CharacterDTO[] {
     return this.data.characters;
   }
 
   // Additional utility methods
-  getCharacterByCharacter(character: string): Character | undefined {
+  getCharacterByCharacter(character: string): CharacterDTO | undefined {
     return this.data.characters.find((char) => char.character === character);
   }
 
@@ -128,8 +128,8 @@ export class DataService {
     pinyin: string,
     definition: string,
     radicals?: string,
-  ): Character {
-    const newCharacter: Character = {
+  ): CharacterDTO {
+    const newCharacter: CharacterDTO = {
       character,
       pinyin,
       definition,
