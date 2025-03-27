@@ -73,12 +73,12 @@ export class DataController {
   }
 
   @Post('characters')
-  addCharacter(@Body() createCharacterDto: CreateCharacterDTO): CharacterDTO {
-    return this.dataService.addCharacter(
-      createCharacterDto.character,
-      createCharacterDto.pinyin,
-      createCharacterDto.definition,
-      createCharacterDto.radicals,
-    );
+  async addCharacter(@Body() createCharacterDto: CreateCharacterDTO) {
+    return this.characterService.create({
+      character: createCharacterDto.character,
+      pinyin: createCharacterDto.pinyin,
+      definition: createCharacterDto.definition,
+      radicals: createCharacterDto.radicals?.replaceAll(' ', ','),
+    });
   }
 }
