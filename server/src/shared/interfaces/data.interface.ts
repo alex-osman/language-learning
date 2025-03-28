@@ -34,7 +34,7 @@ export interface RadicalProp {
   prop?: string;
 }
 
-export interface Character {
+export interface CharacterDTO {
   character: string;
   pinyin: string;
   definition: string;
@@ -48,6 +48,6 @@ export interface DataStructure {
   tones: Tone;
   actors: Actor[];
   radicalProps: RadicalProp[];
-  characters: Character[];
+  characters: CharacterDTO[];
   movie?: string;
 }

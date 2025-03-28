@@ -5,14 +5,18 @@ import {
   Tone,
   Actor,
   RadicalProp,
-  Character,
+  CharacterDTO,
 } from '../shared/interfaces/data.interface';
 import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
 import { CreateCharacterDTO } from '../shared/dto/character.dto';
+import { CharacterService } from 'src/services/character.service';
 
 @Controller('api/data')
 export class DataController {
-  constructor(private readonly dataService: DataService) {}
+  constructor(
+    private readonly dataService: DataService,
+    private readonly characterService: CharacterService,
+  ) {}
 
   @Get('sets')
   getSets(): SetDTO[] {
@@ -47,14 +51,14 @@ export class DataController {
   }
 
   @Get('characters')
-  getCharacters(): Character[] {
-    return this.dataService.getCharacters();
+  getCharacters(): Promise<CharacterDTO[]> {
+    return this.characterService.findAll();
   }
 
   @Get('characters/:character')
   getCharacterByCharacter(
     @Param('character') character: string,
-  ): Character | undefined {
+  ): CharacterDTO | undefined {
     return this.dataService.getCharacterByCharacter(character);
   }
 
@@ -69,12 +73,12 @@ export class DataController {
   }
 
   @Post('characters')
-  addCharacter(@Body() createCharacterDto: CreateCharacterDTO): Character {
-    return this.dataService.addCharacter(
-      createCharacterDto.character,
-      createCharacterDto.pinyin,
-      createCharacterDto.definition,
-      createCharacterDto.radicals,
-    );
+  async addCharacter(@Body() createCharacterDto: CreateCharacterDTO) {
+    return this.characterService.create({
+      character: createCharacterDto.character,
+      pinyin: createCharacterDto.pinyin,
+      definition: createCharacterDto.definition,
+      radicals: createCharacterDto.radicals?.replaceAll(' ', ','),
+    });
   }
 }

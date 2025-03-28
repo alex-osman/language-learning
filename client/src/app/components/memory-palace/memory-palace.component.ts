@@ -19,8 +19,8 @@ import { AddRadicalPropComponent } from '../add-radical-prop/add-radical-prop.co
   ],
   template: `
     <div class="memory-palace">
-      <app-characters> </app-characters>
       <app-add-radical-prop></app-add-radical-prop>
+      <app-characters> </app-characters>
       <app-radicals />
       <app-actors> </app-actors>
       <app-sets> </app-sets>
