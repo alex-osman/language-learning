@@ -105,9 +105,18 @@ export class DataService {
     let final = '';
 
     // Handle special cases first
-    if (pinyinNoTones.startsWith('ju')) {
+    if (pinyinNoTones.length > 2 && pinyinNoTones[1] === 'u') {
+      initial = pinyinNoTones.substring(0, 2);
+      final = pinyinNoTones.substring(2);
+    } else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
+      initial = pinyinNoTones[0];
+      final = '';
+    } else if (pinyinNoTones.startsWith('ju')) {
       initial = 'ju';
       final = '';
+    } else if (pinyinNoTones.startsWith('cu')) {
+      initial = 'cu';
+      final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.startsWith('mi')) {
       initial = 'mi';
       final = `e${pinyinNoTones.substring(2)}`;

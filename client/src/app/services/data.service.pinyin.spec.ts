@@ -56,6 +56,9 @@ describe('DataService - Pinyin Functions', () => {
       { input: 'yue', expected: { initial: 'yu', final: 'e' } },
       { input: 'ming', expected: { initial: 'mi', final: 'eng' } },
       { input: 'ju', expected: { initial: 'ju', final: '' } },
+      { input: 'zi', expected: { initial: 'z', final: '' } },
+      { input: 'cun', expected: { initial: 'cu', final: 'n' } },
+      { input: 'guo', expected: { initial: 'gu', final: 'o' } },
     ];
 
     cases.forEach(({ input, expected }) => {
