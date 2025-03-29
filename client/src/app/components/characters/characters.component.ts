@@ -137,6 +137,14 @@ export class CharactersComponent implements OnInit {
     );
     if (toneLocation) return toneLocation.name;
 
-    return 'Unknown';
+    return (
+      {
+        '1': 'Outside the entrance',
+        '2': 'Kitchen or inside entrance',
+        '3': 'Bedroom or living room',
+        '4': 'Bathroom or outside/yard',
+        '5': 'On the roof',
+      }[character.toneNumber] || 'Unknown'
+    );
   }
 }

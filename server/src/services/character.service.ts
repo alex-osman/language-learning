@@ -60,6 +60,7 @@ export class CharacterService {
       finalSet: finalSet ?? undefined,
       initialActor: initialActor ?? undefined,
       movie: character.movie,
+      imgUrl: character.imgUrl,
     };
   }
 
@@ -104,7 +105,7 @@ export class CharacterService {
       initial = pinyinNoTones.substring(0, 2);
       final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
-      initial = pinyinNoTones[0];
+      initial = pinyinNoTones[0] === 'x' ? pinyinNoTones : pinyinNoTones[0];
       final = '';
     } else if (pinyinNoTones.startsWith('ju')) {
       initial = 'ju';
