@@ -65,7 +65,6 @@ export class CharactersComponent implements OnInit {
     if (!char.pinyin) return;
 
     this.selectedCharacter = char;
-    this.movieScene = await this.dataService.getMovieScene(char.pinyin);
   }
 
   clearSelection(): void {
@@ -74,7 +73,7 @@ export class CharactersComponent implements OnInit {
   }
 
   generateMovie(): void {
-    if (!this.selectedCharacter || !this.movieScene) return;
+    if (!this.selectedCharacter) return;
 
     this.isGeneratingMovie = true;
 
@@ -132,10 +131,12 @@ export class CharactersComponent implements OnInit {
     this.isPlayingAudio = false;
   }
 
-  getToneLocation(movieScene: MovieScene): string {
-    const toneLocation = movieScene.set.toneLocations.find(
-      toneLocation => toneLocation.toneNumber === parseInt(movieScene.tone)
+  getToneLocation(character: CharacterDTO): string {
+    const toneLocation = character.finalSet?.toneLocations.find(
+      toneLocation => toneLocation.toneNumber === character.toneNumber
     );
-    return toneLocation?.name || this.tones?.[movieScene.tone] || 'Unknown';
+    if (toneLocation) return toneLocation.name;
+
+    return 'Unknown';
   }
 }

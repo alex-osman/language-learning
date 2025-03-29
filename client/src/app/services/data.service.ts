@@ -7,7 +7,7 @@ import {
   TWO_LETTER_INITIALS,
   VOWEL_MAP,
 } from '../constants/pinyin.constants';
-import { RadicalProp } from '../interfaces/mandarin-blueprint.interface';
+import { RadicalProp, ToneLocation } from '../interfaces/mandarin-blueprint.interface';
 
 export type ActorDTO = {
   initial: string;
@@ -38,11 +38,21 @@ export interface PropDTO {
 export interface CharacterDTO {
   id: number;
   character: string;
-  pinyin?: string;
-  definition?: string;
-  radicals?: PropDTO[];
+  pinyin: string;
+  definition: string;
+
+  initial: string;
+  initialActor?: ActorDTO;
+
+  final: string;
+  finalSet?: SetDTO;
+
+  toneNumber: number;
+  toneLocation?: ToneLocation;
+
   movie?: string;
   imgUrl?: string;
+  radicals?: PropDTO[];
 }
 
 export interface MovieScene {

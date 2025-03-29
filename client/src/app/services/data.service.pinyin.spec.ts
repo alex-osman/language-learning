@@ -40,49 +40,6 @@ describe('DataService - Pinyin Functions', () => {
     });
   });
 
-  describe('parsePinyin', () => {
-    const cases = [
-      { input: 'er', expected: { initial: 'ø', final: 'er' } },
-      { input: 'ba', expected: { initial: 'b', final: 'a' } },
-      { input: 'shi', expected: { initial: 'sh', final: '' } },
-      { input: 'xiao', expected: { initial: 'xi', final: 'ao' } },
-      { input: 'shuang', expected: { initial: 'shu', final: 'ang' } },
-      { input: 'kuang', expected: { initial: 'ku', final: 'ang' } },
-      { input: 'zhi', expected: { initial: 'zh', final: '' } },
-      { input: 'jia', expected: { initial: 'ji', final: 'a' } },
-      { input: 'ru', expected: { initial: 'ru', final: '' } },
-      { input: 'hua', expected: { initial: 'hu', final: 'a' } },
-      { input: 'luan', expected: { initial: 'lu', final: 'an' } },
-      { input: 'yue', expected: { initial: 'yu', final: 'e' } },
-      { input: 'ming', expected: { initial: 'mi', final: 'eng' } },
-      { input: 'ju', expected: { initial: 'ju', final: '' } },
-      { input: 'zi', expected: { initial: 'z', final: '' } },
-      { input: 'cun', expected: { initial: 'cu', final: 'n' } },
-      { input: 'guo', expected: { initial: 'gu', final: 'o' } },
-    ];
-
-    cases.forEach(({ input, expected }) => {
-      it(`should correctly parse ${input}`, () => {
-        const result = service['parsePinyin'](input);
-        expect(result).toEqual(expected, `Failed to parse ${input}`);
-      });
-    });
-
-    it('should handle edge cases', () => {
-      // Empty string
-      expect(service['parsePinyin']('')).toEqual({ initial: '', final: '' });
-
-      // Single character
-      expect(service['parsePinyin']('a')).toEqual({ initial: 'a', final: '' });
-
-      // Invalid pinyin
-      expect(service['parsePinyin']('xyz')).toEqual({ initial: 'x', final: 'yz' });
-
-      // Special cases with 'w' and 'y'
-      expect(service['parsePinyin']('wu')).toEqual({ initial: 'w', final: '' });
-    });
-  });
-
   describe('getToneNumber', () => {
     it('should correctly identify tone numbers', () => {
       const cases = [

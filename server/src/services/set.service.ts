@@ -73,9 +73,14 @@ export class SetService {
   }
 
   async findByFinal(final: string): Promise<SetDTO | null> {
-    const set = await this.setRepository.findOne({
+    let set = await this.setRepository.findOne({
       where: { final },
     });
+    if (!set) {
+      set = await this.setRepository.findOne({
+        where: { final: 'null' },
+      });
+    }
     if (!set) return null;
     return {
       id: set.id,

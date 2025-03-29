@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ActorService } from 'src/services/actor.service';
-import { CharacterService } from 'src/services/character.service';
-import { RadicalPropService } from 'src/services/radical-prop.service';
-import { SetService } from 'src/services/set.service';
+import { ActorService } from '../services/actor.service';
+import { CharacterService } from '../services/character.service';
+import { RadicalPropService } from '../services/radical-prop.service';
+import { SetService } from '../services/set.service';
 import { CreateActorDTO } from '../shared/dto/actor.dto';
 import { CreateCharacterDTO } from '../shared/dto/character.dto';
 import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';

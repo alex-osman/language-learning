@@ -34,18 +34,26 @@
   </div>
 
   <!-- Movie Scene Info Panel -->
-  <div *ngIf="selectedCharacter && movieScene" class="movie-scene-panel">
+  <div *ngIf="selectedCharacter" class="movie-scene-panel">
     <div class="panel-header">
       <div class="panel-header-top">
-        <h3>{{ selectedCharacter.character }} - {{ selectedCharacter.pinyin }}</h3>
+        <h3>
+          {{ selectedCharacter.character }} - {{ selectedCharacter.pinyin }} -
+          {{ selectedCharacter.definition }}
+        </h3>
         <button class="close-btn" (click)="clearSelection()">×</button>
       </div>
       <div class="panel-sub-header">
-        <h4>Initial: {{ movieScene.initial }} - {{ movieScene.actor.name }}</h4>
-        <h4>Final: {{ movieScene.final || 'ø' }} - {{ movieScene.set.name }}</h4>
         <h4>
-          Tone: {{ movieScene.tone }} -
-          {{ getToneLocation(movieScene) }}
+          Initial: {{ selectedCharacter.initial }} -
+          {{ selectedCharacter.initialActor?.name }}
+        </h4>
+        <h4>
+          Final: {{ selectedCharacter.final || 'ø' }} - {{ selectedCharacter.finalSet?.name }}
+        </h4>
+        <h4>
+          Tone: {{ selectedCharacter.toneNumber }} -
+          {{ getToneLocation(selectedCharacter) }}
         </h4>
       </div>
     </div>

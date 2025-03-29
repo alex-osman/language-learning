@@ -35,7 +35,9 @@ export class CharacterService {
   }
 
   async makeCharacterDTO(character: Character): Promise<CharacterDTO> {
-    const { final, initial } = this.parsePinyin(character.pinyin);
+    const { final, initial } = this.parsePinyin(
+      this.removeToneMarks(character.pinyin),
+    );
     const initialActor = await this.actorService.findByInitial(initial);
     const finalSet = await this.setService.findByFinal(final);
     const radicals = await Promise.all(
@@ -106,7 +108,10 @@ export class CharacterService {
       final = '';
     } else if (pinyinNoTones.startsWith('ju')) {
       initial = 'ju';
-      final = '';
+      final = pinyinNoTones.substring(2);
+    } else if (pinyinNoTones.startsWith('fu')) {
+      initial = 'fu';
+      final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.startsWith('cu')) {
       initial = 'cu';
       final = pinyinNoTones.substring(2);

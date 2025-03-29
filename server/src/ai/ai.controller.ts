@@ -9,8 +9,7 @@ import {
   Post,
   StreamableFile,
 } from '@nestjs/common';
-import { Language } from '@shared/types/languages';
-import { CharacterService } from 'src/services/character.service';
+import { CharacterService } from '../services/character.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDto } from './dto/chat-response.dto';
 import { CritiqueRequestDto } from './dto/critique-request.dto';
@@ -21,6 +20,13 @@ import { CritiqueAiService } from './services/critique-ai.service';
 import { FrenchChatAiService } from './services/french-chat-ai.service';
 import { TtsAiService } from './services/tts-ai.service';
 import { MovieAiService } from './services/movie.service';
+
+enum Language {
+  CHINESE = 'Chinese',
+  PINYIN = 'Pinyin',
+  ENGLISH = 'English',
+  FRENCH = 'French',
+}
 
 @Controller('api/ai')
 export class AiController {
