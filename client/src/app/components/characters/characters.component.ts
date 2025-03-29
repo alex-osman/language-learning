@@ -61,7 +61,7 @@ export class CharactersComponent implements OnInit {
     return !!(char.pinyin && char.definition);
   }
 
-  async onCharacterHover(char: Character) {
+  async onCharacterClick(char: Character) {
     if (!char.pinyin) return;
 
     this.selectedCharacter = char;
@@ -124,13 +124,19 @@ export class CharactersComponent implements OnInit {
 
     this.isPlayingAudio = true;
     try {
+      console.log('Playing audio for:', char.character, char.pinyin);
+
       // Get audio URLs for each syllable in the pinyin
       const audioUrls = this.pinyinService.getAudioUrls(char.pinyin);
+      console.log('Audio URLs:', audioUrls);
 
       // Play each syllable in sequence
       for (const url of audioUrls) {
+        console.log('Playing syllable URL:', url);
         await this.pinyinService.playAudioFile(url);
       }
+
+      console.log('Finished playing audio');
     } catch (error) {
       console.error('Error playing audio:', error);
       this.error = 'Failed to play audio. Please try again.';
@@ -142,5 +148,33 @@ export class CharactersComponent implements OnInit {
   stopAudio() {
     this.pinyinService.stop();
     this.isPlayingAudio = false;
+  }
+
+  /**
+   * Debug method to verify audio URLs are correctly formatted
+   * This can be accessed from the browser console using:
+   * angular.getComponent($0).debugAudioUrls('nǐhǎo')
+   */
+  debugAudioUrls(pinyin: string): void {
+    console.log('Debug Audio URLs for:', pinyin);
+    try {
+      const audioUrls = this.pinyinService.getAudioUrls(pinyin);
+      console.log('Generated Audio URLs:', audioUrls);
+
+      // Try to check if URLs are accessible
+      audioUrls.forEach(url => {
+        fetch(url, { method: 'HEAD' })
+          .then(response => {
+            console.log(
+              `URL ${url} is ${response.ok ? 'accessible' : 'not accessible'} (${response.status})`
+            );
+          })
+          .catch(error => {
+            console.error(`Error checking URL ${url}:`, error);
+          });
+      });
+    } catch (error) {
+      console.error('Error generating audio URLs:', error);
+    }
   }
 }

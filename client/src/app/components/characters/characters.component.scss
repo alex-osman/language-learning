@@ -24,25 +24,21 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
+  &.selected {
+    background-color: #bbdefb;
+    border: 2px solid #1976d2;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+  }
+
   &.has-data {
     background-color: #e3f2fd;
     border: 1px solid #90caf9;
     cursor: pointer;
     position: relative;
 
-    &:hover::after {
-      content: '🔊';
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      font-size: 0.8rem;
-      opacity: 0.6;
-    }
-
-    &.playing-audio {
+    &.selected {
       background-color: #bbdefb;
-      border-color: #64b5f6;
-      animation: pulse 1s infinite;
+      border: 2px solid #1976d2;
     }
 
     .character {
@@ -86,6 +82,44 @@
     font-size: 0.8rem;
     text-align: center;
     word-break: break-word;
+  }
+
+  .audio-control {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+
+    .play-audio-btn {
+      background-color: rgba(25, 118, 210, 0.1);
+      border: 1px solid rgba(25, 118, 210, 0.3);
+      font-size: 1.2rem;
+      color: #1976d2;
+      cursor: pointer;
+      padding: 0.35rem 0.5rem;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(25, 118, 210, 0.2);
+        transform: scale(1.05);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(25, 118, 210, 0.3);
+        transform: scale(0.95);
+      }
+
+      &:disabled {
+        color: #90caf9;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
   }
 }
 
@@ -267,12 +301,21 @@
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4);
   }
-  50% {
-    transform: scale(1.02);
+  70% {
+    box-shadow: 0 0 0 6px rgba(25, 118, 210, 0);
   }
   100% {
-    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

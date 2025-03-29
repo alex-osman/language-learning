@@ -7,15 +7,26 @@
         class="cell"
         [class.has-data]="hasCharacterData(char)"
         [class.no-data]="!hasCharacterData(char)"
-        (mouseenter)="onCharacterHover(char)"
-        (click)="playCharacterAudio(char)"
-        [class.playing-audio]="isPlayingAudio && selectedCharacter?.character === char.character"
+        (click)="onCharacterClick(char)"
+        [class.selected]="selectedCharacter?.character === char.character"
       >
         <div class="cell-content">
           <div class="character">{{ char.character }}</div>
           <ng-container *ngIf="hasCharacterData(char)">
             <div class="pinyin">{{ char.pinyin }}</div>
             <div class="definition">{{ char.definition }}</div>
+            <div class="audio-control">
+              <button
+                class="play-audio-btn"
+                (click)="$event.stopPropagation(); playCharacterAudio(char)"
+                [disabled]="isPlayingAudio"
+                type="button"
+                aria-label="Play audio"
+                title="Play audio for {{ char.character }}"
+              >
+                🔊
+              </button>
+            </div>
           </ng-container>
         </div>
       </div>
@@ -75,23 +86,5 @@
         </ng-container>
       </div>
     </div>
-  </div>
-
-  <!-- Add audio controls near the character display -->
-  <div class="character-info" *ngIf="selectedCharacter">
-    <div class="character-header">
-      <h2>{{ selectedCharacter.character }}</h2>
-      <div class="pinyin" *ngIf="selectedCharacter.pinyin">
-        {{ selectedCharacter.pinyin }}
-      </div>
-      <div class="definition" *ngIf="selectedCharacter.definition">
-        {{ selectedCharacter.definition }}
-      </div>
-    </div>
-  </div>
-
-  <div class="error-message" *ngIf="error">
-    {{ error }}
-    <button (click)="error = null">✕</button>
   </div>
 </div>

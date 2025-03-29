@@ -129,25 +129,58 @@ export class PinyinService {
     this.stop();
 
     return new Promise((resolve, reject) => {
+      console.log(`Attempting to play audio from URL: ${url}`);
       const audio = new Audio(url);
       this.currentAudio = audio;
 
+      // Add more detailed event handlers
+      audio.onloadstart = () => console.log(`Loading started for: ${url}`);
+      audio.oncanplay = () => console.log(`Audio can be played: ${url}`);
+      audio.onplay = () => console.log(`Audio playback started: ${url}`);
+
       audio.onended = () => {
+        console.log(`Audio playback ended: ${url}`);
         this.currentAudio = null;
         resolve();
       };
 
-      audio.onerror = error => {
-        console.error('Error playing audio:', error);
+      audio.onerror = event => {
+        const error = audio.error;
+        let errorMessage = 'Unknown error';
+
+        if (error) {
+          switch (error.code) {
+            case MediaError.MEDIA_ERR_ABORTED:
+              errorMessage = 'Playback aborted by the user';
+              break;
+            case MediaError.MEDIA_ERR_NETWORK:
+              errorMessage = 'Network error while loading audio';
+              break;
+            case MediaError.MEDIA_ERR_DECODE:
+              errorMessage = 'Audio decoding error';
+              break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage = 'Audio format or source not supported';
+              break;
+          }
+        }
+
+        console.error(`Error playing audio (${errorMessage}):`, error);
         this.currentAudio = null;
         resolve(); // Resolve anyway to continue with next audio file
       };
 
-      audio.play().catch(error => {
-        console.error('Error starting audio playback:', error);
-        this.currentAudio = null;
-        resolve(); // Resolve anyway to continue with next audio file
-      });
+      // Attempt to play the audio
+      audio
+        .play()
+        .then(() => {
+          console.log(`Audio playing successfully: ${url}`);
+        })
+        .catch(error => {
+          console.error(`Error starting audio playback: ${url}`, error);
+          this.currentAudio = null;
+          resolve(); // Resolve anyway to continue with next audio file
+        });
     });
   }
 
