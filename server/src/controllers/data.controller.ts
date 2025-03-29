@@ -10,12 +10,14 @@ import {
 import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
 import { CreateCharacterDTO } from '../shared/dto/character.dto';
 import { CharacterService } from 'src/services/character.service';
+import { RadicalPropService } from 'src/services/radical-prop.service';
 
 @Controller('api/data')
 export class DataController {
   constructor(
     private readonly dataService: DataService,
     private readonly characterService: CharacterService,
+    private readonly radicalPropService: RadicalPropService,
   ) {}
 
   @Get('sets')
@@ -39,15 +41,16 @@ export class DataController {
   }
 
   @Get('radicalProps')
-  getRadicalProps(): RadicalProp[] {
-    return this.dataService.getRadicalProps();
+  getRadicalProps(): Promise<RadicalProp[]> {
+    return this.radicalPropService.findAll();
   }
 
   @Get('radicalProps/:radical')
-  getRadicalPropByRadical(
+  async getRadicalPropByRadical(
     @Param('radical') radical: string,
-  ): RadicalProp | undefined {
-    return this.dataService.getRadicalPropByRadical(radical);
+  ): Promise<RadicalProp | undefined> {
+    const result = await this.radicalPropService.findByRadical(radical);
+    return result || undefined;
   }
 
   @Get('characters')
@@ -65,11 +68,11 @@ export class DataController {
   @Post('radicalProps')
   addRadicalProp(
     @Body() createRadicalPropDto: CreateRadicalPropDTO,
-  ): RadicalProp {
-    return this.dataService.addRadicalProp(
-      createRadicalPropDto.radical,
-      createRadicalPropDto.prop,
-    );
+  ): Promise<RadicalProp> {
+    return this.radicalPropService.create({
+      radical: createRadicalPropDto.radical,
+      prop: createRadicalPropDto.prop,
+    });
   }
 
   @Post('characters')

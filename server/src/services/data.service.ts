@@ -5,7 +5,6 @@ import {
   SetDTO,
   Tone,
   Actor,
-  RadicalProp,
   CharacterDTO,
   DataStructure,
 } from '../shared/interfaces/data.interface';
@@ -63,10 +62,6 @@ export class DataService {
     return this.data.actors;
   }
 
-  getRadicalProps(): RadicalProp[] {
-    return this.data.radicalProps;
-  }
-
   getCharacters(): CharacterDTO[] {
     return this.data.characters;
   }
@@ -78,10 +73,6 @@ export class DataService {
 
   getActorByInitial(initial: string): Actor | undefined {
     return this.data.actors.find((actor) => actor.initial === initial);
-  }
-
-  getRadicalPropByRadical(radical: string): RadicalProp | undefined {
-    return this.data.radicalProps.find((prop) => prop.radical === radical);
   }
 
   // Method to add or update a movie for a character
@@ -98,29 +89,6 @@ export class DataService {
 
     this.data.characters[characterIndex].movie = movie;
     this.saveData();
-  }
-
-  addRadicalProp(radical: string, prop: string): RadicalProp {
-    const newRadicalProp: RadicalProp = {
-      radical,
-      prop,
-    };
-
-    // Check if radical already exists
-    const existingIndex = this.data.radicalProps.findIndex(
-      (rp) => rp.radical === radical,
-    );
-
-    if (existingIndex !== -1) {
-      // Update existing radical prop
-      this.data.radicalProps[existingIndex] = newRadicalProp;
-    } else {
-      // Add new radical prop
-      this.data.radicalProps.push(newRadicalProp);
-    }
-
-    this.saveData();
-    return newRadicalProp;
   }
 
   addCharacter(
