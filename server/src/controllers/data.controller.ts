@@ -8,9 +8,11 @@ import {
   CharacterDTO,
 } from '../shared/interfaces/data.interface';
 import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
+import { CreateActorDTO } from '../shared/dto/actor.dto';
 import { CreateCharacterDTO } from '../shared/dto/character.dto';
 import { CharacterService } from 'src/services/character.service';
 import { RadicalPropService } from 'src/services/radical-prop.service';
+import { ActorService } from 'src/services/actor.service';
 
 @Controller('api/data')
 export class DataController {
@@ -18,6 +20,7 @@ export class DataController {
     private readonly dataService: DataService,
     private readonly characterService: CharacterService,
     private readonly radicalPropService: RadicalPropService,
+    private readonly actorService: ActorService,
   ) {}
 
   @Get('sets')
@@ -31,13 +34,16 @@ export class DataController {
   }
 
   @Get('actors')
-  getActors(): Actor[] {
-    return this.dataService.getActors();
+  getActors(): Promise<Actor[]> {
+    return this.actorService.findAll();
   }
 
   @Get('actors/:initial')
-  getActorByInitial(@Param('initial') initial: string): Actor | undefined {
-    return this.dataService.getActorByInitial(initial);
+  async getActorByInitial(
+    @Param('initial') initial: string,
+  ): Promise<Actor | undefined> {
+    const result = await this.actorService.findByInitial(initial);
+    return result || undefined;
   }
 
   @Get('radicalProps')
@@ -63,6 +69,11 @@ export class DataController {
     @Param('character') character: string,
   ): CharacterDTO | undefined {
     return this.dataService.getCharacterByCharacter(character);
+  }
+
+  @Post('actors')
+  addActor(@Body() createActorDto: CreateActorDTO): Promise<Actor> {
+    return this.actorService.create(createActorDto);
   }
 
   @Post('radicalProps')

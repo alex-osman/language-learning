@@ -4,7 +4,6 @@ import { join } from 'path';
 import {
   SetDTO,
   Tone,
-  Actor,
   CharacterDTO,
   DataStructure,
 } from '../shared/interfaces/data.interface';
@@ -58,10 +57,6 @@ export class DataService {
     return this.data.tones;
   }
 
-  getActors(): Actor[] {
-    return this.data.actors;
-  }
-
   getCharacters(): CharacterDTO[] {
     return this.data.characters;
   }
@@ -69,10 +64,6 @@ export class DataService {
   // Additional utility methods
   getCharacterByCharacter(character: string): CharacterDTO | undefined {
     return this.data.characters.find((char) => char.character === character);
-  }
-
-  getActorByInitial(initial: string): Actor | undefined {
-    return this.data.actors.find((actor) => actor.initial === initial);
   }
 
   // Method to add or update a movie for a character
