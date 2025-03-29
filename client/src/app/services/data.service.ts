@@ -30,12 +30,17 @@ export type ToneLocationDTO = {
 };
 
 export type Tone = { [key: string]: string };
-
-export interface Character {
+export interface PropDTO {
+  id: number;
+  radical: string;
+  prop?: string;
+}
+export interface CharacterDTO {
+  id: number;
   character: string;
   pinyin?: string;
   definition?: string;
-  radicals?: string[];
+  radicals?: PropDTO[];
   movie?: string;
   imgUrl?: string;
 }
@@ -74,8 +79,8 @@ export class DataService {
     return this.http.get<RadicalProp[]>(`${this.apiUrl}/radicalProps`);
   }
 
-  getCharacters(): Observable<Character[]> {
-    return this.http.get<Character[]>(`${this.apiUrl}/characters`);
+  getCharacters(): Observable<CharacterDTO[]> {
+    return this.http.get<CharacterDTO[]>(`${this.apiUrl}/characters`);
   }
 
   // Helper method to get tone number from pinyin

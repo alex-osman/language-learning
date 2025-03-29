@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataService, Character, MovieScene, Tone } from '../../services/data.service';
+import { DataService, CharacterDTO, MovieScene, Tone } from '../../services/data.service';
 import { MovieService, MovieGenerationRequest } from '../../services/movie.service';
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
 import { PinyinService } from '../../services/pinyin.service';
@@ -13,8 +13,8 @@ import { PinyinService } from '../../services/pinyin.service';
   styleUrls: ['./characters.component.scss'],
 })
 export class CharactersComponent implements OnInit {
-  characters: Character[] = [];
-  selectedCharacter: Character | null = null;
+  characters: CharacterDTO[] = [];
+  selectedCharacter: CharacterDTO | null = null;
   movieScene: MovieScene | null = null;
   isLoading = true;
   isGeneratingMovie = false;
@@ -57,11 +57,11 @@ export class CharactersComponent implements OnInit {
     });
   }
 
-  hasCharacterData(char: Character): boolean {
+  hasCharacterData(char: CharacterDTO): boolean {
     return !!(char.pinyin && char.definition);
   }
 
-  async onCharacterClick(char: Character) {
+  async onCharacterClick(char: CharacterDTO) {
     if (!char.pinyin) return;
 
     this.selectedCharacter = char;
@@ -78,19 +78,9 @@ export class CharactersComponent implements OnInit {
 
     this.isGeneratingMovie = true;
 
-    const request: MovieGenerationRequest = {
-      character: this.selectedCharacter.character,
-      pinyin: this.selectedCharacter.pinyin || '',
-      definition: this.selectedCharacter.definition || '',
-      actor: this.movieScene.actor,
-      set: this.movieScene.set,
-      tone: this.movieScene.tone,
-      toneLocation: this.movieScene.tone,
-      radicalProps: this.getRadicalProps(this.selectedCharacter.radicals),
-    };
-
-    this.movieService.generateMovie(request).subscribe({
+    this.movieService.generateMovie(this.selectedCharacter.id).subscribe({
       next: response => {
+        console.log('Movie generated:', response);
         if (this.selectedCharacter) {
           // Update the character's movie property
           const charIndex = this.characters.findIndex(
@@ -111,15 +101,7 @@ export class CharactersComponent implements OnInit {
     });
   }
 
-  public getRadicalProps(props?: string[]): RadicalProp[] {
-    if (!props) return [];
-
-    return props.map(
-      radical => this.radicalProps.find(prop => prop.radical === radical) || { radical, prop: '' }
-    );
-  }
-
-  async playCharacterAudio(char: Character) {
+  async playCharacterAudio(char: CharacterDTO) {
     if (!char.pinyin) return;
 
     this.isPlayingAudio = true;
@@ -150,31 +132,10 @@ export class CharactersComponent implements OnInit {
     this.isPlayingAudio = false;
   }
 
-  /**
-   * Debug method to verify audio URLs are correctly formatted
-   * This can be accessed from the browser console using:
-   * angular.getComponent($0).debugAudioUrls('nǐhǎo')
-   */
-  debugAudioUrls(pinyin: string): void {
-    console.log('Debug Audio URLs for:', pinyin);
-    try {
-      const audioUrls = this.pinyinService.getAudioUrls(pinyin);
-      console.log('Generated Audio URLs:', audioUrls);
-
-      // Try to check if URLs are accessible
-      audioUrls.forEach(url => {
-        fetch(url, { method: 'HEAD' })
-          .then(response => {
-            console.log(
-              `URL ${url} is ${response.ok ? 'accessible' : 'not accessible'} (${response.status})`
-            );
-          })
-          .catch(error => {
-            console.error(`Error checking URL ${url}:`, error);
-          });
-      });
-    } catch (error) {
-      console.error('Error generating audio URLs:', error);
-    }
+  getToneLocation(movieScene: MovieScene): string {
+    const toneLocation = movieScene.set.toneLocations.find(
+      toneLocation => toneLocation.toneNumber === parseInt(movieScene.tone)
+    );
+    return toneLocation?.name || this.tones?.[movieScene.tone] || 'Unknown';
   }
 }

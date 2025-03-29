@@ -11,5 +11,5 @@ export const databaseConfig: TypeOrmModuleOptions = {
   password: process.env.RDS_PASSWORD || '',
   database: process.env.RDS_DB || 'language_learning',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  logging: process.env.NODE_ENV !== 'production',
+  // logging: process.env.NODE_ENV !== 'production',
 };

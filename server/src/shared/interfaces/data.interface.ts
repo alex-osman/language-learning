@@ -6,6 +6,7 @@ export const TONES_MAPPED_TO_LOCATION = {
   '5': 'On the roof',
 };
 export interface SetDTO {
+  id: number;
   final: string;
   name: string;
   description?: string;
@@ -22,32 +23,45 @@ export interface Tone {
   [key: string]: string;
 }
 
-export interface Actor {
+export interface ActorDTO {
+  id: number;
   initial: string;
   name: string;
   description?: string;
   type: 'male' | 'female' | 'fictional';
 }
 
-export interface RadicalProp {
+export interface PropDTO {
+  id: number;
   radical: string;
   prop?: string;
 }
 
 export interface CharacterDTO {
+  id: number;
   character: string;
   pinyin: string;
   definition: string;
+
+  initial: string;
+  initialActor?: ActorDTO;
+
+  final: string;
+  finalSet?: SetDTO;
+
+  toneNumber: number;
+  toneLocation?: ToneLocation;
+
   movie?: string;
   imgUrl?: string;
-  radicals?: string[];
+  radicals?: PropDTO[];
 }
 
 export interface DataStructure {
   sets: SetDTO[];
   tones: Tone;
-  actors: Actor[];
-  radicalProps: RadicalProp[];
+  actors: ActorDTO[];
+  radicalProps: PropDTO[];
   characters: CharacterDTO[];
   movie?: string;
 }

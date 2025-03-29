@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Actor } from '../entities/actor.entity';
-import { Actor as ActorDTO } from '../shared/interfaces/data.interface';
+import { ActorDTO as ActorDTO } from '../shared/interfaces/data.interface';
 
 @Injectable()
 export class ActorService {

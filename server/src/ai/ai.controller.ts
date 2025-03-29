@@ -5,25 +5,22 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Param,
   Post,
   StreamableFile,
 } from '@nestjs/common';
 import { Language } from '@shared/types/languages';
+import { CharacterService } from 'src/services/character.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDto } from './dto/chat-response.dto';
+import { CritiqueRequestDto } from './dto/critique-request.dto';
+import { CritiqueResponseDto } from './dto/critique-response.dto';
+import { TtsRequestDto } from './dto/tts-request.dto';
 import { ChineseChatAiService } from './services/chat-ai.service';
 import { CritiqueAiService } from './services/critique-ai.service';
 import { FrenchChatAiService } from './services/french-chat-ai.service';
 import { TtsAiService } from './services/tts-ai.service';
-import { TtsRequestDto } from './dto/tts-request.dto';
-import { CritiqueRequestDto } from './dto/critique-request.dto';
-import { CritiqueResponseDto } from './dto/critique-response.dto';
-import {
-  MovieGenerationRequestDto,
-  MovieGenerationResponseDto,
-} from './dto/movie-generation.dto';
 import { MovieAiService } from './services/movie.service';
-import { DataService } from 'src/services/data.service';
 
 @Controller('api/ai')
 export class AiController {
@@ -34,8 +31,8 @@ export class AiController {
     private readonly chineseChatService: ChineseChatAiService,
     private readonly frenchChatService: FrenchChatAiService,
     private readonly critiqueService: CritiqueAiService,
+    private readonly characterService: CharacterService,
     private readonly movieService: MovieAiService,
-    private readonly dataService: DataService,
   ) {}
 
   @Post('tts')
@@ -100,32 +97,30 @@ export class AiController {
     }
   }
 
-  @Post('movie')
-  async generateMovie(
-    @Body() request: MovieGenerationRequestDto,
-  ): Promise<MovieGenerationResponseDto> {
-    try {
-      const movieGenerationResponse =
-        await this.movieService.generateMovie(request);
-      // Save movie to database
-      this.dataService.addMovieToCharacter(
-        request.character,
-        movieGenerationResponse.movie,
-      );
-      return movieGenerationResponse;
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error(`Movie generation failed: ${errorMessage}`, errorStack);
+  @Post('movie/:characterId')
+  async generateMovie(@Param('characterId') characterId: string) {
+    const character = await this.characterService.getOneCharacterDTO(
+      parseInt(characterId),
+    );
+
+    if (!character) {
       throw new HttpException(
         {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Failed to generate movie scene',
-          details: errorMessage,
+          status: HttpStatus.NOT_FOUND,
+          error: 'Character not found',
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.NOT_FOUND,
       );
     }
+
+    const movie = await this.movieService.generateMovie(character);
+
+    await this.characterService.update(character.id, {
+      movie,
+    });
+
+    return {
+      movie,
+    };
   }
 }

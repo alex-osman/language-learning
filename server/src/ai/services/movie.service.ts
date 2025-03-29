@@ -4,7 +4,10 @@ import {
   MovieGenerationRequestDto,
   MovieGenerationResponseDto,
 } from '../dto/movie-generation.dto';
-import { TONES_MAPPED_TO_LOCATION } from '@shared/interfaces/data.interface';
+import {
+  CharacterDTO,
+  TONES_MAPPED_TO_LOCATION,
+} from '@shared/interfaces/data.interface';
 
 @Injectable()
 export class MovieAiService {
@@ -17,17 +20,14 @@ export class MovieAiService {
     });
   }
 
-  async generateMovie(
-    request: MovieGenerationRequestDto,
-  ): Promise<MovieGenerationResponseDto> {
+  async generateMovie(character: CharacterDTO): Promise<string> {
     try {
-      const { character, pinyin, actor, set, tone, radicalProps, definition } =
-        request;
-
       let toneLocation =
-        TONES_MAPPED_TO_LOCATION[tone as keyof typeof TONES_MAPPED_TO_LOCATION];
-      const attemptToneLocation = set.toneLocations.find(
-        (t) => t.toneNumber === Number(tone),
+        TONES_MAPPED_TO_LOCATION[
+          String(character.toneNumber) as keyof typeof TONES_MAPPED_TO_LOCATION
+        ];
+      const attemptToneLocation = character.finalSet?.toneLocations.find(
+        (t) => t.toneNumber === character.toneNumber,
       );
       if (attemptToneLocation) {
         toneLocation = attemptToneLocation.name;
@@ -35,21 +35,21 @@ export class MovieAiService {
           toneLocation += ` - ${attemptToneLocation.description}`;
         }
       }
-      let actorName = actor.name;
-      if (actor.description) {
-        actorName += ` - ${actor.description}`;
+      let actorName = character.initialActor?.name;
+      if (character.initialActor?.description) {
+        actorName += ` - ${character.initialActor.description}`;
       }
 
-      const prompt = `Create a scene for the Chinese character "${character}" (${pinyin}) - "${definition}" that incorporates:
+      const prompt = `Create a scene for the Chinese character "${character.character}" (${character.pinyin}) - "${character.definition}" that incorporates:
 
 Actor: ${actorName}
-Set Location: ${set.name}
-Tone Location (Tone ${tone}): ${toneLocation}
-Radical Props: ${radicalProps.map((rp) => `${rp.radical} (${rp.prop})`).join(', ')}
+Set Location: ${character.finalSet?.name}
+Tone Location (Tone ${character.toneNumber}): ${toneLocation}
+Radical Props: ${character.radicals?.map((rp) => `${rp.radical} (${rp.prop})`).join(', ')}
 
 The scene should:
-1. Take place in the specified location (${set.name})
-2. Feature ${actor.name} as the main actor
+1. Take place in the specified location (${character.finalSet?.name})
+2. Feature ${character.initialActor?.name} as the main actor
 3. The action should happen in the tone location: ${toneLocation}
 4. Incorporate the radical props naturally into the scene
 5. Create a memorable connection to the character's meaning
@@ -83,7 +83,7 @@ The scene should help remember both the character's appearance and meaning throu
         );
       }
 
-      return { movie: movieScene };
+      return movieScene;
     } catch (error) {
       // If it's already an HttpException, rethrow it
       if (error instanceof HttpException) {

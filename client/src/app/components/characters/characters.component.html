@@ -45,7 +45,7 @@
         <h4>Final: {{ movieScene.final || 'ø' }} - {{ movieScene.set.name }}</h4>
         <h4>
           Tone: {{ movieScene.tone }} -
-          {{ tones ? tones[movieScene.tone] : 'No tone location found' }}
+          {{ getToneLocation(movieScene) }}
         </h4>
       </div>
     </div>
@@ -58,9 +58,9 @@
         />
       </div>
       <div class="info-section">
-        <h4>Radical Props</h4>
+        <h4>Props</h4>
         <p>
-          <ng-container *ngFor="let prop of getRadicalProps(selectedCharacter.radicals)">
+          <ng-container *ngFor="let prop of selectedCharacter.radicals">
             <div *ngIf="prop">
               <span class="prop-item">{{ prop.radical }}</span> &nbsp;&nbsp;&nbsp;&nbsp; (
               <span class="prop-item">{{ prop.prop }}</span

@@ -25,7 +25,7 @@ interface MovieGenerationResponse {
 export class MovieService {
   constructor(private http: HttpClient) {}
 
-  generateMovie(request: MovieGenerationRequest): Observable<MovieGenerationResponse> {
-    return this.http.post<MovieGenerationResponse>(`api/ai/movie`, request);
+  generateMovie(characterId: number) {
+    return this.http.post<MovieGenerationResponse>(`api/ai/movie/${characterId}`, {});
   }
 }

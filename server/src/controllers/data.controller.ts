@@ -1,85 +1,84 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
-import { DataService } from '../services/data.service';
-import {
-  SetDTO,
-  Tone,
-  Actor,
-  RadicalProp,
-  CharacterDTO,
-} from '../shared/interfaces/data.interface';
-import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
-import { CreateActorDTO } from '../shared/dto/actor.dto';
-import { CreateCharacterDTO } from '../shared/dto/character.dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ActorService } from 'src/services/actor.service';
 import { CharacterService } from 'src/services/character.service';
 import { RadicalPropService } from 'src/services/radical-prop.service';
-import { ActorService } from 'src/services/actor.service';
+import { SetService } from 'src/services/set.service';
+import { CreateActorDTO } from '../shared/dto/actor.dto';
+import { CreateCharacterDTO } from '../shared/dto/character.dto';
+import { CreateRadicalPropDTO } from '../shared/dto/radical-prop.dto';
+import {
+  ActorDTO,
+  CharacterDTO,
+  PropDTO,
+  SetDTO,
+  Tone,
+} from '../shared/interfaces/data.interface';
 
 @Controller('api/data')
 export class DataController {
   constructor(
-    private readonly dataService: DataService,
     private readonly characterService: CharacterService,
     private readonly radicalPropService: RadicalPropService,
     private readonly actorService: ActorService,
+    private readonly setService: SetService,
   ) {}
 
   @Get('sets')
-  getSets(): SetDTO[] {
-    return this.dataService.getSets();
+  getSets(): Promise<SetDTO[]> {
+    return this.setService.findAll();
   }
 
   @Get('tones')
   getTones(): Tone {
-    return this.dataService.getTones();
+    return {
+      '1': 'Outside the entrance',
+      '2': 'Kitchen or inside entrance',
+      '3': 'Bedroom or living room',
+      '4': 'Bathroom or outside/yard',
+      '5': 'On the roof',
+    };
   }
 
   @Get('actors')
-  getActors(): Promise<Actor[]> {
+  getActors(): Promise<ActorDTO[]> {
     return this.actorService.findAll();
   }
 
   @Get('actors/:initial')
   async getActorByInitial(
     @Param('initial') initial: string,
-  ): Promise<Actor | undefined> {
+  ): Promise<ActorDTO | undefined> {
     const result = await this.actorService.findByInitial(initial);
     return result || undefined;
   }
 
   @Get('radicalProps')
-  getRadicalProps(): Promise<RadicalProp[]> {
+  getRadicalProps(): Promise<PropDTO[]> {
     return this.radicalPropService.findAll();
   }
 
   @Get('radicalProps/:radical')
   async getRadicalPropByRadical(
     @Param('radical') radical: string,
-  ): Promise<RadicalProp | undefined> {
+  ): Promise<PropDTO | undefined> {
     const result = await this.radicalPropService.findByRadical(radical);
     return result || undefined;
   }
 
   @Get('characters')
   getCharacters(): Promise<CharacterDTO[]> {
-    return this.characterService.findAll();
-  }
-
-  @Get('characters/:character')
-  getCharacterByCharacter(
-    @Param('character') character: string,
-  ): CharacterDTO | undefined {
-    return this.dataService.getCharacterByCharacter(character);
+    return this.characterService.getAllCharacterDTOs();
   }
 
   @Post('actors')
-  addActor(@Body() createActorDto: CreateActorDTO): Promise<Actor> {
+  addActor(@Body() createActorDto: CreateActorDTO): Promise<ActorDTO> {
     return this.actorService.create(createActorDto);
   }
 
   @Post('radicalProps')
   addRadicalProp(
     @Body() createRadicalPropDto: CreateRadicalPropDTO,
-  ): Promise<RadicalProp> {
+  ): Promise<PropDTO> {
     return this.radicalPropService.create({
       radical: createRadicalPropDto.radical,
       prop: createRadicalPropDto.prop,

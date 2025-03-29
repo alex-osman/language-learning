@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RadicalProp } from '../entities/radical-prop.entity';
-import { RadicalProp as RadicalPropDTO } from '@shared/interfaces/data.interface';
+import { PropDTO as RadicalPropDTO } from '@shared/interfaces/data.interface';
 
 @Injectable()
 export class RadicalPropService {
