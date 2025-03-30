@@ -18,7 +18,13 @@
       <p>
         {{ reviewStats.correct + reviewStats.incorrect }} of {{ reviewStats.total }} cards reviewed
       </p>
-      <div class="progress-bar">
+      <div
+        class="progress-bar"
+        role="progressbar"
+        [attr.aria-valuenow]="reviewStats.correct + reviewStats.incorrect"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="reviewStats.total"
+      >
         <div
           class="progress"
           [style.width.%]="
@@ -28,17 +34,31 @@
       </div>
     </div>
 
-    <div class="flashcard" [class.flipped]="isFlipped" (click)="flipCard()">
+    <div
+      class="flashcard"
+      [class.flipped]="isFlipped"
+      [class.processing]="isProcessingReview"
+      (click)="flipCard()"
+      role="button"
+      tabindex="0"
+      (keydown.space)="flipCard()"
+      aria-label="Flashcard - tap to flip"
+    >
       <div class="flashcard-inner">
         <div class="flashcard-front">
           <div class="character">{{ currentCard.character }}</div>
-          <p class="hint">Click to reveal</p>
+          <p class="hint">Tap to reveal</p>
         </div>
         <div class="flashcard-back">
-          <div class="character">{{ isFlipped ? currentCard.character : '' }}</div>
-          <div class="pinyin">{{ isFlipped ? currentCard.pinyin : '' }}</div>
-          <div class="definition">{{ isFlipped ? currentCard.definition : '' }}</div>
-          <button class="audio-btn" (click)="$event.stopPropagation(); playAudio(currentCard)">
+          <div class="character">{{ currentCard.character }}</div>
+          <div class="pinyin">{{ currentCard.pinyin }}</div>
+          <div class="definition">{{ currentCard.definition }}</div>
+          <button
+            class="audio-btn"
+            (click)="$event.stopPropagation(); playAudio(currentCard)"
+            [disabled]="isProcessingReview"
+            aria-label="Play audio pronunciation"
+          >
             🔊 Play Audio
           </button>
         </div>
@@ -47,19 +67,64 @@
 
     <div class="review-actions" *ngIf="isFlipped">
       <p>How well did you remember this?</p>
-      <div class="rating-buttons">
-        <button class="rating-btn bad" (click)="submitReview(0)">0 - Complete Blackout</button>
-        <button class="rating-btn bad" (click)="submitReview(1)">
-          1 - Remembered after seeing answer
+      <div class="rating-buttons" [class.disabled]="isProcessingReview">
+        <button
+          class="rating-btn bad"
+          (click)="submitReview(0)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 0"
+          data-mobile-label="0 - Complete Blackout"
+        >
+          <span>0 - Complete Blackout</span>
         </button>
-        <button class="rating-btn bad" (click)="submitReview(2)">
-          2 - Incorrect, but seemed easy after
+        <button
+          class="rating-btn bad"
+          (click)="submitReview(1)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 1"
+          data-mobile-label="1 - Recognized only"
+        >
+          <span>1 - Remembered after seeing answer</span>
         </button>
-        <button class="rating-btn ok" (click)="submitReview(3)">3 - Correct with difficulty</button>
-        <button class="rating-btn good" (click)="submitReview(4)">
-          4 - Correct after hesitation
+        <button
+          class="rating-btn bad"
+          (click)="submitReview(2)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 2"
+          data-mobile-label="2 - Easy after seeing"
+        >
+          <span>2 - Incorrect, but seemed easy after</span>
         </button>
-        <button class="rating-btn perfect" (click)="submitReview(5)">5 - Perfect recall</button>
+        <button
+          class="rating-btn ok"
+          (click)="submitReview(3)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 3"
+          data-mobile-label="3 - Difficult recall"
+        >
+          <span>3 - Correct with difficulty</span>
+        </button>
+        <button
+          class="rating-btn good"
+          (click)="submitReview(4)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 4"
+          data-mobile-label="4 - Slight hesitation"
+        >
+          <span>4 - Correct after hesitation</span>
+        </button>
+        <button
+          class="rating-btn perfect"
+          (click)="submitReview(5)"
+          [disabled]="isProcessingReview"
+          [class.selected]="selectedRating === 5"
+          data-mobile-label="5 - Perfect recall"
+        >
+          <span>5 - Perfect recall</span>
+        </button>
+      </div>
+      <div *ngIf="isProcessingReview" class="processing-indicator">
+        <p>Processing...</p>
       </div>
     </div>
   </div>
