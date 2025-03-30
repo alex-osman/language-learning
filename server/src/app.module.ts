@@ -26,6 +26,9 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
       exclude: ['/api*'],
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
