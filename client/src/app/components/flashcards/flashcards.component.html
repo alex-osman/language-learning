@@ -35,9 +35,9 @@
           <p class="hint">Click to reveal</p>
         </div>
         <div class="flashcard-back">
-          <div class="character">{{ currentCard.character }}</div>
-          <div class="pinyin">{{ currentCard.pinyin }}</div>
-          <div class="definition">{{ currentCard.definition }}</div>
+          <div class="character">{{ isFlipped ? currentCard.character : '' }}</div>
+          <div class="pinyin">{{ isFlipped ? currentCard.pinyin : '' }}</div>
+          <div class="definition">{{ isFlipped ? currentCard.definition : '' }}</div>
           <button class="audio-btn" (click)="$event.stopPropagation(); playAudio(currentCard)">
             🔊 Play Audio
           </button>

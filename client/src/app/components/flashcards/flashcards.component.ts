@@ -52,8 +52,8 @@ export class FlashcardsComponent implements OnInit {
 
   showNextCard() {
     if (this.dueCards.length > 0) {
-      this.currentCard = this.dueCards.shift() || null;
       this.isFlipped = false;
+      this.currentCard = this.dueCards.shift() || null;
       this.isReviewing = true;
     } else {
       this.currentCard = null;
