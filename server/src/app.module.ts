@@ -22,17 +22,41 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FlashcardService } from './services/flashcard.service';
 import { FlashcardController } from './controllers/flashcard.controller';
+import { AppController } from './controllers/app.controller';
 
 @Module({
   imports: [
+    // First, set up the database connection
+    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
+
+    // Then, the static file serving for normal static assets (excluding the index.html fallback)
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
       exclude: ['/api*'],
+      serveStaticOptions: {
+        index: false, // Don't automatically serve index.html for directories
+      },
     }),
-    TypeOrmModule.forRoot(databaseConfig),
-    TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
+
+    // Finally, the catch-all route for Angular's client-side routing
+    // This should be evaluated last to ensure all API routes are matched first
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
+      serveRoot: '/*', // This creates a catch-all route that will serve index.html for any unmatched routes
+      exclude: ['/api*'],
+      serveStaticOptions: {
+        index: 'index.html', // Always serve index.html for client-side routing
+      },
+    }),
   ],
-  controllers: [DataController, AiController, FlashcardController],
+  // First list controllers that handle API endpoints, then the catch-all controller
+  controllers: [
+    DataController,
+    AiController,
+    FlashcardController,
+    AppController,
+  ],
   providers: [
     AppService,
     CharacterService,
