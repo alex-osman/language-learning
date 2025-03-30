@@ -25,7 +25,18 @@ import { join } from 'path';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
-      exclude: ['/api*'],
+      exclude: ['/api/**'],
+      serveStaticOptions: {
+        fallthrough: true,
+      },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
+      serveRoot: '*',
+      exclude: ['/api/**'],
+      serveStaticOptions: {
+        index: 'index.html',
+      },
     }),
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
