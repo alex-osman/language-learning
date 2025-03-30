@@ -38,6 +38,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/sentences',
+    redirectTo: '/flashcards',
   },
 ];
