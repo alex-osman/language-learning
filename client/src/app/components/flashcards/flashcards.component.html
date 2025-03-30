@@ -46,10 +46,12 @@
     >
       <div class="flashcard-inner">
         <div class="flashcard-front">
-          <div class="character">{{ currentCard.character }}</div>
+          <div class="character" [class.processing]="isProcessingReview">
+            {{ currentCard.character }}
+          </div>
           <p class="hint">Tap to reveal</p>
         </div>
-        <div class="flashcard-back">
+        <div class="flashcard-back" [class.processing]="isProcessingReview">
           <div class="character">{{ currentCard.character }}</div>
           <div class="pinyin">{{ currentCard.pinyin }}</div>
           <div class="definition">{{ currentCard.definition }}</div>

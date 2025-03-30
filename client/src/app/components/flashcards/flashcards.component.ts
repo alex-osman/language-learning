@@ -112,7 +112,6 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
 
   showNextCard() {
     // Reset review state
-    this.isProcessingReview = false;
     this.selectedRating = null;
 
     // Set isFlipped to false BEFORE setting currentCard to ensure
@@ -124,8 +123,10 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.currentCard = this.dueCards.shift() || null;
         this.isReviewing = true;
-      }, 50);
+        this.isProcessingReview = false;
+      }, 300);
     } else {
+      this.isProcessingReview = false;
       this.currentCard = null;
       this.isReviewing = false;
       this.reviewCompleted = true;
