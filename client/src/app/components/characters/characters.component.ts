@@ -4,6 +4,7 @@ import { DataService, CharacterDTO, MovieScene, Tone } from '../../services/data
 import { MovieService, MovieGenerationRequest } from '../../services/movie.service';
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
 import { PinyinService } from '../../services/pinyin.service';
+import { FlashcardService } from '../../services/flashcard.service';
 
 @Component({
   selector: 'app-characters',
@@ -19,6 +20,7 @@ export class CharactersComponent implements OnInit {
   isLoading = true;
   isGeneratingMovie = false;
   isPlayingAudio = false;
+  isStartingLearning = false;
   error: string | null = null;
   tones: Tone | null = null;
   radicalProps: RadicalProp[] = [];
@@ -26,7 +28,8 @@ export class CharactersComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private movieService: MovieService,
-    private pinyinService: PinyinService
+    private pinyinService: PinyinService,
+    private flashcardService: FlashcardService
   ) {}
 
   ngOnInit() {
@@ -146,5 +149,29 @@ export class CharactersComponent implements OnInit {
         '5': 'On the roof',
       }[character.toneNumber] || 'Unknown'
     );
+  }
+
+  startLearning(): void {
+    if (!this.selectedCharacter) return;
+
+    this.isStartingLearning = true;
+
+    this.flashcardService.startLearning(this.selectedCharacter.id).subscribe({
+      next: response => {
+        console.log('Character added to learning:', response);
+        // Update the character's learning info in the local array
+        const charIndex = this.characters.findIndex(c => c.id === this.selectedCharacter?.id);
+        if (charIndex !== -1) {
+          this.characters[charIndex] = response;
+          this.selectedCharacter = response;
+        }
+        this.isStartingLearning = false;
+      },
+      error: error => {
+        console.error('Error starting learning:', error);
+        this.isStartingLearning = false;
+        this.error = 'Failed to add character to learning. Please try again.';
+      },
+    });
   }
 }

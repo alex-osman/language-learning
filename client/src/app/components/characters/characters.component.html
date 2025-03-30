@@ -93,6 +93,28 @@
           </button>
         </ng-container>
       </div>
+      <div class="info-section">
+        <h4>Spaced Repetition</h4>
+        <ng-container *ngIf="selectedCharacter.dueForReview">
+          <p>This character is due for review!</p>
+          <p>
+            Last reviewed: {{ selectedCharacter.lastReviewDate | date : 'medium' }}<br />
+            Repetitions: {{ selectedCharacter.repetitions }}<br />
+            Easiness: {{ selectedCharacter.easinessFactor?.toFixed(2) }}
+          </p>
+        </ng-container>
+        <button
+          class="start-learning-btn"
+          (click)="startLearning()"
+          [disabled]="isStartingLearning"
+        >
+          <ng-container *ngIf="!isStartingLearning">
+            <span *ngIf="!selectedCharacter.nextReviewDate">Start Learning</span>
+            <span *ngIf="selectedCharacter.nextReviewDate">Update Learning</span>
+          </ng-container>
+          <ng-container *ngIf="isStartingLearning">Processing...</ng-container>
+        </button>
+      </div>
     </div>
   </div>
 </div>

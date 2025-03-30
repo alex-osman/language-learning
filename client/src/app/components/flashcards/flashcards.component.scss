@@ -1,0 +1,294 @@
+.flashcards-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+  }
+}
+
+.loading-state,
+.error-message,
+.no-cards {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  margin: 2rem 0;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+
+  button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #c62828;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #b71c1c;
+    }
+  }
+}
+
+.review-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.review-progress {
+  width: 100%;
+  margin-bottom: 2rem;
+
+  p {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 10px;
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+
+    .progress {
+      height: 100%;
+      background-color: #2196f3;
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+.flashcard {
+  width: 300px;
+  height: 400px;
+  perspective: 1000px;
+  margin-bottom: 2rem;
+  cursor: pointer;
+
+  &.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+
+    .flashcard-front,
+    .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      border-radius: 10px;
+    }
+
+    .flashcard-front {
+      background-color: #3498db;
+      color: white;
+
+      .character {
+        font-size: 6rem;
+        margin-bottom: 1rem;
+      }
+
+      .hint {
+        font-size: 0.9rem;
+        opacity: 0.7;
+      }
+    }
+
+    .flashcard-back {
+      background-color: #2980b9;
+      color: white;
+      transform: rotateY(180deg);
+
+      .character {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .pinyin {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .definition {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .audio-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+  }
+}
+
+.review-actions {
+  text-align: center;
+  width: 100%;
+  margin-top: 1rem;
+
+  p {
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+
+  .rating-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .rating-btn {
+      flex: 1 0 45%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-bottom: 0.5rem;
+
+      &.bad {
+        background-color: #ff5252;
+        color: white;
+
+        &:hover {
+          background-color: #d32f2f;
+        }
+      }
+
+      &.ok {
+        background-color: #ffb74d;
+        color: white;
+
+        &:hover {
+          background-color: #f57c00;
+        }
+      }
+
+      &.good {
+        background-color: #4caf50;
+        color: white;
+
+        &:hover {
+          background-color: #388e3c;
+        }
+      }
+
+      &.perfect {
+        background-color: #2196f3;
+        color: white;
+
+        &:hover {
+          background-color: #1976d2;
+        }
+      }
+    }
+  }
+}
+
+.review-completed {
+  text-align: center;
+  padding: 2rem;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+
+  h3 {
+    margin-bottom: 1.5rem;
+    color: #2e7d32;
+  }
+
+  .review-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      .stat-label {
+        font-size: 1rem;
+        color: #616161;
+      }
+
+      &.correct {
+        .stat-value {
+          color: #4caf50;
+        }
+      }
+
+      &.incorrect {
+        .stat-value {
+          color: #f44336;
+        }
+      }
+    }
+  }
+
+  .reset-btn {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: #1b5e20;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .flashcard {
+    width: 250px;
+    height: 350px;
+  }
+
+  .rating-buttons .rating-btn {
+    flex: 1 0 100%;
+  }
+}

@@ -48,6 +48,12 @@ export class CharacterService {
       }),
     );
 
+    // Calculate if the character is due for review
+    const now = new Date();
+    const dueForReview = character.nextReviewDate
+      ? character.nextReviewDate <= now
+      : false;
+
     return {
       id: character.id,
       character: character.character,
@@ -61,6 +67,13 @@ export class CharacterService {
       initialActor: initialActor ?? undefined,
       movie: character.movie,
       imgUrl: character.imgUrl,
+      // Add spaced repetition fields
+      easinessFactor: character.easinessFactor,
+      repetitions: character.repetitions,
+      interval: character.interval,
+      nextReviewDate: character.nextReviewDate,
+      lastReviewDate: character.lastReviewDate,
+      dueForReview,
     };
   }
 

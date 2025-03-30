@@ -4,6 +4,7 @@ import { InteractiveComponent } from './components/interactive/interactive.compo
 import { FrenchInteractiveComponent } from './components/french-interactive/french-interactive.component';
 import { MemoryPalaceComponent } from './components/memory-palace/memory-palace.component';
 import { PhoneticChartComponent } from './components/phonetic-chart/phonetic-chart.component';
+import { FlashcardsComponent } from './components/flashcards/flashcards.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,10 @@ export const routes: Routes = [
   {
     path: 'phonetics',
     component: PhoneticChartComponent,
+  },
+  {
+    path: 'flashcards',
+    component: FlashcardsComponent,
   },
   {
     path: '',

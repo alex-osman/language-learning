@@ -1,0 +1,100 @@
+<div class="flashcards-container">
+  <h2>Spaced Repetition Flashcards</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading flashcards...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadDueCards()">Try Again</button>
+  </div>
+
+  <!-- Review in Progress -->
+  <div *ngIf="isReviewing && currentCard" class="review-container">
+    <div class="review-progress">
+      <p>
+        {{ reviewStats.correct + reviewStats.incorrect }} of {{ reviewStats.total }} cards reviewed
+      </p>
+      <div class="progress-bar">
+        <div
+          class="progress"
+          [style.width.%]="
+            ((reviewStats.correct + reviewStats.incorrect) / reviewStats.total) * 100
+          "
+        ></div>
+      </div>
+    </div>
+
+    <div class="flashcard" [class.flipped]="isFlipped" (click)="flipCard()">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <div class="character">{{ currentCard.character }}</div>
+          <p class="hint">Click to reveal</p>
+        </div>
+        <div class="flashcard-back">
+          <div class="character">{{ currentCard.character }}</div>
+          <div class="pinyin">{{ currentCard.pinyin }}</div>
+          <div class="definition">{{ currentCard.definition }}</div>
+          <button class="audio-btn" (click)="$event.stopPropagation(); playAudio(currentCard)">
+            🔊 Play Audio
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-actions" *ngIf="isFlipped">
+      <p>How well did you remember this?</p>
+      <div class="rating-buttons">
+        <button class="rating-btn bad" (click)="submitReview(0)">0 - Complete Blackout</button>
+        <button class="rating-btn bad" (click)="submitReview(1)">
+          1 - Remembered after seeing answer
+        </button>
+        <button class="rating-btn bad" (click)="submitReview(2)">
+          2 - Incorrect, but seemed easy after
+        </button>
+        <button class="rating-btn ok" (click)="submitReview(3)">3 - Correct with difficulty</button>
+        <button class="rating-btn good" (click)="submitReview(4)">
+          4 - Correct after hesitation
+        </button>
+        <button class="rating-btn perfect" (click)="submitReview(5)">5 - Perfect recall</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No cards to review -->
+  <div
+    *ngIf="!isLoading && !error && dueCards.length === 0 && !isReviewing && !reviewCompleted"
+    class="no-cards"
+  >
+    <p>No cards due for review today!</p>
+    <p>Come back tomorrow or add new characters to study.</p>
+  </div>
+
+  <!-- Review Completed -->
+  <div *ngIf="reviewCompleted" class="review-completed">
+    <h3>Review Session Completed! 🎉</h3>
+    <div class="review-summary">
+      <div class="stat">
+        <span class="stat-value">{{ reviewStats.total }}</span>
+        <span class="stat-label">Total Cards</span>
+      </div>
+      <div class="stat correct">
+        <span class="stat-value">{{ reviewStats.correct }}</span>
+        <span class="stat-label">Correct</span>
+      </div>
+      <div class="stat incorrect">
+        <span class="stat-value">{{ reviewStats.incorrect }}</span>
+        <span class="stat-label">Incorrect</span>
+      </div>
+    </div>
+
+    <p>
+      Great job! The spaced repetition algorithm will schedule these cards for review at optimal
+      intervals.
+    </p>
+    <button class="reset-btn" (click)="resetReview()">Start New Review</button>
+  </div>
+</div>

@@ -53,6 +53,14 @@ export interface CharacterDTO {
   movie?: string;
   imgUrl?: string;
   radicals?: PropDTO[];
+
+  // Spaced Repetition Fields
+  easinessFactor?: number;
+  repetitions?: number;
+  interval?: number;
+  nextReviewDate?: Date;
+  lastReviewDate?: Date;
+  dueForReview?: boolean;
 }
 
 export interface MovieScene {

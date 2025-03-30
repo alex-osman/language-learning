@@ -20,6 +20,8 @@ import { ConversationService } from './ai/services/conversation.service';
 import { MovieAiService } from './ai/services/movie.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { FlashcardService } from './services/flashcard.service';
+import { FlashcardController } from './controllers/flashcard.controller';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { join } from 'path';
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
   ],
-  controllers: [DataController, AiController],
+  controllers: [DataController, AiController, FlashcardController],
   providers: [
     AppService,
     CharacterService,
@@ -43,6 +45,7 @@ import { join } from 'path';
     CritiqueAiService,
     ConversationService,
     MovieAiService,
+    FlashcardService,
   ],
 })
 export class AppModule {}
