@@ -1,50 +1,68 @@
-import { Controller, Get, All, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, All, Res, Req } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { join } from 'path';
 
 @Controller()
 export class AppController {
+  private readonly indexPath = join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    'client',
+    'dist',
+    'browser',
+    'index.html',
+  );
+
   @Get()
   root(@Res() res: Response) {
     // Serve the index.html for the root path
-    res.sendFile(
-      join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'client',
-        'dist',
-        'browser',
-        'index.html',
-      ),
-    );
+    res.sendFile(this.indexPath);
   }
 
-  // Using @All('*') with a very low priority to ensure all other routes are matched first
-  // This should be the last route to be evaluated
+  // Specific routes for Angular client-side routing
+  @Get('sentences')
+  sentences(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  @Get('interactive')
+  interactive(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  @Get('french')
+  french(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  @Get('memory-palace')
+  memoryPalace(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  @Get('phonetics')
+  phonetics(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  @Get('flashcards')
+  flashcards(@Res() res: Response) {
+    res.sendFile(this.indexPath);
+  }
+
+  // Fallback for unmatched routes
   @All('*')
-  catchAll(@Res() res: Response) {
-    // Make sure this doesn't handle /api* paths (although those should be handled by their own controllers first)
-    const url = res.req.originalUrl;
+  catchAll(@Req() req: Request, @Res() res: Response) {
+    // Make sure this doesn't handle /api* paths
+    const url = req.originalUrl;
     if (url.startsWith('/api')) {
       res.status(404).send({ message: 'API endpoint not found' });
       return;
     }
 
-    // Serve the index.html for any non-API path that doesn't match server-side routes
-    // This allows Angular's router to handle client-side routing
-    res.sendFile(
-      join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'client',
-        'dist',
-        'browser',
-        'index.html',
-      ),
-    );
+    // Serve index.html for any non-API path
+    res.sendFile(this.indexPath);
   }
 }

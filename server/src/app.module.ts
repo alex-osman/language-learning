@@ -26,31 +26,18 @@ import { AppController } from './controllers/app.controller';
 
 @Module({
   imports: [
-    // First, set up the database connection
+    // Database connection
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
 
-    // Then, the static file serving for normal static assets (excluding the index.html fallback)
+    // Single static file module - just serve the static files without trying to handle SPA routing
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
       exclude: ['/api*'],
-      serveStaticOptions: {
-        index: false, // Don't automatically serve index.html for directories
-      },
-    }),
-
-    // Finally, the catch-all route for Angular's client-side routing
-    // This should be evaluated last to ensure all API routes are matched first
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
-      serveRoot: '/*', // This creates a catch-all route that will serve index.html for any unmatched routes
-      exclude: ['/api*'],
-      serveStaticOptions: {
-        index: 'index.html', // Always serve index.html for client-side routing
-      },
+      // Do not set serveRoot to avoid path-to-regexp issues
     }),
   ],
-  // First list controllers that handle API endpoints, then the catch-all controller
+  // Order matters: API controllers first, then the fallback controller
   controllers: [
     DataController,
     AiController,
