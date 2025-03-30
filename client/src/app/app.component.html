@@ -1,9 +1,28 @@
 <nav class="main-nav">
-  <a routerLink="/sentences" routerLinkActive="active">Sentences</a>
-  <a routerLink="/interactive" routerLinkActive="active">Chinese</a>
-  <a routerLink="/memory-palace" routerLinkActive="active">Memory Palace</a>
-  <a routerLink="/phonetics" routerLinkActive="active">Phonetics</a>
-  <a routerLink="/french" routerLinkActive="active">French</a>
-  <a routerLink="/flashcards" routerLinkActive="active">Flashcards</a>
+  <div class="nav-container">
+    <div class="logo">
+      <span>Language Learning</span>
+    </div>
+
+    <button
+      class="mobile-menu-toggle"
+      [class.open]="mobileMenuOpen"
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle menu"
+    >
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <div class="nav-links" [class.open]="mobileMenuOpen">
+      <a routerLink="/sentences" routerLinkActive="active">Sentences</a>
+      <a routerLink="/interactive" routerLinkActive="active">Chinese</a>
+      <a routerLink="/memory-palace" routerLinkActive="active">Memory Palace</a>
+      <a routerLink="/phonetics" routerLinkActive="active">Phonetics</a>
+      <a routerLink="/french" routerLinkActive="active">French</a>
+      <a routerLink="/flashcards" routerLinkActive="active">Flashcards</a>
+    </div>
+  </div>
 </nav>
 <router-outlet></router-outlet>
