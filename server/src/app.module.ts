@@ -27,7 +27,6 @@ import { FlashcardController } from './controllers/flashcard.controller';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
-      exclude: ['/api*'],
     }),
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
