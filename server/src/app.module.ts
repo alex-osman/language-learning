@@ -18,26 +18,9 @@ import { FrenchChatAiService } from './ai/services/french-chat-ai.service';
 import { CritiqueAiService } from './ai/services/critique-ai.service';
 import { ConversationService } from './ai/services/conversation.service';
 import { MovieAiService } from './ai/services/movie.service';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
-      exclude: ['/api/**'],
-      serveStaticOptions: {
-        fallthrough: true,
-      },
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
-      serveRoot: '*',
-      exclude: ['/api/**'],
-      serveStaticOptions: {
-        index: 'index.html',
-      },
-    }),
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([Character, RadicalProp, Actor, Set]),
   ],
