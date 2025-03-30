@@ -19,13 +19,19 @@ export class FlashcardController {
    * Get all characters that are due for review
    */
   @Get('due')
-  async getDueCards(): Promise<CharacterDTO[]> {
+  async getDueCards(): Promise<{ characters: CharacterDTO[]; total: number }> {
     const dueCharacters = await this.flashcardService.getDueCards();
+    const total = await this.flashcardService.getTotalNumberOfCards();
 
     // Convert to DTOs
-    return Promise.all(
-      dueCharacters.map((char) => this.characterService.makeCharacterDTO(char)),
-    );
+    return {
+      characters: await Promise.all(
+        dueCharacters.map((char) =>
+          this.characterService.makeCharacterDTO(char),
+        ),
+      ),
+      total,
+    };
   }
 
   /**

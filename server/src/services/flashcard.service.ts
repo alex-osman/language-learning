@@ -20,6 +20,10 @@ export class FlashcardService {
     private characterRepository: Repository<Character>,
   ) {}
 
+  async getTotalNumberOfCards(): Promise<number> {
+    return this.characterRepository.count();
+  }
+
   /**
    * Get all characters due for review today
    */

@@ -24,6 +24,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
   reviewCompleted = false;
   reviewStats = {
     total: 0,
+    totalDue: 0,
     correct: 0,
     incorrect: 0,
   };
@@ -94,9 +95,10 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     this.error = null;
 
     const sub = this.flashcardService.getDueCards().subscribe({
-      next: cards => {
-        this.dueCards = cards;
-        this.reviewStats.total = cards.length;
+      next: response => {
+        this.dueCards = response.characters;
+        this.reviewStats.totalDue = response.characters.length;
+        this.reviewStats.total = response.total;
         this.isLoading = false;
         this.showNextCard();
       },
@@ -198,6 +200,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     this.reviewCompleted = false;
     this.reviewStats = {
       total: 0,
+      totalDue: 0,
       correct: 0,
       incorrect: 0,
     };

@@ -14,8 +14,8 @@ export class FlashcardService {
   /**
    * Get all characters that are due for review today
    */
-  getDueCards(): Observable<CharacterDTO[]> {
-    return this.http.get<CharacterDTO[]>(`${this.apiUrl}/due`);
+  getDueCards(): Observable<{ characters: CharacterDTO[]; total: number }> {
+    return this.http.get<{ characters: CharacterDTO[]; total: number }>(`${this.apiUrl}/due`);
   }
 
   /**

@@ -16,7 +16,10 @@
   <div *ngIf="isReviewing && currentCard" class="review-container">
     <div class="review-progress">
       <p>
-        {{ reviewStats.correct + reviewStats.incorrect }} of {{ reviewStats.total }} cards reviewed
+        {{ reviewStats.correct + reviewStats.incorrect }} of {{ reviewStats.totalDue }}/{{
+          reviewStats.total
+        }}
+        cards reviewed
       </p>
       <div
         class="progress-bar"
@@ -145,7 +148,7 @@
     <h3>Review Session Completed! 🎉</h3>
     <div class="review-summary">
       <div class="stat">
-        <span class="stat-value">{{ reviewStats.total }}</span>
+        <span class="stat-value">{{ reviewStats.totalDue }}</span>
         <span class="stat-label">Total Cards</span>
       </div>
       <div class="stat correct">
