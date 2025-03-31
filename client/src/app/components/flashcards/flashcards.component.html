@@ -26,12 +26,12 @@
         role="progressbar"
         [attr.aria-valuenow]="reviewStats.correct + reviewStats.incorrect"
         [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="reviewStats.total"
+        [attr.aria-valuemax]="reviewStats.totalDue"
       >
         <div
           class="progress"
           [style.width.%]="
-            ((reviewStats.correct + reviewStats.incorrect) / reviewStats.total) * 100
+            ((reviewStats.correct + reviewStats.incorrect) / reviewStats.totalDue) * 100
           "
         ></div>
       </div>
