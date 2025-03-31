@@ -603,3 +603,62 @@
     padding-bottom: 220px;
   }
 }
+
+.no-cards {
+  text-align: center;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  margin: 2rem 0;
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+    margin: 1rem 0;
+  }
+
+  .practice-anyway {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+
+    p {
+      font-weight: 500;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+
+    .practice-btn {
+      padding: 0.75rem 1.5rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+
+      .practice-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        width: 100%;
+      }
+    }
+  }
+}

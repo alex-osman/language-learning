@@ -76,6 +76,7 @@ describe('CharacterService', () => {
       { input: 'guo', expected: { initial: 'gu', final: 'o' } },
       { input: 'fu', expected: { initial: 'fu', final: '' } },
       { input: 'xi', expected: { initial: 'xi', final: '' } },
+      { input: 'bu', expected: { initial: 'bu', final: '' } },
     ];
 
     testCases.forEach(({ input, expected }) => {

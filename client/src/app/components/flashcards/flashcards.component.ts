@@ -112,6 +112,38 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
+  /**
+   * Load practice cards even when none are due
+   * This is triggered when a user wants to practice despite having no due cards
+   */
+  loadPracticeCards() {
+    this.isLoading = true;
+    this.error = null;
+
+    const sub = this.flashcardService.getPracticeCards().subscribe({
+      next: response => {
+        this.dueCards = response.characters;
+        this.reviewStats.totalDue = response.characters.length;
+        this.reviewStats.total = response.total;
+        this.isLoading = false;
+
+        if (this.dueCards.length > 0) {
+          this.showNextCard();
+        } else {
+          this.error =
+            'No cards available for practice. Please add characters to your study list first.';
+        }
+      },
+      error: err => {
+        console.error('Error loading practice cards:', err);
+        this.error = 'Failed to load cards for practice. Please try again.';
+        this.isLoading = false;
+      },
+    });
+
+    this.subscriptions.push(sub);
+  }
+
   showNextCard() {
     // Reset review state
     this.selectedRating = null;
@@ -131,7 +163,6 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
       this.isProcessingReview = false;
       this.currentCard = null;
       this.isReviewing = false;
-      this.reviewCompleted = true;
     }
   }
 

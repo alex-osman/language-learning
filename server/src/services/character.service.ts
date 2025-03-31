@@ -120,6 +120,9 @@ export class CharacterService {
     } else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
       initial = pinyinNoTones[0] === 'x' ? pinyinNoTones : pinyinNoTones[0];
       final = '';
+    } else if (pinyinNoTones.startsWith('bu')) {
+      initial = 'bu';
+      final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.startsWith('ju')) {
       initial = 'ju';
       final = pinyinNoTones.substring(2);

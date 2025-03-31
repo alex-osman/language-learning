@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { FlashcardService } from '../services/flashcard.service';
 import { CharacterService } from '../services/character.service';
 import { Character } from '../entities/character.entity';
@@ -27,6 +27,30 @@ export class FlashcardController {
     return {
       characters: await Promise.all(
         dueCharacters.map((char) =>
+          this.characterService.makeCharacterDTO(char),
+        ),
+      ),
+      total,
+    };
+  }
+
+  /**
+   * Get practice cards even when no cards are due
+   * @param limit The number of cards to retrieve for practice (default: 10)
+   */
+  @Get('practice')
+  async getPracticeCards(
+    @Query('limit') limit: number = 10,
+  ): Promise<{ characters: CharacterDTO[]; total: number }> {
+    // Get characters for practice, regardless of due status
+    const practiceCharacters =
+      await this.flashcardService.getPracticeCards(limit);
+    const total = await this.flashcardService.getTotalNumberOfCards();
+
+    // Convert to DTOs
+    return {
+      characters: await Promise.all(
+        practiceCharacters.map((char) =>
           this.characterService.makeCharacterDTO(char),
         ),
       ),

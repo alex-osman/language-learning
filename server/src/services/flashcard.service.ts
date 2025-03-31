@@ -40,6 +40,50 @@ export class FlashcardService {
   }
 
   /**
+   * Get practice cards even when none are due
+   * This provides cards for users who want to practice regardless of the schedule
+   * @param limit The maximum number of cards to return
+   */
+  async getPracticeCards(limit: number = 10): Promise<Character[]> {
+    // First check if any cards are due
+    const dueCards = await this.getDueCards();
+
+    // If there are due cards, return those first
+    if (dueCards.length > 0) {
+      return dueCards.slice(0, limit);
+    }
+
+    // Otherwise, return cards that have been studied before (sorted by next review date)
+    // This prioritizes cards that will be due soon
+    const cards = await this.characterRepository.find({
+      where: {
+        // Only include cards that have been studied before (have a next review date)
+        nextReviewDate: LessThanOrEqual(new Date(9999, 0, 1)), // Far future date to include all cards with a review date
+      },
+      order: {
+        // Sort by next review date (ascending) so cards due soonest come first
+        nextReviewDate: 'ASC',
+        // Then by easiness factor (ascending) so more difficult cards come first
+        easinessFactor: 'ASC',
+      },
+      take: limit,
+    });
+
+    // If there are no cards with review dates, return random cards for the user to learn
+    if (cards.length === 0) {
+      return this.characterRepository.find({
+        take: limit,
+        // Get random cards for true beginners
+        order: {
+          id: 'ASC', // Start with simpler characters which typically have lower IDs
+        },
+      });
+    }
+
+    return cards;
+  }
+
+  /**
    * Process review of a character using SM-2 algorithm
    * @param characterId The ID of the character being reviewed
    * @param quality The quality of response (0-5)

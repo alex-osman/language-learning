@@ -19,6 +19,16 @@ export class FlashcardService {
   }
 
   /**
+   * Get practice cards even when none are due
+   * @param limit The maximum number of cards to return (default: 10)
+   */
+  getPracticeCards(limit: number = 10): Observable<{ characters: CharacterDTO[]; total: number }> {
+    return this.http.get<{ characters: CharacterDTO[]; total: number }>(`${this.apiUrl}/practice`, {
+      params: { limit: limit.toString() },
+    });
+  }
+
+  /**
    * Submit a review for a character
    * @param characterId The ID of the character
    * @param quality The quality rating (0-5) of the review
