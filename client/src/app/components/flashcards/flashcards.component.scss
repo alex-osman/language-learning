@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 2rem 1rem;
   font-family: Arial, sans-serif;
+  position: relative;
+  min-height: 100vh;
 
   h2 {
     text-align: center;
@@ -59,6 +61,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  min-height: 70vh;
+  padding-bottom: 4rem;
+
+  &.flipped-mode {
+    padding-bottom: 220px;
+
+    @media (max-width: 480px) {
+      padding-bottom: 270px;
+    }
+  }
 }
 
 .review-progress {
@@ -242,37 +255,70 @@
   }
 }
 
-.review-actions {
-  text-align: center;
-  width: 100%;
-  margin-top: 1rem;
+.review-actions-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 1rem;
+  z-index: 100;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: 0 auto;
 
-  p {
-    margin-bottom: 1rem;
-    font-weight: bold;
+  &.processing {
+    opacity: 0.8;
   }
 
-  .rating-buttons {
+  .review-actions-content {
+    text-align: center;
+
+    p {
+      margin-bottom: 0.75rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  }
+
+  .rating-buttons-compact {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
     gap: 0.5rem;
+    flex-wrap: wrap;
 
     &.disabled {
       opacity: 0.7;
     }
 
     .rating-btn {
-      flex: 1 0 45%;
-      padding: 0.75rem;
+      flex: 1 0 15%;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
-      margin-bottom: 0.5rem;
+      padding: 0.6rem 0.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       font-size: 0.9rem;
-      position: relative;
-      overflow: hidden;
+      min-height: 70px;
+
+      .rating-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+      }
+
+      .rating-text {
+        font-size: 0.8rem;
+        text-align: center;
+        line-height: 1.1;
+      }
 
       &:disabled {
         cursor: not-allowed;
@@ -281,6 +327,7 @@
 
       &.selected {
         box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+        transform: scale(1.05);
 
         &:after {
           content: '✓';
@@ -337,36 +384,20 @@
   }
 
   @media (max-width: 480px) {
-    .rating-buttons {
+    padding: 0.75rem 0.5rem;
+
+    .rating-buttons-compact {
       .rating-btn {
-        flex: 1 0 100%;
-        padding: 0.8rem 0.6rem;
-        font-size: 0.9rem;
-        text-align: center;
-        min-height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex: 1 0 30%;
+        padding: 0.5rem 0.3rem;
+        min-height: 60px;
 
-        /* Hide the desktop span */
-        span {
-          display: none;
+        .rating-number {
+          font-size: 1.3rem;
         }
 
-        /* Show the mobile label */
-        &::before {
-          content: attr(data-mobile-label);
-          display: block;
-          width: 100%;
-          text-align: center;
-          font-weight: 600;
-          letter-spacing: 0.5px;
-        }
-
-        /* Ensure consistent colors */
-        &.ok {
-          background-color: #ff9800;
-          color: white;
+        .rating-text {
+          font-size: 0.7rem;
         }
       }
     }
@@ -483,7 +514,6 @@
   }
 }
 
-/* Animation for audio playing feedback */
 @keyframes pulse-audio {
   0% {
     box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4);
@@ -498,24 +528,22 @@
 
 :host-context(.audio-playing) {
   .audio-btn {
-    animation: pulse-audio 1s infinite;
+    animation: pulse-audio 1.5s ease-in-out infinite;
   }
 }
 
-/* Improve touch target sizes for mobile */
 .touch-device {
   .rating-btn,
   .audio-btn,
   .reset-btn {
-    min-height: 44px; /* Apple's recommended minimum touch target size */
+    min-height: 44px;
   }
 
   .flashcard {
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Add processing indicator styles */
 .processing-indicator {
   margin-top: 1rem;
   text-align: center;
@@ -542,5 +570,36 @@
   }
   100% {
     opacity: 0.7;
+  }
+}
+
+.review-actions-wrapper {
+  transition: opacity 0.3s ease, transform 0.3s ease-out;
+  transform: translateY(0);
+
+  &.ng-enter {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  &.ng-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.ng-leave {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.ng-leave-active {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+:host-context(body) {
+  &.flipped-mode {
+    padding-bottom: 220px;
   }
 }

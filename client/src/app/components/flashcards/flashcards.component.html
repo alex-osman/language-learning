@@ -13,7 +13,7 @@
   </div>
 
   <!-- Review in Progress -->
-  <div *ngIf="isReviewing && currentCard" class="review-container">
+  <div *ngIf="isReviewing && currentCard" class="review-container" [class.flipped-mode]="isFlipped">
     <div class="review-progress">
       <p>
         {{ reviewStats.correct + reviewStats.incorrect }} of {{ reviewStats.totalDue }}/{{
@@ -70,66 +70,81 @@
       </div>
     </div>
 
-    <div class="review-actions" *ngIf="isFlipped">
-      <p>How well did you remember this?</p>
-      <div class="rating-buttons" [class.disabled]="isProcessingReview">
-        <button
-          class="rating-btn bad"
-          (click)="submitReview(0)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 0"
-          data-mobile-label="0 - Complete Blackout"
-        >
-          <span>0 - Complete Blackout</span>
-        </button>
-        <button
-          class="rating-btn bad"
-          (click)="submitReview(1)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 1"
-          data-mobile-label="1 - Recognized only"
-        >
-          <span>1 - Remembered after seeing answer</span>
-        </button>
-        <button
-          class="rating-btn bad"
-          (click)="submitReview(2)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 2"
-          data-mobile-label="2 - Easy after seeing"
-        >
-          <span>2 - Incorrect, but seemed easy after</span>
-        </button>
-        <button
-          class="rating-btn ok"
-          (click)="submitReview(3)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 3"
-          data-mobile-label="3 - Difficult recall"
-        >
-          <span>3 - Correct with difficulty</span>
-        </button>
-        <button
-          class="rating-btn good"
-          (click)="submitReview(4)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 4"
-          data-mobile-label="4 - Slight hesitation"
-        >
-          <span>4 - Correct after hesitation</span>
-        </button>
-        <button
-          class="rating-btn perfect"
-          (click)="submitReview(5)"
-          [disabled]="isProcessingReview"
-          [class.selected]="selectedRating === 5"
-          data-mobile-label="5 - Perfect recall"
-        >
-          <span>5 - Perfect recall</span>
-        </button>
-      </div>
-      <div *ngIf="isProcessingReview" class="processing-indicator">
-        <p>Processing...</p>
+    <!-- Fixed position review actions that appear when card is flipped -->
+    <div class="review-actions-wrapper" *ngIf="isFlipped" [class.processing]="isProcessingReview">
+      <div class="review-actions-content">
+        <p>How well did you remember this?</p>
+        <div class="rating-buttons-compact" [class.disabled]="isProcessingReview">
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(0)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 0"
+            data-mobile-label="0"
+            aria-label="0 - Complete Blackout"
+          >
+            <span class="rating-number">0</span>
+            <span class="rating-text">Complete Blackout</span>
+          </button>
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(1)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 1"
+            data-mobile-label="1"
+            aria-label="1 - Remembered after seeing answer"
+          >
+            <span class="rating-number">1</span>
+            <span class="rating-text">Remembered after seeing</span>
+          </button>
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(2)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 2"
+            data-mobile-label="2"
+            aria-label="2 - Incorrect, but seemed easy after"
+          >
+            <span class="rating-number">2</span>
+            <span class="rating-text">Incorrect but easy after</span>
+          </button>
+          <button
+            class="rating-btn ok"
+            (click)="submitReview(3)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 3"
+            data-mobile-label="3"
+            aria-label="3 - Correct with difficulty"
+          >
+            <span class="rating-number">3</span>
+            <span class="rating-text">Correct with difficulty</span>
+          </button>
+          <button
+            class="rating-btn good"
+            (click)="submitReview(4)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 4"
+            data-mobile-label="4"
+            aria-label="4 - Correct after hesitation"
+          >
+            <span class="rating-number">4</span>
+            <span class="rating-text">Correct after hesitation</span>
+          </button>
+          <button
+            class="rating-btn perfect"
+            (click)="submitReview(5)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 5"
+            data-mobile-label="5"
+            aria-label="5 - Perfect recall"
+          >
+            <span class="rating-number">5</span>
+            <span class="rating-text">Perfect recall</span>
+          </button>
+        </div>
+        <div *ngIf="isProcessingReview" class="processing-indicator">
+          <p>Processing...</p>
+        </div>
       </div>
     </div>
   </div>
