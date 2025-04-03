@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, Repository, IsNull } from 'typeorm';
 import { Character } from '../entities/character.entity';
 
 // Response quality ratings (0-5)
@@ -30,9 +30,10 @@ export class FlashcardService {
   async getDueCards(): Promise<Character[]> {
     const now = new Date();
     return this.characterRepository.find({
-      where: {
-        nextReviewDate: LessThanOrEqual(now),
-      },
+      where: [
+        { nextReviewDate: LessThanOrEqual(now) },
+        { nextReviewDate: IsNull() },
+      ],
       order: {
         nextReviewDate: 'ASC',
       },
