@@ -69,7 +69,7 @@ describe('CharacterService', () => {
       { input: 'hua', expected: { initial: 'hu', final: 'a' } },
       { input: 'luan', expected: { initial: 'lu', final: 'an' } },
       { input: 'yue', expected: { initial: 'yu', final: 'e' } },
-      { input: 'ming', expected: { initial: 'mi', final: 'eng' } },
+      { input: 'ming', expected: { initial: 'mi', final: 'ng' } },
       { input: 'ju', expected: { initial: 'ju', final: '' } },
       { input: 'zi', expected: { initial: 'z', final: '' } },
       { input: 'cun', expected: { initial: 'cu', final: 'n' } },
@@ -78,6 +78,7 @@ describe('CharacterService', () => {
       { input: 'xi', expected: { initial: 'xi', final: '' } },
       { input: 'bu', expected: { initial: 'bu', final: '' } },
       { input: 'mu', expected: { initial: 'mu', final: '' } },
+      { input: 'mian', expected: { initial: 'mi', final: 'an' } },
     ];
 
     testCases.forEach(({ input, expected }) => {

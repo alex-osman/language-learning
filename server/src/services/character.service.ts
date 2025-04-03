@@ -134,7 +134,7 @@ export class CharacterService {
       final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.startsWith('mi')) {
       initial = 'mi';
-      final = `e${pinyinNoTones.substring(2)}`;
+      final = `${pinyinNoTones.substring(2)}`;
     } else if (pinyinNoTones.startsWith('shu')) {
       initial = 'shu';
       final = pinyinNoTones.substring(3);
