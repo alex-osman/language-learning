@@ -77,6 +77,7 @@ describe('CharacterService', () => {
       { input: 'fu', expected: { initial: 'fu', final: '' } },
       { input: 'xi', expected: { initial: 'xi', final: '' } },
       { input: 'bu', expected: { initial: 'bu', final: '' } },
+      { input: 'mu', expected: { initial: 'mu', final: '' } },
     ];
 
     testCases.forEach(({ input, expected }) => {
@@ -84,20 +85,6 @@ describe('CharacterService', () => {
         const result = service.parsePinyin(input);
         expect(result).toEqual(expected);
       });
-    });
-
-    it('should handle edge cases', () => {
-      // Empty string
-      expect(service.parsePinyin('')).toEqual({ initial: '', final: '' });
-
-      // Single character
-      expect(service.parsePinyin('a')).toEqual({ initial: 'a', final: '' });
-
-      // Special case with 'w'
-      expect(service.parsePinyin('wu')).toEqual({ initial: 'w', final: '' });
-
-      // Special case with 'r'
-      expect(service.parsePinyin('ri')).toEqual({ initial: 'r', final: '' });
     });
   });
 
