@@ -21,6 +21,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
   isProcessingReview = false;
   selectedRating: number | null = null;
   error: string | null = null;
+  audioEnabled = false;
   reviewCompleted = false;
   reviewStats = {
     total: 0,
@@ -175,9 +176,11 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     // Play pronunciation when card is flipped to reveal answer
     // Add a slight delay to match the animation timing
     if (this.isFlipped && this.currentCard) {
-      setTimeout(() => {
-        this.playAudio(this.currentCard!);
-      }, 300); // Half the animation time (600ms/2) to sync with the card flip
+      if (this.audioEnabled) {
+        setTimeout(() => {
+          this.playAudio(this.currentCard!);
+        }, 300); // Half the animation time (600ms/2) to sync with the card flip
+      }
     }
   }
 
