@@ -205,10 +205,24 @@
         font-size: 0.8rem;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 
+        // Add transition for smooth content change
+        transition: max-height 0.3s ease;
+
+        &.detailed-hint {
+          max-height: 400px;
+        }
+
         pre {
           margin: 0;
           white-space: pre-wrap;
           word-wrap: break-word;
+        }
+
+        .hint-divider {
+          margin: 8px 0;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.3);
+          width: 100%;
         }
 
         .hint-section {
@@ -220,6 +234,18 @@
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
+          }
+
+          &.technical {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 4px;
+            border-bottom: none;
+            margin-bottom: 8px;
+
+            h4 {
+              color: #64b5f6; // Lighter blue for technical sections
+            }
           }
 
           h4 {
@@ -234,6 +260,15 @@
 
             &:last-child {
               margin-bottom: 0;
+            }
+
+            &.movie-hint {
+              font-style: italic;
+              background-color: rgba(255, 255, 255, 0.05);
+              padding: 6px;
+              border-radius: 3px;
+              margin-top: 2px;
+              line-height: 1.3;
             }
           }
 

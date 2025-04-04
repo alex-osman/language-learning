@@ -24,6 +24,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
   audioEnabled = false;
   reviewCompleted = false;
   showHint = false;
+  hintLevel = 0; // 0: no hint, 1: basic hint (actor, location, props), 2: detailed hint (initial, final, tone)
   reviewStats = {
     total: 0,
     totalDue: 0,
@@ -112,13 +113,30 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Toggle hint visibility
+  // Toggle hint visibility and level
   toggleHint(event?: MouseEvent) {
     // Prevent the card from flipping when clicking the hint button
     if (event) {
       event.stopPropagation();
     }
-    this.showHint = !this.showHint;
+
+    // Cycle through hint levels: 0 (no hint) -> 1 (basic) -> 2 (detailed) -> 0 (no hint)
+    this.hintLevel = (this.hintLevel + 1) % 3;
+    this.showHint = this.hintLevel > 0;
+  }
+
+  // Get the hint button text based on current hint level
+  getHintButtonText(): string {
+    switch (this.hintLevel) {
+      case 0:
+        return 'Show Hint';
+      case 1:
+        return 'More Details';
+      case 2:
+        return 'Hide Hint';
+      default:
+        return 'Show Hint';
+    }
   }
 
   loadDueCards() {
@@ -179,6 +197,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     // Reset review state
     this.selectedRating = null;
     this.showHint = false;
+    this.hintLevel = 0;
 
     // Set isFlipped to false BEFORE setting currentCard to ensure
     // the next card is always shown front-side first

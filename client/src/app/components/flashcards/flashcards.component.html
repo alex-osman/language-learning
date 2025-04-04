@@ -59,36 +59,50 @@
             class="hint-btn"
             (click)="toggleHint($event)"
             [disabled]="isProcessingReview"
-            aria-label="Show or hide hint"
+            aria-label="Toggle hint level"
           >
-            {{ showHint ? 'Hide Hint' : 'Show Hint' }}
+            {{ getHintButtonText() }}
           </button>
 
           <!-- Hint container -->
-          <div *ngIf="showHint" class="hint-container">
-            <div class="hint-section">
-              <h4>Initial: {{ currentCard.initial }}</h4>
-              <p *ngIf="currentCard.initialActor">Actor: {{ currentCard.initialActor.name }}</p>
+          <div *ngIf="showHint" class="hint-container" [class.detailed-hint]="hintLevel === 2">
+            <!-- Actor info -->
+            <div class="hint-section" *ngIf="currentCard.initialActor">
+              <h4>{{ hintLevel === 1 ? 'Actor:' : 'Initial: ' + currentCard.initial }}</h4>
+              <p>{{ currentCard.initialActor.name }}</p>
             </div>
 
-            <div class="hint-section">
-              <h4>Final: {{ currentCard.final || 'ø' }}</h4>
-              <p *ngIf="currentCard.finalSet">Set: {{ currentCard.finalSet.name }}</p>
+            <!-- Set/Location info -->
+            <div class="hint-section" *ngIf="currentCard.finalSet || currentCard.toneNumber">
+              <h4>
+                {{
+                  hintLevel === 1
+                    ? 'Location:'
+                    : 'Final: ' + (currentCard.final || 'ø') + ', Tone: ' + currentCard.toneNumber
+                }}
+              </h4>
+              <p>{{ getToneLocation(currentCard) }}</p>
+              <p *ngIf="hintLevel === 2 && currentCard.finalSet">
+                Set: {{ currentCard.finalSet.name }}
+              </p>
             </div>
 
-            <div class="hint-section">
-              <h4>Tone: {{ currentCard.toneNumber }}</h4>
-              <p>Location: {{ getToneLocation(currentCard) }}</p>
-            </div>
-
+            <!-- Props/Radicals info -->
             <div
               class="hint-section"
               *ngIf="currentCard.radicals && currentCard.radicals.length > 0"
             >
-              <h4>Props:</h4>
+              <h4>{{ hintLevel === 1 ? 'Props:' : 'Radicals:' }}</h4>
               <div *ngFor="let prop of currentCard.radicals" class="prop-item">
-                <span>{{ prop.radical }}</span> - <span>{{ prop.prop }}</span>
+                <span *ngIf="hintLevel === 1">{{ prop.prop }}</span>
+                <span *ngIf="hintLevel === 2">{{ prop.radical }} - {{ prop.prop }}</span>
               </div>
+            </div>
+
+            <!-- Optional movie section at level 2 -->
+            <div class="hint-section" *ngIf="hintLevel === 2 && currentCard.movie">
+              <h4>Movie:</h4>
+              <p class="movie-hint">{{ currentCard.movie }}</p>
             </div>
           </div>
         </div>
