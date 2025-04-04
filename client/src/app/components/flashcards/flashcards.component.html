@@ -53,6 +53,44 @@
             {{ currentCard.character }}
           </div>
           <p class="hint">Tap to reveal</p>
+
+          <!-- Hint button -->
+          <button
+            class="hint-btn"
+            (click)="toggleHint($event)"
+            [disabled]="isProcessingReview"
+            aria-label="Show or hide hint"
+          >
+            {{ showHint ? 'Hide Hint' : 'Show Hint' }}
+          </button>
+
+          <!-- Hint container -->
+          <div *ngIf="showHint" class="hint-container">
+            <div class="hint-section">
+              <h4>Initial: {{ currentCard.initial }}</h4>
+              <p *ngIf="currentCard.initialActor">Actor: {{ currentCard.initialActor.name }}</p>
+            </div>
+
+            <div class="hint-section">
+              <h4>Final: {{ currentCard.final || 'ø' }}</h4>
+              <p *ngIf="currentCard.finalSet">Set: {{ currentCard.finalSet.name }}</p>
+            </div>
+
+            <div class="hint-section">
+              <h4>Tone: {{ currentCard.toneNumber }}</h4>
+              <p>Location: {{ getToneLocation(currentCard) }}</p>
+            </div>
+
+            <div
+              class="hint-section"
+              *ngIf="currentCard.radicals && currentCard.radicals.length > 0"
+            >
+              <h4>Props:</h4>
+              <div *ngFor="let prop of currentCard.radicals" class="prop-item">
+                <span>{{ prop.radical }}</span> - <span>{{ prop.prop }}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="flashcard-back" [class.processing]="isProcessingReview">
           <div class="character">{{ currentCard.character }}</div>

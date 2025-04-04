@@ -23,6 +23,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
   error: string | null = null;
   audioEnabled = false;
   reviewCompleted = false;
+  showHint = false;
   reviewStats = {
     total: 0,
     totalDue: 0,
@@ -51,6 +52,26 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     if (this.audioIsPlayingTimeout) {
       clearTimeout(this.audioIsPlayingTimeout);
     }
+  }
+
+  // Get tone location for a character
+  getToneLocation(character: CharacterDTO): string {
+    // First check if the finalSet has toneLocations with the matching tone number
+    const toneLocation = character.finalSet?.toneLocations.find(
+      toneLocation => toneLocation.toneNumber === character.toneNumber
+    );
+    if (toneLocation) return toneLocation.name;
+
+    // Fallback to default locations based on tone number
+    return (
+      {
+        '1': 'Outside the entrance',
+        '2': 'Kitchen or inside entrance',
+        '3': 'Bedroom or living room',
+        '4': 'Bathroom or outside/yard',
+        '5': 'On the roof',
+      }[character.toneNumber] || 'Unknown'
+    );
   }
 
   // Detect if user is on mobile device to adjust UX
@@ -89,6 +110,15 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
     if (this.touchEndX > this.touchStartX + SWIPE_THRESHOLD && !this.isFlipped) {
       this.flipCard();
     }
+  }
+
+  // Toggle hint visibility
+  toggleHint(event?: MouseEvent) {
+    // Prevent the card from flipping when clicking the hint button
+    if (event) {
+      event.stopPropagation();
+    }
+    this.showHint = !this.showHint;
   }
 
   loadDueCards() {
@@ -148,6 +178,7 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
   showNextCard() {
     // Reset review state
     this.selectedRating = null;
+    this.showHint = false;
 
     // Set isFlipped to false BEFORE setting currentCard to ensure
     // the next card is always shown front-side first
