@@ -1,9 +1,12 @@
 <div class="container">
   <!-- Highlight Sidebar Component -->
-  <app-highlight-sidebar
-    [currentHighlighted]="currentHighlighted"
-    (audioRequested)="playAudio($event)"
-  ></app-highlight-sidebar>
+  <!-- hide on mobile -->
+  <div class="hidden-mobile">
+    <app-highlight-sidebar
+      [currentHighlighted]="currentHighlighted"
+      (audioRequested)="playAudio($event)"
+    ></app-highlight-sidebar>
+  </div>
 
   <!-- Main Content -->
   <div class="main-content">
@@ -12,12 +15,13 @@
 
       <!-- Sentence Selector -->
       <div class="sentence-selector">
-        <button 
+        <button
           *ngFor="let s of sentences; let i = index"
           (click)="selectSentence(s)"
           [class.active]="s === activeSentence"
-          class="sentence-button">
-          Sentence {{s.id}}
+          class="sentence-button"
+        >
+          Sentence {{ s.id }}
         </button>
       </div>
 
