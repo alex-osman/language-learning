@@ -136,7 +136,7 @@ import { WordsComponent } from '../words/words.component';
 })
 export class MemoryPalaceComponent {
   visibleSections = {
-    addRadicalProp: true,
+    addRadicalProp: false,
     characters: true,
     words: true,
     radicals: true,
