@@ -58,8 +58,7 @@
       </div>
 
       <div class="sentence-footer">
-        <span *ngIf="sentence.source" class="source">Source: {{ sentence.source }}</span>
-        <span class="audio-indicator" (click)="playAudio(sentence.sentence)">
+        <span class="audio-indicator" (click)="playAudio(sentence.id)">
           <i class="audio-icon">🔊</i>
         </span>
       </div>

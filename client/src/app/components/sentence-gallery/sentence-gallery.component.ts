@@ -50,9 +50,15 @@ export class SentenceGalleryComponent implements OnInit {
     });
   }
 
-  async playAudio(text: string): Promise<void> {
-    // await this.speechService.speak(text);
-    await this.ttsService.generateSpeech(text);
+  async playAudio(sentenceId: number): Promise<void> {
+    const sentence = this.sentences.find(s => s.id === sentenceId);
+    if (sentence?.audioUrl) {
+      const audioUrl = sentence.audioUrl;
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } else if (sentence?.sentence) {
+      await this.ttsService.generateSpeech(sentence.sentence);
+    }
   }
 
   applyFilters(): void {
