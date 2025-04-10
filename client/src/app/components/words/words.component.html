@@ -1,0 +1,56 @@
+<div class="section words">
+  <h2>Words</h2>
+  <h4>{{ words.length }} words</h4>
+
+  <div *ngIf="isLoading" class="loading">Loading words...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div class="grid" *ngIf="!isLoading && !error">
+    <ng-container *ngFor="let word of words">
+      <div
+        class="cell"
+        [class.has-data]="hasWordData(word)"
+        [class.no-data]="!hasWordData(word)"
+        (click)="onWordClick(word)"
+        [class.selected]="selectedWord?.id === word.id"
+      >
+        <div class="cell-content">
+          <div class="word">{{ word.word }}</div>
+          <ng-container *ngIf="hasWordData(word)">
+            <div class="pinyin">{{ word.pinyin }}</div>
+            <div class="definition">{{ word.definition }}</div>
+            <div *ngIf="word.frequencyRank" class="frequency-rank">#{{ word.frequencyRank }}</div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Word Details Panel -->
+  <div *ngIf="selectedWord" class="word-details-panel">
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <h3>
+          {{ selectedWord.word }} - {{ selectedWord.pinyin }} -
+          {{ selectedWord.definition }}
+        </h3>
+        <button class="close-btn" (click)="clearSelection()">×</button>
+      </div>
+      <div class="panel-sub-header">
+        <h4 *ngIf="selectedWord.frequencyRank">
+          Frequency Rank: #{{ selectedWord.frequencyRank }}
+        </h4>
+      </div>
+    </div>
+    <div class="panel-content">
+      <div class="info-section">
+        <h4>Definition</h4>
+        <p>{{ selectedWord.definition }}</p>
+      </div>
+      <div class="info-section" *ngIf="selectedWord.notes">
+        <h4>Notes</h4>
+        <p class="notes-text">{{ selectedWord.notes }}</p>
+      </div>
+    </div>
+  </div>
+</div>

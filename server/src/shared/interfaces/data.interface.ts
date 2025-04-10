@@ -65,6 +65,16 @@ export interface CharacterDTO {
   dueForReview?: boolean;
 }
 
+export interface WordDTO {
+  id: number;
+  word: string;
+  pinyin: string;
+  definition: string;
+  notes?: string;
+  frequencyRank?: number;
+  createdAt: Date;
+}
+
 export interface DataStructure {
   sets: SetDTO[];
   tones: Tone;

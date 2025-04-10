@@ -63,6 +63,16 @@ export interface CharacterDTO {
   dueForReview?: boolean;
 }
 
+export interface WordDTO {
+  id: number;
+  word: string;
+  pinyin: string;
+  definition: string;
+  notes?: string;
+  frequencyRank?: number;
+  createdAt: Date;
+}
+
 export interface MovieScene {
   initial: string;
   final: string;
@@ -77,6 +87,7 @@ export interface MovieScene {
 })
 export class DataService {
   private apiUrl = '/api/data';
+  private wordsApiUrl = '/api/words';
 
   constructor(private http: HttpClient) {}
 
@@ -99,6 +110,10 @@ export class DataService {
 
   getCharacters(): Observable<CharacterDTO[]> {
     return this.http.get<CharacterDTO[]>(`${this.apiUrl}/characters`);
+  }
+
+  getWords(): Observable<WordDTO[]> {
+    return this.http.get<WordDTO[]>(`${this.wordsApiUrl}`);
   }
 
   // Helper method to get tone number from pinyin
