@@ -49,7 +49,7 @@ export class CharactersComponent implements OnInit {
     this.error = null;
 
     this.dataService.getCharacters().subscribe(characters => {
-      this.characters = characters;
+      this.characters = characters.sort((a, b) => b.id - a.id);
       this.isLoading = false;
     });
   }
