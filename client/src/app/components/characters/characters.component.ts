@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DataService, CharacterDTO, MovieScene, Tone } from '../../services/data.service';
 import { MovieService, MovieGenerationRequest } from '../../services/movie.service';
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
@@ -9,7 +10,7 @@ import { FlashcardService } from '../../services/flashcard.service';
 @Component({
   selector: 'app-characters',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './characters.component.html',
   styleUrls: ['./characters.component.scss'],
 })
@@ -24,6 +25,8 @@ export class CharactersComponent implements OnInit {
   error: string | null = null;
   tones: Tone | null = null;
   radicalProps: RadicalProp[] = [];
+  userStoryInput: string = '';
+  generatedImageUrl: string | null = null;
 
   constructor(
     private dataService: DataService,
@@ -73,14 +76,16 @@ export class CharactersComponent implements OnInit {
   clearSelection(): void {
     this.selectedCharacter = null;
     this.movieScene = null;
+    this.generatedImageUrl = null;
   }
 
   generateMovie(): void {
     if (!this.selectedCharacter) return;
 
     this.isGeneratingMovie = true;
+    this.generatedImageUrl = null;
 
-    this.movieService.generateMovie(this.selectedCharacter.id).subscribe({
+    this.movieService.generateMovie(this.selectedCharacter.id, this.userStoryInput).subscribe({
       next: response => {
         console.log('Movie generated:', response);
         if (this.selectedCharacter) {
@@ -93,6 +98,15 @@ export class CharactersComponent implements OnInit {
             this.selectedCharacter.movie = response.movie;
           }
         }
+
+        // Store the generated image URL if available
+        if (response.imageUrl) {
+          console.log('Image URL received:', response.imageUrl);
+          this.generatedImageUrl = response.imageUrl;
+        }
+
+        // Reset the user input after successful generation
+        this.userStoryInput = '';
         this.isGeneratingMovie = false;
       },
       error: error => {

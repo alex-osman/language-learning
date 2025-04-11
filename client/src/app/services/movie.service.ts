@@ -13,10 +13,12 @@ export interface MovieGenerationRequest {
   toneLocation: string;
   radicalProps: RadicalProp[];
   definition: string;
+  userInput?: string;
 }
 
 interface MovieGenerationResponse {
   movie: string;
+  imageUrl?: string;
 }
 
 @Injectable({
@@ -25,7 +27,9 @@ interface MovieGenerationResponse {
 export class MovieService {
   constructor(private http: HttpClient) {}
 
-  generateMovie(characterId: number) {
-    return this.http.post<MovieGenerationResponse>(`api/ai/movie/${characterId}`, {});
+  generateMovie(characterId: number, userInput?: string): Observable<MovieGenerationResponse> {
+    return this.http.post<MovieGenerationResponse>(`api/ai/movie/${characterId}`, {
+      userInput: userInput || '',
+    });
   }
 }

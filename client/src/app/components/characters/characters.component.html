@@ -81,8 +81,24 @@
         <h4>Movie</h4>
         <ng-container *ngIf="selectedCharacter.movie">
           <p class="movie-text">{{ selectedCharacter.movie }}</p>
+
+          <!-- Generated Image Display -->
+          <div *ngIf="generatedImageUrl" class="generated-image-container">
+            <h5>Generated Image</h5>
+            <img [src]="generatedImageUrl" alt="AI generated scene" class="generated-image" />
+          </div>
         </ng-container>
         <ng-container *ngIf="!selectedCharacter.movie">
+          <div class="movie-input-container">
+            <label for="userStoryInput">Story Instructions (Optional):</label>
+            <textarea
+              id="userStoryInput"
+              [(ngModel)]="userStoryInput"
+              placeholder="Enter details you'd like to include in the story (optional)"
+              class="user-story-input"
+            >
+            </textarea>
+          </div>
           <button
             class="generate-movie-btn"
             (click)="generateMovie()"

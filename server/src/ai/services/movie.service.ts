@@ -20,7 +20,10 @@ export class MovieAiService {
     });
   }
 
-  async generateMovie(character: CharacterDTO): Promise<string> {
+  async generateMovie(
+    character: CharacterDTO,
+    userInput?: string,
+  ): Promise<{ text: string; imageUrl?: string }> {
     try {
       let toneLocation =
         TONES_MAPPED_TO_LOCATION[
@@ -57,6 +60,8 @@ The scene should:
 7. Include line breaks for readability
 8. Be slightly humorous but not over-the-top
 
+${userInput ? `Additional user-requested elements: ${userInput}` : ''}
+
 The scene should help remember both the character's appearance and meaning through the story.`;
 
       const completion = await this.openai.chat.completions.create({
@@ -83,7 +88,20 @@ The scene should help remember both the character's appearance and meaning throu
         );
       }
 
-      return movieScene;
+      // Generate image based on the story
+      try {
+        const imageUrl = await this.generateImage(movieScene, character);
+        this.logger.log(
+          `Image generated successfully for character: ${character.character}`,
+        );
+        return { text: movieScene, imageUrl };
+      } catch (imageError) {
+        // If image generation fails, log the error but still return the text
+        this.logger.error(
+          `Image generation failed, but returning text: ${imageError}`,
+        );
+        return { text: movieScene };
+      }
     } catch (error) {
       // If it's already an HttpException, rethrow it
       if (error instanceof HttpException) {
@@ -105,6 +123,40 @@ The scene should help remember both the character's appearance and meaning throu
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  private async generateImage(
+    storyText: string,
+    character: CharacterDTO,
+  ): Promise<string | undefined> {
+    try {
+      const actorName = character.initialActor?.name || '';
+      const location = character.finalSet?.name || '';
+
+      // Create a prompt for DALL-E that captures the essence of the story
+      const imagePrompt = `Create a vibrant, illustrated scene of "${storyText}".
+The scene shows ${actorName} in ${location}.
+The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
+Make it visually distinct and high quality.`;
+
+      const response = await this.openai.images.generate({
+        model: 'dall-e-3',
+        prompt: imagePrompt,
+        n: 1,
+        size: '1024x1024',
+      });
+
+      this.logger.log(`Image generation prompt: ${imagePrompt}`);
+      this.logger.log(`Generated image URL: ${response.data[0]?.url}`);
+
+      return response.data[0]?.url;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Image generation failed: ${errorMessage}`);
+      // Return undefined instead of throwing, so the text can still be returned
+      return undefined;
     }
   }
 }

@@ -104,7 +104,10 @@ export class AiController {
   }
 
   @Post('movie/:characterId')
-  async generateMovie(@Param('characterId') characterId: string) {
+  async generateMovie(
+    @Param('characterId') characterId: string,
+    @Body() requestBody: { userInput?: string },
+  ) {
     const character = await this.characterService.getOneCharacterDTO(
       parseInt(characterId),
     );
@@ -119,14 +122,18 @@ export class AiController {
       );
     }
 
-    const movie = await this.movieService.generateMovie(character);
+    const result = await this.movieService.generateMovie(
+      character,
+      requestBody.userInput,
+    );
 
     await this.characterService.update(character.id, {
-      movie,
+      movie: result.text,
     });
 
     return {
-      movie,
+      movie: result.text,
+      imageUrl: result.imageUrl,
     };
   }
 }
