@@ -1,9 +1,11 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import {
-  MovieGenerationRequestDto,
-  MovieGenerationResponseDto,
-} from '../dto/movie-generation.dto';
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
+
 import {
   CharacterDTO,
   TONES_MAPPED_TO_LOCATION,
@@ -135,10 +137,12 @@ The scene should help remember both the character's appearance and meaning throu
       const location = character.finalSet?.name || '';
 
       // Create a prompt for DALL-E that captures the essence of the story
-      const imagePrompt = `Create a vibrant, illustrated scene of "${storyText}".
+      const imagePrompt = `Create a vibrant, photorealistic scene for the following story:
 The scene shows ${actorName} in ${location}.
 The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
-Make it visually distinct and high quality.`;
+Make it visually distinct and high quality.  Here is the scene: ${storyText} - Remember to make ${actorName} the main focus of the image.`;
+
+      this.logger.log(`Image generation prompt: ${imagePrompt}`);
 
       const response = await this.openai.images.generate({
         model: 'dall-e-3',
@@ -150,13 +154,59 @@ Make it visually distinct and high quality.`;
       this.logger.log(`Image generation prompt: ${imagePrompt}`);
       this.logger.log(`Generated image URL: ${response.data[0]?.url}`);
 
-      return response.data[0]?.url;
+      const imageUrl = response.data[0]?.url;
+      if (!imageUrl) {
+        return undefined;
+      }
+
+      // Download the image as a buffer
+      const imageResponse = await fetch(imageUrl);
+      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+      // Use characterID for the filename
+      const filename = `${character.id}.png`;
+
+      // Upload to S3
+      const s3Url = await this.uploadToS3(imageBuffer, filename);
+
+      return s3Url;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Image generation failed: ${errorMessage}`);
       // Return undefined instead of throwing, so the text can still be returned
       return undefined;
+    }
+  }
+
+  private async uploadToS3(
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<string> {
+    try {
+      // You'll need to set up the AWS SDK and S3 client
+      const bucketName = 'chinese-public';
+      const key = `images/${filename}`;
+
+      const client = new S3Client({
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        },
+        region: process.env.AWS_REGION || '',
+      });
+
+      const command = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+        Body: imageBuffer,
+      });
+      const response = await client.send(command);
+
+      // Return the S3 URL
+      return `https://${bucketName}.s3.amazonaws.com/${key}`;
+    } catch (error) {
+      this.logger.error(`Failed to upload image to S3: ${error.message}`);
+      throw error;
     }
   }
 }

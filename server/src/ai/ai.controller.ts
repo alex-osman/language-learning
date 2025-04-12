@@ -129,6 +129,7 @@ export class AiController {
 
     await this.characterService.update(character.id, {
       movie: result.text,
+      imgUrl: result.imageUrl,
     });
 
     return {
