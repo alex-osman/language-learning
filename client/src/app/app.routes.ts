@@ -3,7 +3,6 @@ import { SentenceDisplayComponent } from './components/sentence-display/sentence
 import { InteractiveComponent } from './components/interactive/interactive.component';
 import { FrenchInteractiveComponent } from './components/french-interactive/french-interactive.component';
 import { MemoryPalaceComponent } from './components/memory-palace/memory-palace.component';
-import { PhoneticChartComponent } from './components/phonetic-chart/phonetic-chart.component';
 import { FlashcardsComponent } from './components/flashcards/flashcards.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
 
@@ -23,10 +22,6 @@ export const routes: Routes = [
   {
     path: 'memory-palace',
     component: MemoryPalaceComponent,
-  },
-  {
-    path: 'phonetics',
-    component: PhoneticChartComponent,
   },
   {
     path: 'flashcards',

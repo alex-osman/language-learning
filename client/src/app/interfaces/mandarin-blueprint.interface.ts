@@ -14,12 +14,6 @@ export interface MandarinBlueprint {
   }[];
 }
 
-export interface PhoneticSet {
-  final: string;
-  location: string;
-  description?: string;
-}
-
 export interface ToneLocation {
   tone: string;
   location: string;
