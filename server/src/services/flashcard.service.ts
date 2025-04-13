@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, Repository, IsNull } from 'typeorm';
+import { LessThanOrEqual, Repository, IsNull, Not } from 'typeorm';
 import { Character } from '../entities/character.entity';
 
 // Response quality ratings (0-5)
@@ -21,7 +21,11 @@ export class FlashcardService {
   ) {}
 
   async getTotalNumberOfCards(): Promise<number> {
-    return this.characterRepository.count();
+    return this.characterRepository.count({
+      where: {
+        movie: Not(IsNull()),
+      },
+    });
   }
 
   /**
@@ -29,15 +33,14 @@ export class FlashcardService {
    */
   async getDueCards(): Promise<Character[]> {
     const now = new Date();
-    return this.characterRepository.find({
-      where: [
-        { nextReviewDate: LessThanOrEqual(now) },
-        { nextReviewDate: IsNull() },
-      ],
-      order: {
-        nextReviewDate: 'ASC',
-      },
-    });
+    return this.characterRepository
+      .createQueryBuilder('character')
+      .where(
+        '(character.movie IS NOT NULL AND (character.nextReviewDate <= :now OR character.nextReviewDate IS NULL))',
+        { now },
+      )
+      .orderBy('character.nextReviewDate', 'ASC')
+      .getMany();
   }
 
   /**
@@ -73,6 +76,9 @@ export class FlashcardService {
     // If there are no cards with review dates, return random cards for the user to learn
     if (cards.length === 0) {
       return this.characterRepository.find({
+        where: {
+          movie: Not(IsNull()),
+        },
         take: limit,
         // Get random cards for true beginners
         order: {
