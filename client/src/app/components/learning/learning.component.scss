@@ -69,6 +69,44 @@
         .value {
           font-size: 1.1rem;
         }
+
+        &.add-props {
+          grid-column: 1 / -1; // Span all columns
+          margin-top: 15px;
+          padding-top: 15px;
+          border-top: 1px dashed #ddd;
+
+          .input-group {
+            display: flex;
+            margin-bottom: 0;
+
+            input {
+              flex: 1;
+              padding: 8px;
+              border: 1px solid #ddd;
+              border-radius: 4px 0 0 4px;
+              font-size: 1rem;
+            }
+
+            button {
+              padding: 8px 15px;
+              border: none;
+              border-radius: 0 4px 4px 0;
+              background: #007bff;
+              color: white;
+              cursor: pointer;
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+              }
+
+              &:hover:not(:disabled) {
+                background: #0069d9;
+              }
+            }
+          }
+        }
       }
     }
   }

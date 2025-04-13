@@ -60,4 +60,11 @@ export class MovieService {
       prompt: movieDescription,
     });
   }
+
+  // Update character radicals
+  updateCharacterRadicals(characterId: number, radicals: string): Observable<CharacterDTO> {
+    return this.http.put<CharacterDTO>(`api/characters/${characterId}/radicals`, {
+      radicals,
+    });
+  }
 }

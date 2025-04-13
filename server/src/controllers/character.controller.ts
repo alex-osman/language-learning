@@ -7,6 +7,7 @@ import {
   Logger,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
@@ -105,6 +106,66 @@ export class CharacterController {
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to save character movie',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put(':id/radicals')
+  async updateCharacterRadicals(
+    @Param('id') id: string,
+    @Body() radicalData: { radicals: string },
+  ): Promise<CharacterDTO> {
+    try {
+      const characterId = parseInt(id, 10);
+      if (isNaN(characterId)) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Invalid character ID',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const character =
+        await this.characterService.getOneCharacterDTO(characterId);
+      if (!character) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Character not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const updatedCharacter = await this.characterService.update(characterId, {
+        radicals: radicalData.radicals.split('').join(','),
+      });
+
+      if (!updatedCharacter) {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Failed to update character radicals',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      return this.characterService.makeCharacterDTO(updatedCharacter);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error(`Failed to update character radicals:`, error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to update character radicals',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
