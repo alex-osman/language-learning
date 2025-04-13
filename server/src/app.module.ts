@@ -28,6 +28,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FlashcardService } from './services/flashcard.service';
 import { FlashcardController } from './controllers/flashcard.controller';
+import { CharacterController } from './controllers/character.controller';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { FlashcardController } from './controllers/flashcard.controller';
     FlashcardController,
     SentenceController,
     WordsController,
+    CharacterController,
   ],
   providers: [
     AppService,

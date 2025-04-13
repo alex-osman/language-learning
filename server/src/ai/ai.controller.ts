@@ -20,6 +20,7 @@ import { CritiqueAiService } from './services/critique-ai.service';
 import { FrenchChatAiService } from './services/french-chat-ai.service';
 import { TtsAiService } from './services/tts-ai.service';
 import { MovieAiService } from './services/movie.service';
+import { CharacterDTO } from '@shared/interfaces/data.interface';
 
 enum Language {
   CHINESE = 'Chinese',
@@ -136,5 +137,46 @@ export class AiController {
       movie: result.text,
       imageUrl: result.imageUrl,
     };
+  }
+
+  @Post('generate-image')
+  async generateImage(
+    @Body() requestBody: { characterId: number; prompt: string },
+  ) {
+    try {
+      const character = await this.characterService.getOneCharacterDTO(
+        requestBody.characterId,
+      );
+
+      if (!character) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Character not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const result = await this.movieService.generateImage(
+        requestBody.prompt,
+        character,
+      );
+      await this.characterService.update(character.id, {
+        imgUrl: result,
+      });
+
+      return { imageUrl: result || '' };
+    } catch (error: any) {
+      this.logger.error(`Image generation failed:`);
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to generate image',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

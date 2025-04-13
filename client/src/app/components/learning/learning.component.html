@@ -1,0 +1,99 @@
+<div class="learning-container">
+  <h1>Hanzi Movie Method</h1>
+
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading next character...</p>
+  </div>
+
+  <div *ngIf="!isLoading && currentCharacter" class="character-card">
+    <div class="character-info">
+      <div class="character-display">
+        <span class="hanzi">{{ currentCharacter.character }}</span>
+        <div class="details">
+          <span class="pinyin">{{ currentCharacter.pinyin }}</span>
+          <span class="definition">{{ currentCharacter.definition }}</span>
+        </div>
+      </div>
+
+      <div class="movie-elements">
+        <div class="element">
+          <span class="label">Actor:</span>
+          <span class="value">{{ currentCharacter.initialActor?.name }}</span>
+        </div>
+
+        <div class="element">
+          <span class="label">Set:</span>
+          <span class="value">{{ currentCharacter.finalSet?.name }}</span>
+        </div>
+
+        <div class="element">
+          <span class="label">Tone:</span>
+          <span class="value"
+            >{{ currentCharacter.toneNumber }} -
+            {{ getToneName(currentCharacter.toneNumber) }}</span
+          >
+        </div>
+
+        <div class="element">
+          <span class="label">Tone Location:</span>
+          <span class="value">{{ currentCharacter.finalSet?.name }}</span>
+          <span
+            *ngIf="currentCharacter.finalSet?.toneLocations?.[currentCharacter.toneNumber]"
+            class="value"
+            >{{ currentCharacter.finalSet?.toneLocations?.[currentCharacter.toneNumber]?.name }}</span
+          >
+        </div>
+
+        <div class="element">
+          <span class="label">Props:</span>
+          <span class="value">
+            <div *ngFor="let prop of currentCharacter.radicals; let last = last">
+              {{ prop.radical }} ({{ prop.prop }}){{ !last ? ', ' : '' }}
+            </div>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="movie-creation">
+      <h3>Create a movie</h3>
+      <div class="input-group">
+        <textarea
+          [(ngModel)]="userMovie"
+          placeholder="Enter your movie description..."
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="actions">
+        <button
+          (click)="generateImage()"
+          [disabled]="!userMovie || isGeneratingImage"
+          class="btn btn-primary"
+        >
+          {{ isGeneratingImage ? 'Generating...' : 'Generate Image' }}
+        </button>
+      </div>
+
+      <div *ngIf="generatedImageUrl" class="generated-image">
+        <h4>Generated Image</h4>
+        <img [src]="generatedImageUrl" alt="Generated movie scene" />
+      </div>
+
+      <div *ngIf="currentCharacter?.imgUrl" class="generated-image">
+        <h4>Current Image</h4>
+        <img [src]="currentCharacter.imgUrl" alt="Generated movie scene" />
+      </div>
+
+      <div class="actions">
+        <button (click)="saveMovie()" [disabled]="!userMovie || isSaving" class="btn btn-success">
+          {{ isSaving ? 'Saving...' : 'Submit' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !currentCharacter" class="no-characters">
+    <p>You've created movies for all characters! 🎉</p>
+  </div>
+</div>

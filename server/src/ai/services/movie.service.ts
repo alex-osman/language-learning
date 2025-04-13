@@ -128,54 +128,48 @@ The scene should help remember both the character's appearance and meaning throu
     }
   }
 
-  private async generateImage(
+  public async generateImage(
     storyText: string,
     character: CharacterDTO,
   ): Promise<string | undefined> {
-    try {
-      const actorName = character.initialActor?.name || '';
-      const location = character.finalSet?.name || '';
+    const actorName = character.initialActor?.name || '';
+    const location = character.finalSet?.name || '';
 
-      // Create a prompt for DALL-E that captures the essence of the story
-      const imagePrompt = `Create a vibrant, photorealistic scene for the following story:
-The scene shows ${actorName} in ${location}.
-The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
-Make it visually distinct and high quality.  Here is the scene: ${storyText} - Remember to make ${actorName} the main focus of the image.`;
+    // Create a prompt for DALL-E that captures the essence of the story
+    //     const imagePrompt = `Create a vibrant, photorealistic scene for the following story:
+    // The scene shows ${actorName} in ${location}.
+    // The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
+    // Make it visually distinct and high quality.  Here is the scene: ${storyText} - Remember to make ${actorName} the main focus of the image.`;
 
-      this.logger.log(`Image generation prompt: ${imagePrompt}`);
+    const imagePrompt = `Create a vibrant, photorealistic scene for the following story:${storyText}`;
 
-      const response = await this.openai.images.generate({
-        model: 'dall-e-3',
-        prompt: imagePrompt,
-        n: 1,
-        size: '1024x1024',
-      });
+    this.logger.log(`Image generation prompt: ${imagePrompt}`);
 
-      this.logger.log(`Image generation prompt: ${imagePrompt}`);
-      this.logger.log(`Generated image URL: ${response.data[0]?.url}`);
+    const response = await this.openai.images.generate({
+      model: 'dall-e-3',
+      prompt: imagePrompt,
+      n: 1,
+      size: '1024x1024',
+    });
 
-      const imageUrl = response.data[0]?.url;
-      if (!imageUrl) {
-        return undefined;
-      }
+    this.logger.log(`Image generation prompt: ${imagePrompt}`);
+    this.logger.log(`Generated image URL: ${response.data[0]?.url}`);
 
-      // Download the image as a buffer
-      const imageResponse = await fetch(imageUrl);
-      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-      // Use characterID for the filename
-      const filename = `${character.id}.png`;
-
-      // Upload to S3
-      const s3Url = await this.uploadToS3(imageBuffer, filename);
-
-      return s3Url;
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Image generation failed: ${errorMessage}`);
-      // Return undefined instead of throwing, so the text can still be returned
+    const imageUrl = response.data[0]?.url;
+    if (!imageUrl) {
       return undefined;
     }
+
+    // Download the image as a buffer
+    const imageResponse = await fetch(imageUrl);
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+    // Use characterID for the filename
+    const filename = `${character.id}.png`;
+
+    // Upload to S3
+    const s3Url = await this.uploadToS3(imageBuffer, filename);
+
+    return s3Url;
   }
 
   private async uploadToS3(
@@ -185,7 +179,7 @@ Make it visually distinct and high quality.  Here is the scene: ${storyText} - R
     try {
       // You'll need to set up the AWS SDK and S3 client
       const bucketName = 'chinese-public';
-      const key = `images/${filename}`;
+      const key = `${filename}`;
 
       const client = new S3Client({
         credentials: {

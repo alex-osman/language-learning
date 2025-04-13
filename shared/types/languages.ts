@@ -1,3 +1,11 @@
+export const TONES_MAPPED_TO_LOCATION = {
+  '1': 'Outside the entrance',
+  '2': 'Kitchen or inside entrance',
+  '3': 'Bedroom or living room',
+  '4': 'Bathroom or outside/yard',
+  '5': 'On the roof',
+};
+
 export enum Language {
   CHINESE = 'Chinese',
   PINYIN = 'Pinyin',

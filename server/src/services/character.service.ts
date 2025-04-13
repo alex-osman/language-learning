@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Character } from '../entities/character.entity';
 import { CharacterDTO, PropDTO } from '@shared/interfaces/data.interface';
 import { TONE_MAP, TWO_LETTER_INITIALS, VOWEL_MAP } from './pinyin.constants';
@@ -96,6 +96,17 @@ export class CharacterService {
 
   async delete(id: number): Promise<void> {
     await this.characterRepository.delete(id);
+  }
+
+  async getNextCharacterWithoutMovie(): Promise<CharacterDTO | null> {
+    const character = await this.characterRepository.findOne({
+      where: { movie: IsNull() },
+      order: { id: 'ASC' },
+    });
+
+    if (!character) return null;
+
+    return this.makeCharacterDTO(character);
   }
 
   removeToneMarks(pinyin: string): string {
