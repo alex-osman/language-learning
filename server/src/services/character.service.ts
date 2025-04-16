@@ -129,7 +129,10 @@ export class CharacterService {
     let final = '';
 
     // Handle special cases first
-    if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {
+    if (pinyinNoTones.substring(0, 3) === 'zhu') {
+      initial = 'zhu';
+      final = pinyinNoTones.substring(3);
+    } else if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {
       initial = pinyinNoTones.substring(0, 2);
       final = pinyinNoTones.substring(2);
     } else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
