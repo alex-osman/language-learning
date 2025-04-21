@@ -132,8 +132,8 @@ The scene should help remember both the character's appearance and meaning throu
     storyText: string,
     character: CharacterDTO,
   ): Promise<string | undefined> {
-    const actorName = character.initialActor?.name || '';
-    const location = character.finalSet?.name || '';
+    // const actorName = character.initialActor?.name || '';
+    // const location = character.finalSet?.name || '';
 
     // Create a prompt for DALL-E that captures the essence of the story
     //     const imagePrompt = `Create a vibrant, photorealistic scene for the following story:
@@ -141,7 +141,7 @@ The scene should help remember both the character's appearance and meaning throu
     // The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
     // Make it visually distinct and high quality.  Here is the scene: ${storyText} - Remember to make ${actorName} the main focus of the image.`;
 
-    const imagePrompt = `Create a vibrant, photorealistic scene for the following story:${storyText}`;
+    const imagePrompt = `Create a vibrant, photorealistic scene for the following story: ${storyText}`;
 
     this.logger.log(`Image generation prompt: ${imagePrompt}`);
 
