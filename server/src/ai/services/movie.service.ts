@@ -156,16 +156,10 @@ Story context: ${storyText}
       quality: 'low' as any,
     });
 
-    console.log('response', response);
-
     if (!response.data?.[0]?.b64_json) {
       this.logger.error('No image data received from DALL-E');
       return undefined;
     }
-
-    this.logger.log('=== DALL-E Response ===');
-    this.logger.log('Image generated successfully');
-    this.logger.log('========================');
 
     // Convert base64 to buffer
     const imageBuffer = Buffer.from(response.data[0].b64_json, 'base64');
