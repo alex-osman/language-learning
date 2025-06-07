@@ -89,7 +89,7 @@
         ></textarea>
       </div>
 
-      <div class="actions">
+      <div class="actions button-group">
         <button
           (click)="generateImage()"
           [disabled]="!userMovie || isGeneratingImage"
@@ -97,23 +97,41 @@
         >
           {{ isGeneratingImage ? 'Generating...' : 'Generate Image' }}
         </button>
-      </div>
-
-      <div *ngIf="generatedImageUrl" class="generated-image">
-        <h4>Generated Image</h4>
-        <img [src]="generatedImageUrl" alt="Generated movie scene" />
-      </div>
-
-      <div *ngIf="currentCharacter?.imgUrl" class="generated-image">
-        <h4>Current Image</h4>
-        <img [src]="currentCharacter.imgUrl" alt="Generated movie scene" />
-      </div>
-
-      <div class="actions">
-        <button (click)="saveMovie()" [disabled]="!userMovie || isSaving" class="btn btn-success">
-          {{ isSaving ? 'Saving...' : 'Submit' }}
+        <button
+          (click)="fileInput.click()"
+          [disabled]="isUploading"
+          class="btn btn-secondary"
+          type="button"
+        >
+          {{ isUploading ? 'Uploading...' : 'Upload Image' }}
         </button>
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          #fileInput
+          style="display: none"
+        />
       </div>
+      <div *ngIf="selectedFile" class="image-preview">
+        <img [src]="imagePreviewUrl" alt="Preview" />
+        <button type="button" class="remove-btn" (click)="removeSelectedFile()">Remove</button>
+      </div>
+      <div *ngIf="generatedImageUrl || currentCharacter?.imgUrl" class="generated-image">
+        <h4>Image</h4>
+        <img
+          [src]="generatedImageUrl || currentCharacter?.imgUrl"
+          alt="Generated or uploaded movie scene"
+          class="movie-image"
+        />
+      </div>
+      <button
+        (click)="saveMovie()"
+        [disabled]="!userMovie || isSaving"
+        class="btn btn-success submit-btn"
+      >
+        {{ isSaving ? 'Saving...' : 'Submit' }}
+      </button>
     </div>
   </div>
 

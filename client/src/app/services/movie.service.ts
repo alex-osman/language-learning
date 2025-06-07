@@ -67,4 +67,9 @@ export class MovieService {
       radicals,
     });
   }
+
+  // Upload a character image
+  uploadCharacterImage(formData: FormData): Observable<{ imageUrl: string }> {
+    return this.http.post<{ imageUrl: string }>('api/characters/upload-image', formData);
+  }
 }
