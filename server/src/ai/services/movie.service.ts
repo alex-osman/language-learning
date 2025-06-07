@@ -153,6 +153,7 @@ Story context: ${storyText}
       model: 'gpt-image-1',
       prompt: imagePrompt,
       n: 1,
+      quality: 'low',
     });
 
     console.log('response', response);
