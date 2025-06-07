@@ -29,11 +29,19 @@ import { join } from 'path';
 import { FlashcardService } from './services/flashcard.service';
 import { FlashcardController } from './controllers/flashcard.controller';
 import { CharacterController } from './controllers/character.controller';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
+    }),
+    MulterModule.register({
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
     }),
     TypeOrmModule.forRoot(databaseConfig),
     TypeOrmModule.forFeature([

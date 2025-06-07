@@ -126,10 +126,8 @@ export class LearningComponent implements OnInit {
         alert('File size must be less than 5MB');
         return;
       }
+
       this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => (this.imagePreviewUrl = e.target.result);
-      reader.readAsDataURL(file);
       this.uploadImage();
     }
   }

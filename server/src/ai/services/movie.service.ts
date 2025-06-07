@@ -172,7 +172,7 @@ The scene should help remember both the character's appearance and meaning throu
     return s3Url;
   }
 
-  private async uploadToS3(
+  public async uploadToS3(
     imageBuffer: Buffer,
     filename: string,
   ): Promise<string> {
