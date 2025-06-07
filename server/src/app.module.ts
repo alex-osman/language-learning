@@ -35,7 +35,7 @@ import { memoryStorage } from 'multer';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist'),
+      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
     }),
     MulterModule.register({
       storage: memoryStorage(),
