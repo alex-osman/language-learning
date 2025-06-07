@@ -31,6 +31,8 @@ import { FlashcardController } from './controllers/flashcard.controller';
 import { CharacterController } from './controllers/character.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { SentenceAnalyzerService } from './services/sentence-analyzer.service';
+import { SentenceAnalyzerController } from './controllers/sentence-analyzer.controller';
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { memoryStorage } from 'multer';
     SentenceController,
     WordsController,
     CharacterController,
+    SentenceAnalyzerController,
   ],
   providers: [
     AppService,
@@ -76,6 +79,7 @@ import { memoryStorage } from 'multer';
     ConversationService,
     MovieAiService,
     FlashcardService,
+    SentenceAnalyzerService,
   ],
 })
 export class AppModule {}

@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DataService, CharacterDTO } from '../../services/data.service';
+import {
+  SentenceAnalysisService,
+  SentenceAnalysisResult,
+  AnalyzedCharacter,
+} from '../../services/sentence-analysis.service';
+import { Subject, debounceTime, distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
   selector: 'app-sentence-analyzer',
@@ -12,80 +17,74 @@ import { DataService, CharacterDTO } from '../../services/data.service';
 })
 export class SentenceAnalyzerComponent implements OnInit {
   inputText: string = '';
-  characters: CharacterDTO[] = [];
-  analysisResults: {
-    character: string;
-    isKnown: boolean;
-    charData?: CharacterDTO;
-    count: number;
-  }[] = [];
+  analysisResults: AnalyzedCharacter[] = [];
   totalCharacters: number = 0;
   uniqueCharacters: number = 0;
   knownCharacters: number = 0;
   unknownCharacters: number = 0;
   knownPercentage: number = 0;
+  isLoading: boolean = false;
+  error: string | null = null;
 
-  constructor(private dataService: DataService) {}
+  private textInput$ = new Subject<string>();
+
+  constructor(private sentenceAnalysisService: SentenceAnalysisService) {}
 
   ngOnInit() {
-    this.loadCharacters();
+    // Set up the text input stream with debouncing and filtering
+    this.textInput$
+      .pipe(
+        debounceTime(300), // Wait 300ms after the last keystroke
+        distinctUntilChanged((prev, curr) => {
+          // Remove whitespace, punctuation, and non-Chinese characters for comparison
+          const cleanPrev = prev.replace(/[\s\p{P}\p{S}]/gu, '').replace(/[^\u4e00-\u9fff]/g, '');
+          const cleanCurr = curr.replace(/[\s\p{P}\p{S}]/gu, '').replace(/[^\u4e00-\u9fff]/g, '');
+          return cleanPrev === cleanCurr;
+        }),
+        filter(text => {
+          // Only emit if there are Chinese characters
+          const chineseChars = text
+            .replace(/[\s\p{P}\p{S}]/gu, '')
+            .replace(/[^\u4e00-\u9fff]/g, '');
+          return chineseChars.length > 0;
+        })
+      )
+      .subscribe(text => {
+        this.analyzeText(text);
+      });
   }
 
-  private loadCharacters() {
-    this.dataService.getCharacters().subscribe(characters => {
-      this.characters = characters;
-      if (this.inputText) {
-        this.analyzeText();
-      }
-    });
-  }
+  onTextChange(text: string) {
+    this.textInput$.next(text);
 
-  analyzeText() {
-    if (!this.inputText) {
+    // Clear results if there are no Chinese characters
+    const chineseChars = text.replace(/[\s\p{P}\p{S}]/gu, '').replace(/[^\u4e00-\u9fff]/g, '');
+    if (!chineseChars) {
       this.analysisResults = [];
       this.resetStats();
-      return;
     }
-
-    // Remove spaces, punctuation, and non-Chinese characters
-    const chars = this.inputText
-      .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
-      .replace(/[^\u4e00-\u9fff]/g, '') // Keep only Chinese characters
-      .split('');
-
-    // Count occurrences of each character
-    const charCounts = new Map<string, number>();
-    chars.forEach(char => {
-      charCounts.set(char, (charCounts.get(char) || 0) + 1);
-    });
-
-    // Create analysis results with counts
-    this.analysisResults = Array.from(charCounts.entries()).map(([char, count]) => {
-      const knownChar = this.characters.find(c => c.character === char);
-      return {
-        character: char,
-        isKnown: knownChar ? this.hasCharacterData(knownChar) : false,
-        charData: knownChar,
-        count: count,
-      };
-    });
-
-    this.updateStats();
   }
 
-  private hasCharacterData(char: CharacterDTO): boolean {
-    return !!(char.pinyin && char.definition);
-  }
+  private analyzeText(text: string) {
+    this.isLoading = true;
+    this.error = null;
 
-  private updateStats() {
-    this.totalCharacters = this.analysisResults.reduce((sum, result) => sum + result.count, 0);
-    this.uniqueCharacters = this.analysisResults.length;
-    this.knownCharacters = this.analysisResults.filter(r => r.isKnown).length;
-    this.unknownCharacters = this.uniqueCharacters - this.knownCharacters;
-    this.knownPercentage =
-      this.uniqueCharacters > 0
-        ? Math.round((this.knownCharacters / this.uniqueCharacters) * 100)
-        : 0;
+    this.sentenceAnalysisService.analyzeSentence(text).subscribe({
+      next: (analysis: SentenceAnalysisResult) => {
+        this.analysisResults = analysis.all_characters;
+        this.totalCharacters = analysis.total_characters;
+        this.uniqueCharacters = analysis.all_characters.length;
+        this.knownCharacters = analysis.known_count;
+        this.unknownCharacters = analysis.unknown_count;
+        this.knownPercentage = analysis.known_percent;
+        this.isLoading = false;
+      },
+      error: error => {
+        console.error('Error analyzing text:', error);
+        this.error = 'Failed to analyze text. Please try again.';
+        this.isLoading = false;
+      },
+    });
   }
 
   private resetStats() {

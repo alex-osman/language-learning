@@ -11,6 +11,22 @@
   margin-bottom: 1rem;
 }
 
+.error-message {
+  color: #dc3545;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background-color: #f8d7da;
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-style: italic;
+}
+
 .analysis-section {
   margin-top: 1rem;
 }

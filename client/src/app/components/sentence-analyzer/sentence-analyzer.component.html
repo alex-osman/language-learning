@@ -2,14 +2,20 @@
   <div class="input-section">
     <textarea
       [(ngModel)]="inputText"
-      (ngModelChange)="analyzeText()"
+      (ngModelChange)="onTextChange($event)"
       placeholder="Enter Chinese text to analyze..."
       rows="4"
       class="text-input"
     ></textarea>
   </div>
 
-  <div class="analysis-section" *ngIf="analysisResults.length > 0">
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading" *ngIf="isLoading">Analyzing text...</div>
+
+  <div class="analysis-section" *ngIf="analysisResults.length > 0 && !isLoading">
     <h3>Analysis Results</h3>
     <div class="stats">
       <p>Total Characters: {{ totalCharacters }}</p>
@@ -23,10 +29,10 @@
       <div
         *ngFor="let result of analysisResults"
         class="character-item"
-        [class.known]="result.isKnown"
-        [class.unknown]="!result.isKnown"
+        [class.known]="result.known"
+        [class.unknown]="!result.known"
       >
-        <span class="char">{{ result.character }}</span>
+        <span class="char">{{ result.char }}</span>
         <span class="count" *ngIf="result.count > 1">({{ result.count }})</span>
         <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData?.pinyin }}</span>
         <span *ngIf="result.charData?.definition" class="definition">{{
