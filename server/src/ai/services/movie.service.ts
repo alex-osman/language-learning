@@ -132,38 +132,44 @@ The scene should help remember both the character's appearance and meaning throu
     storyText: string,
     character: CharacterDTO,
   ): Promise<string | undefined> {
-    // const actorName = character.initialActor?.name || '';
-    // const location = character.finalSet?.name || '';
+    const imagePrompt = `Create a vibrant, photorealistic scene for a Chinese character learning system. This is for educational purposes to help remember Chinese characters.
 
-    // Create a prompt for DALL-E that captures the essence of the story
-    //     const imagePrompt = `Create a vibrant, photorealistic scene for the following story:
-    // The scene shows ${actorName} in ${location}.
-    // The image should be memorable, slightly stylized, and clearly represent the Chinese character "${character.character}" (${character.definition}).
-    // Make it visually distinct and high quality.  Here is the scene: ${storyText} - Remember to make ${actorName} the main focus of the image.`;
+Guidelines:
+- Create a clear, memorable scene that matches the story exactly
+- If the story mentions a public figure, create a scene that captures their distinctive appearance and characteristics
+- The image should be suitable for educational use
+- Make the scene vivid and engaging while maintaining accuracy to the story
+- Focus on visual clarity and memorable details
 
-    const imagePrompt = `Create a vibrant, photorealistic scene for the following story: ${storyText}`;
+Character: ${character.character} (${character.pinyin})
+Story context: ${storyText}
+`;
 
-    this.logger.log(`Image generation prompt: ${imagePrompt}`);
+    this.logger.log('=== Image Generation Debug Info ===');
+    this.logger.log(`Full Image Prompt: ${imagePrompt}`);
+    this.logger.log('================================');
 
     const response = await this.openai.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt: imagePrompt,
       n: 1,
-      size: '1024x1024',
+      moderation: 'low',
+      quality: 'low',
     });
 
-    this.logger.log(`Image generation prompt: ${imagePrompt}`);
-    this.logger.log(`Generated image URL: ${response.data[0]?.url}`);
+    console.log('response', response);
 
-    const imageUrl = response.data[0]?.url;
-    if (!imageUrl) {
+    if (!response.data?.[0]?.b64_json) {
+      this.logger.error('No image data received from DALL-E');
       return undefined;
     }
 
-    // Download the image as a buffer
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-    // Use characterID for the filename
+    this.logger.log('=== DALL-E Response ===');
+    this.logger.log('Image generated successfully');
+    this.logger.log('========================');
+
+    // Convert base64 to buffer
+    const imageBuffer = Buffer.from(response.data[0].b64_json, 'base64');
     const filename = `${character.id}.png`;
 
     // Upload to S3

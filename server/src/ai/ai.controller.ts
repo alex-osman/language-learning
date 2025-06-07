@@ -162,6 +162,7 @@ export class AiController {
         requestBody.prompt,
         character,
       );
+      console.log('result', result);
       await this.characterService.update(character.id, {
         imgUrl: result,
       });
@@ -169,7 +170,12 @@ export class AiController {
       return { imageUrl: result || '' };
     } catch (error: any) {
       this.logger.error(`Image generation failed:`);
-      console.log(error);
+      if (error?.error?.message) {
+        console.log(error?.error?.message);
+      } else {
+        console.log(error);
+      }
+
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
