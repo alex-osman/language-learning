@@ -97,6 +97,20 @@
         >
           {{ isGeneratingImage ? 'Generating...' : 'Generate Image' }}
         </button>
+
+        <div class="upload-section">
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            #fileInput
+            style="display: none"
+          />
+          <button (click)="fileInput.click()" [disabled]="isUploading" class="btn btn-secondary">
+            {{ isUploading ? 'Uploading...' : 'Upload Image' }}
+          </button>
+          <div *ngIf="selectedFile" class="selected-file">Selected: {{ selectedFile.name }}</div>
+        </div>
       </div>
 
       <div *ngIf="generatedImageUrl" class="generated-image">

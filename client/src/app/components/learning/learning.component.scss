@@ -184,4 +184,35 @@
       }
     }
   }
+
+  .upload-section {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .selected-file {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #5a6268;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
 }
