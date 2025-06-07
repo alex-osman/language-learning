@@ -28,9 +28,9 @@
       >
         <span class="char">{{ result.character }}</span>
         <span class="count" *ngIf="result.count > 1">({{ result.count }})</span>
-        <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData.pinyin }}</span>
+        <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData?.pinyin }}</span>
         <span *ngIf="result.charData?.definition" class="definition">{{
-          result.charData.definition
+          result.charData?.definition
         }}</span>
       </div>
     </div>
