@@ -13,6 +13,7 @@
     <h3>Analysis Results</h3>
     <div class="stats">
       <p>Total Characters: {{ totalCharacters }}</p>
+      <p>Unique Characters: {{ uniqueCharacters }}</p>
       <p>Known Characters: {{ knownCharacters }}</p>
       <p>Unknown Characters: {{ unknownCharacters }}</p>
       <p>Known Percentage: {{ knownPercentage }}%</p>
@@ -26,6 +27,7 @@
         [class.unknown]="!result.isKnown"
       >
         <span class="char">{{ result.character }}</span>
+        <span class="count" *ngIf="result.count > 1">({{ result.count }})</span>
         <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData.pinyin }}</span>
         <span *ngIf="result.charData?.definition" class="definition">{{
           result.charData.definition
