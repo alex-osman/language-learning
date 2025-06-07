@@ -19,7 +19,6 @@ export class SentenceAnalyzerComponent implements OnInit {
   inputText: string = '';
   analysisResults: AnalyzedCharacter[] = [];
   totalCharacters: number = 0;
-  uniqueCharacters: number = 0;
   knownCharacters: number = 0;
   unknownCharacters: number = 0;
   knownPercentage: number = 0;
@@ -61,7 +60,10 @@ export class SentenceAnalyzerComponent implements OnInit {
     const chineseChars = text.replace(/[\s\p{P}\p{S}]/gu, '').replace(/[^\u4e00-\u9fff]/g, '');
     if (!chineseChars) {
       this.analysisResults = [];
-      this.resetStats();
+      this.totalCharacters = 0;
+      this.knownCharacters = 0;
+      this.unknownCharacters = 0;
+      this.knownPercentage = 0;
     }
   }
 
@@ -73,7 +75,6 @@ export class SentenceAnalyzerComponent implements OnInit {
       next: (analysis: SentenceAnalysisResult) => {
         this.analysisResults = analysis.all_characters;
         this.totalCharacters = analysis.total_characters;
-        this.uniqueCharacters = analysis.all_characters.length;
         this.knownCharacters = analysis.known_count;
         this.unknownCharacters = analysis.unknown_count;
         this.knownPercentage = analysis.known_percent;
@@ -85,13 +86,5 @@ export class SentenceAnalyzerComponent implements OnInit {
         this.isLoading = false;
       },
     });
-  }
-
-  private resetStats() {
-    this.totalCharacters = 0;
-    this.uniqueCharacters = 0;
-    this.knownCharacters = 0;
-    this.unknownCharacters = 0;
-    this.knownPercentage = 0;
   }
 }

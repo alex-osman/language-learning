@@ -19,7 +19,6 @@
     <h3>Analysis Results</h3>
     <div class="stats">
       <p>Total Characters: {{ totalCharacters }}</p>
-      <p>Unique Characters: {{ uniqueCharacters }}</p>
       <p>Known Characters: {{ knownCharacters }}</p>
       <p>Unknown Characters: {{ unknownCharacters }}</p>
       <p>Known Percentage: {{ knownPercentage }}%</p>
@@ -38,6 +37,9 @@
         <span *ngIf="result.charData?.definition" class="definition">{{
           result.charData?.definition
         }}</span>
+        <span *ngIf="!result.known && result.charData" class="char-id"
+          >ID: {{ result.charData.id }}</span
+        >
       </div>
     </div>
   </div>
