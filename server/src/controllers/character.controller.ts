@@ -182,7 +182,7 @@ export class CharacterController {
   @Post('upload-image')
   @UseInterceptors(FileInterceptor('image'))
   async uploadCharacterImage(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body('characterId') characterId: string,
   ): Promise<{ imageUrl: string }> {
     try {
