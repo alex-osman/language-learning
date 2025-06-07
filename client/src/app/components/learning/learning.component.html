@@ -97,7 +97,6 @@
         >
           {{ isGeneratingImage ? 'Generating...' : 'Generate Image' }}
         </button>
-<<<<<<< HEAD
         <button
           (click)="fileInput.click()"
           [disabled]="isUploading"
@@ -105,37 +104,6 @@
           type="button"
         >
           {{ isUploading ? 'Uploading...' : 'Upload Image' }}
-=======
-
-        <div class="upload-section">
-          <input
-            type="file"
-            accept="image/*"
-            (change)="onFileSelected($event)"
-            #fileInput
-            style="display: none"
-          />
-          <button (click)="fileInput.click()" [disabled]="isUploading" class="btn btn-secondary">
-            {{ isUploading ? 'Uploading...' : 'Upload Image' }}
-          </button>
-          <div *ngIf="selectedFile" class="selected-file">Selected: {{ selectedFile.name }}</div>
-        </div>
-      </div>
-
-      <div *ngIf="generatedImageUrl" class="generated-image">
-        <h4>Generated Image</h4>
-        <img [src]="generatedImageUrl" alt="Generated movie scene" />
-      </div>
-
-      <div *ngIf="currentCharacter?.imgUrl" class="generated-image">
-        <h4>Current Image</h4>
-        <img [src]="currentCharacter.imgUrl" alt="Generated movie scene" />
-      </div>
-
-      <div class="actions">
-        <button (click)="saveMovie()" [disabled]="!userMovie || isSaving" class="btn btn-success">
-          {{ isSaving ? 'Saving...' : 'Submit' }}
->>>>>>> main
         </button>
         <input
           type="file"
