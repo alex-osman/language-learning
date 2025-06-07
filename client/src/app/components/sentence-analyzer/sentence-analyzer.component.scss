@@ -1,0 +1,58 @@
+.sentence-analyzer {
+  padding: 1rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.analysis-section {
+  margin-top: 1rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.character-item {
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.character-item.known {
+  background-color: #e6ffe6;
+  border: 1px solid #90ee90;
+}
+
+.character-item.unknown {
+  background-color: #ffe6e6;
+  border: 1px solid #ffb6c1;
+}
+
+.char {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.status {
+  font-size: 0.8rem;
+  color: #666;
+}

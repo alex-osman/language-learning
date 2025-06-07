@@ -1,0 +1,36 @@
+<div class="sentence-analyzer">
+  <div class="input-section">
+    <textarea
+      [(ngModel)]="inputText"
+      (ngModelChange)="analyzeText()"
+      placeholder="Enter Chinese text to analyze..."
+      rows="4"
+      class="text-input"
+    ></textarea>
+  </div>
+
+  <div class="analysis-section" *ngIf="analysisResults.length > 0">
+    <h3>Analysis Results</h3>
+    <div class="stats">
+      <p>Total Characters: {{ totalCharacters }}</p>
+      <p>Known Characters: {{ knownCharacters }}</p>
+      <p>Unknown Characters: {{ unknownCharacters }}</p>
+      <p>Known Percentage: {{ knownPercentage }}%</p>
+    </div>
+
+    <div class="character-grid">
+      <div
+        *ngFor="let result of analysisResults"
+        class="character-item"
+        [class.known]="result.isKnown"
+        [class.unknown]="!result.isKnown"
+      >
+        <span class="char">{{ result.character }}</span>
+        <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData.pinyin }}</span>
+        <span *ngIf="result.charData?.definition" class="definition">{{
+          result.charData.definition
+        }}</span>
+      </div>
+    </div>
+  </div>
+</div>

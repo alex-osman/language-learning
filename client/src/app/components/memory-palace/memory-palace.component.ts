@@ -6,6 +6,7 @@ import { RadicalsComponent } from '../radicals/radicals.component';
 import { SetsComponent } from '../sets/sets.component';
 import { AddRadicalPropComponent } from '../add-radical-prop/add-radical-prop.component';
 import { WordsComponent } from '../words/words.component';
+import { SentenceAnalyzerComponent } from '../sentence-analyzer/sentence-analyzer.component';
 
 @Component({
   selector: 'app-memory-palace',
@@ -18,9 +19,19 @@ import { WordsComponent } from '../words/words.component';
     RadicalsComponent,
     AddRadicalPropComponent,
     WordsComponent,
+    SentenceAnalyzerComponent,
   ],
   template: `
     <div class="memory-palace">
+      <div class="section-container">
+        <div class="section-header">
+          <h2>Sentence Analyzer</h2>
+        </div>
+        <div class="section-content">
+          <app-sentence-analyzer></app-sentence-analyzer>
+        </div>
+      </div>
+
       <div class="section-container">
         <div class="section-header" (click)="toggleSection('addRadicalProp')">
           <h2>Add Radical Props</h2>
