@@ -154,7 +154,7 @@ Story context: ${storyText}
       prompt: imagePrompt,
       n: 1,
       moderation: 'low',
-      quality: 'low',
+      quality: 'standard',
     });
 
     console.log('response', response);
