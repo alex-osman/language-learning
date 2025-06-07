@@ -36,12 +36,9 @@
 
         <div class="element">
           <span class="label">Tone Location:</span>
-          <span class="value">{{ currentCharacter.finalSet?.name }}</span>
-          <span
-            *ngIf="currentCharacter.finalSet?.toneLocations?.[currentCharacter.toneNumber]"
-            class="value"
-            >{{ currentCharacter.finalSet?.toneLocations?.[currentCharacter.toneNumber]?.name }}</span
-          >
+          <span class="value">{{ currentCharacter.finalSet?.name }}</span
+          ><br />
+          <span *ngIf="toneLocation" class="value">{{ toneLocation }}</span>
         </div>
 
         <div class="element">

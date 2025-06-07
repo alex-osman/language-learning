@@ -21,6 +21,7 @@ export class LearningComponent implements OnInit {
   isGeneratingImage: boolean = false;
   radicalsInput: string = '';
   isSavingRadicals: boolean = false;
+  toneLocation: string = '';
 
   constructor(private movieService: MovieService) {}
 
@@ -38,6 +39,7 @@ export class LearningComponent implements OnInit {
       next: character => {
         this.currentCharacter = character;
         this.isLoading = false;
+        this.toneLocation = this.getToneName(this.currentCharacter.toneNumber);
       },
       error: err => {
         console.error('Error loading next character:', err);
@@ -101,7 +103,8 @@ export class LearningComponent implements OnInit {
 
   getToneName(toneNumber: number): string {
     return (
-      this.currentCharacter?.finalSet?.toneLocations?.[toneNumber]?.name ||
+      this.currentCharacter?.finalSet?.toneLocations?.find(t => t.toneNumber === toneNumber)
+        ?.name ||
       TONES_MAPPED_TO_LOCATION[toneNumber as unknown as keyof typeof TONES_MAPPED_TO_LOCATION]
     );
   }
