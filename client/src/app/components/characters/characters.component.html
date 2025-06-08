@@ -6,7 +6,7 @@
       <div
         class="cell"
         [class.has-data]="hasCharacterData(char)"
-        [class.no-data]="!hasCharacterData(char)"
+        [class.no-data]="!char.movie"
         (click)="onCharacterClick(char)"
         [class.selected]="selectedCharacter?.character === char.character"
       >

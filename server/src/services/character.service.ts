@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, Not } from 'typeorm';
+import { Repository, IsNull, Not, MoreThan } from 'typeorm';
 import { Character } from '../entities/character.entity';
 import { CharacterDTO, PropDTO } from '@shared/interfaces/data.interface';
 import { TONE_MAP, TWO_LETTER_INITIALS, VOWEL_MAP } from './pinyin.constants';
@@ -22,9 +22,24 @@ export class CharacterService {
       where: {
         movie: Not(IsNull()),
       },
+      order: {
+        id: 'DESC',
+      },
+    });
+    const latestChar = all[0];
+    const plusFive = await this.characterRepository.find({
+      where: {
+        id: MoreThan(latestChar.id),
+      },
+      order: {
+        id: 'ASC',
+      },
+      take: 5,
     });
     return Promise.all(
-      all.map(async (character) => this.makeCharacterDTO(character)),
+      [...all, ...plusFive].map(async (character) =>
+        this.makeCharacterDTO(character),
+      ),
     );
   }
 

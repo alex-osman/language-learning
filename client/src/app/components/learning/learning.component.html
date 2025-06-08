@@ -120,7 +120,7 @@
       <div *ngIf="generatedImageUrl || currentCharacter?.imgUrl" class="generated-image">
         <h4>Image</h4>
         <img
-          [src]="generatedImageUrl || currentCharacter?.imgUrl"
+          [src]="generatedImageUrl || currentCharacter.imgUrl"
           alt="Generated or uploaded movie scene"
           class="movie-image"
         />
