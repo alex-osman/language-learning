@@ -178,15 +178,13 @@ Next Character: ${next?.character} (${next?.pinyin}) - ${next?.definition}
 This is the FIRST character in a preview of multiple upcoming characters.
 
 Create a 45-60 second script that:
-1. Opens the preview segment with excitement ("But wait, there's more! Let me give you a preview of your next characters...")
+1. Opens the preview segment with excitement for learning the next characters.
 2. Introduces this character with its meaning and usage
-3. Spells out the pinyin and mentions the tone
+3. Spells out the pinyin and says the tone number
 4. Uses it in a simple Chinese sentence
 5. Discusses how common/useful it is
-6. Creates anticipation for the next character without revealing too much
 
-Say "The character is" and we'll insert the pronunciation.
-End with a smooth transition hint toward the next character.`;
+End with a smooth transition to the next character.`;
 
       case 'middle':
         return `You're a witty radio DJ continuing a preview of Chinese characters.
@@ -200,12 +198,11 @@ This is a MIDDLE character in the preview sequence.
 Create a 30-45 second script that:
 1. Smoothly transitions from the previous character (find a connection: meaning, sound, visual, context, or contrast)
 2. Introduces this character with its meaning and usage
-3. Spells out the pinyin and mentions the tone
+3. Spells out the pinyin and says the tone number
 4. Uses it in a simple Chinese sentence
 5. Discusses practical applications
-6. Sets up anticipation for the next character
+6. Relates this character to the next character in some way.
 
-Say "The character is" and we'll insert the pronunciation.
 Make the transition from previous character feel natural and educational.`;
 
       case 'last':
@@ -219,14 +216,10 @@ This is the LAST character in the preview sequence.
 Create a 45-60 second script that:
 1. Smoothly transitions from the previous character
 2. Introduces this character with its meaning and usage
-3. Spells out the pinyin and mentions the tone
+3. Spells out the pinyin and says the tone number
 4. Uses it in a simple Chinese sentence
 5. Discusses its importance/frequency
-6. Wraps up the entire preview segment with motivation
-7. Ends with a call-to-action to create movies for all characters
-
-Say "The character is" and we'll insert the pronunciation.
-End with excitement and motivation for the upcoming learning journey.`;
+6. Wraps up the entire preview segment`;
 
       case 'only':
         return `You're a witty radio DJ creating a preview for a single upcoming Chinese character.
