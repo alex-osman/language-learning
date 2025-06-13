@@ -123,6 +123,43 @@ Create a 30-45 second script that:
     return script;
   }
 
+  async generateMultiCharacterPreviewScript(
+    characters: Character[],
+  ): Promise<string> {
+    const cacheKey = `multi_preview_${characters.map((c) => c.id).join('_')}`;
+    const file = path.join(this.cacheDir, `${cacheKey}.txt`);
+
+    if (fs.existsSync(file)) {
+      return fs.readFileSync(file, 'utf8');
+    }
+
+    const characterList = characters
+      .map(
+        (char, index) =>
+          `${index + 1}. ${char.character} (${char.pinyin}) - ${char.definition}`,
+      )
+      .join('\n');
+
+    const prompt = `You're a witty, engaging radio DJ creating a preview segment for upcoming Chinese characters.
+
+Characters to preview:
+${characterList}
+
+Create a complete preview script that:
+1. Opens with excitement about the upcoming characters
+2. For each character, briefly mentions what it means and spells out the pinyin with tone number
+3. Keeps each character introduction concise (1-2 sentences max)
+4. No need for transitions between characters - just move from one to the next
+5. Ends with motivation to start learning these characters
+6. Uses only text that the radio host will read exactly as written
+
+Keep the entire script engaging but concise. Don't overthink transitions - just present each character clearly and move on to the next.`;
+
+    const script = await this.generateScript(prompt);
+    fs.writeFileSync(file, script);
+    return script;
+  }
+
   async generateCharacterPreviewScript(
     currentCharacter: Character,
     previousCharacter?: Character,
@@ -183,6 +220,7 @@ Create a 45-60 second script that:
 3. Spells out the pinyin and says the tone number
 4. Uses it in a simple Chinese sentence
 5. Discusses how common/useful it is
+6. Uses only text, the radio host will read the script exactly as written.
 
 End with a smooth transition to the next character.`;
 
@@ -202,6 +240,7 @@ Create a 30-45 second script that:
 4. Uses it in a simple Chinese sentence
 5. Discusses practical applications
 6. Relates this character to the next character in some way.
+7. Uses only text, the radio host will read the script exactly as written.
 
 Make the transition from previous character feel natural and educational.`;
 
@@ -219,7 +258,8 @@ Create a 45-60 second script that:
 3. Spells out the pinyin and says the tone number
 4. Uses it in a simple Chinese sentence
 5. Discusses its importance/frequency
-6. Wraps up the entire preview segment`;
+6. Wraps up the entire preview segment
+7. Uses only text, the radio host will read the script exactly as written.`;
 
       case 'only':
         return `You're a witty radio DJ creating a preview for a single upcoming Chinese character.
@@ -235,9 +275,7 @@ Create a 45-60 second script that:
 4. Uses it in a simple Chinese sentence
 5. Discusses how common/useful it is
 6. Ends with motivation to create a movie for this character
-
-Say "The character is" and we'll insert the pronunciation.
-Make it engaging and complete as a standalone preview.`;
+7. Uses only text, the radio host will read the script exactly as written.`;
     }
   }
 

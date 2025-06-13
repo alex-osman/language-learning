@@ -6,6 +6,7 @@ server/src/data.json
 /node_modules
 /build
 /radio-cache/silence
+/radio-cache/scripts
 /radio-cache/tts
 /radio-output
 

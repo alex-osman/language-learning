@@ -25,7 +25,7 @@ async function bootstrap() {
     // Get character count from command line argument (default: 5)
     const args = process.argv.slice(2);
     const countArg = args.find((arg) => arg.startsWith('--count='));
-    const count = countArg ? parseInt(countArg.split('=')[1]) : 5;
+    const count = countArg ? parseInt(countArg.split('=')[1]) : 4;
 
     console.log(`🎙️ Building preview for ${count} character(s)...`);
 

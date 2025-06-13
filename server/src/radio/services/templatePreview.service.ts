@@ -48,7 +48,7 @@ export class TemplatePreviewService {
 
   /**
    * Builds modular preview segments for multiple characters.
-   * Each character gets a context-aware script based on its position.
+   * Uses a single LLM request to generate the complete preview script.
    *
    * @param count Number of characters to preview (default: 5)
    * @returns A list of audio segments for the multi-character preview
@@ -67,24 +67,14 @@ export class TemplatePreviewService {
     console.log(`🔮 Building preview for ${characters.length} characters`);
     const segments: AudioSegment[] = [];
 
-    for (let i = 0; i < characters.length; i++) {
-      const current = characters[i];
-      const previous = i > 0 ? characters[i - 1] : undefined;
-      const next = i < characters.length - 1 ? characters[i + 1] : undefined;
-
-      // Generate context-aware script for this character
-      const script = await this.djScriptService.generateCharacterPreviewScript(
-        current,
-        previous,
-        next,
+    // Generate complete preview script in a single LLM request
+    const completeScript =
+      await this.djScriptService.generateMultiCharacterPreviewScript(
+        characters,
       );
 
-      // Add script and pronunciation
-      segments.push({ type: 'text', content: script, lang: 'en' });
-      segments.push({ type: 'pause', duration: this.SHORT_PAUSE });
-    }
-
-    // Final pause
+    // Add the complete script as a single segment
+    segments.push({ type: 'text', content: completeScript, lang: 'en' });
     segments.push({ type: 'pause', duration: this.FINAL_PAUSE });
 
     console.log(`Preview segments built for ${characters.length} characters`);
