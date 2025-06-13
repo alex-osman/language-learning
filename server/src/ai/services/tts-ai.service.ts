@@ -56,7 +56,7 @@ export class TtsAiService extends BaseAiService {
       input: request.text,
       instructions:
         '你正在给一个只学会了一些基础词语的小朋友讲故事。请说得慢一些，清楚一些。',
-      speed: request.speed === 'slow' ? 0.7 : 1,
+      speed: 1,
       response_format: 'mp3',
     });
 

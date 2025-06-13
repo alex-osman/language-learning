@@ -33,6 +33,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SentenceAnalyzerService } from './services/sentence-analyzer.service';
 import { SentenceAnalyzerController } from './controllers/sentence-analyzer.controller';
+import { RadioModule } from './radio/radio.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { SentenceAnalyzerController } from './controllers/sentence-analyzer.cont
       Sentence,
       Word,
     ]),
+    RadioModule,
   ],
   controllers: [
     DataController,
