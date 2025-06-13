@@ -5,6 +5,9 @@ server/src/data.json
 /dist
 /node_modules
 /build
+/radio-cache/silence
+/radio-cache/tts
+/radio-output
 
 # Logs
 logs

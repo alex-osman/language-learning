@@ -29,6 +29,7 @@ async function bootstrap() {
     const segments = await templateService.buildHardSegments();
 
     console.log(`Processing ${segments.length} segments...`);
+    console.log(`Debug ${JSON.stringify(segments, null, 2)}`);
     const audioFiles: string[] = [];
 
     for (let i = 0; i < segments.length; i++) {

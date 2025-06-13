@@ -54,24 +54,21 @@ export class TemplateHardService {
       segments.push({ type: 'text', content: w.character, lang: 'zh' });
       segments.push({ type: 'pause', duration: '500ms' });
 
-      // 3. Spell pinyin letters (no SSML, just spell them out)
-      const spelledPinyin = pinyinNoTones.split('').join(' '); // "ma" -> "m a"
-      segments.push({ type: 'text', content: spelledPinyin, lang: 'en' });
-      segments.push({ type: 'pause', duration: '300ms' });
-
-      // 4. Tone number
+      // 3. Spell pinyin letters (no SSML, just spell them out) and tone number
+      const spelledPinyin = pinyinNoTones.split('').join('-').toUpperCase(); // "ma" -> "M-A"
       segments.push({
         type: 'text',
-        content: `tone ${toneNumber}`,
+        content: `Spelled out slowly: ${spelledPinyin} tone ${toneNumber}`,
         lang: 'en',
       });
+
       segments.push({ type: 'pause', duration: '500ms' });
 
-      // 5. Chinese character again
+      // 4. Chinese character again
       segments.push({ type: 'text', content: w.character, lang: 'zh' });
       segments.push({ type: 'pause', duration: this.SHORT_PAUSE });
 
-      // 6. English meaning
+      // 5. English meaning
       segments.push({
         type: 'text',
         content: `Means ${w.definition}`,
