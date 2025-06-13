@@ -56,11 +56,9 @@ Example style: "Alright, let's tackle our third character today!  This one's sup
     const spellingPhrases = [
       'Let me break that down for you slowly:',
       "Here's how we spell it out slowly:",
-      "Letter by letter, that's:",
       'Breaking it down nice and slow:',
       "Let's spell that out together slowly:",
-      'Piece by piece it is spelled:',
-      "Here's how its speled slowly:",
+      "Here's how its spelled slowly:",
     ];
 
     // Randomly select a phrase
