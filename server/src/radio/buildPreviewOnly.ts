@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
-import { RadioBuilderService } from './services/radioBuilder.service';
+import { TemplatePreviewService } from './services/templatePreview.service';
 import { RadioTtsService } from './services/tts.service';
 import { SilenceService } from './services/silence.service';
 import { ConcatService } from './services/concat.service';
@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
 
   try {
-    const radioBuilderService = app.get(RadioBuilderService);
+    const templateService = app.get(TemplatePreviewService);
     const ttsService = app.get(RadioTtsService);
     const silenceService = app.get(SilenceService);
     const concatService = app.get(ConcatService);
@@ -22,17 +22,22 @@ async function bootstrap() {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    console.log('🔮 Generating preview segment for next character...');
-    const segments = await radioBuilderService.buildPreviewOnly();
+    // Get character count from command line argument (default: 5)
+    const args = process.argv.slice(2);
+    const countArg = args.find((arg) => arg.startsWith('--count='));
+    const count = countArg ? parseInt(countArg.split('=')[1]) : 5;
+
+    console.log(`🎙️ Building preview for ${count} character(s)...`);
+
+    // Use multi-character preview if count > 1, otherwise single character
+    const segments =
+      count > 1
+        ? await templateService.buildMultiCharacterPreviewSegments(count)
+        : await templateService.buildPreviewSegments();
 
     if (segments.length === 0) {
-      console.log(
-        'ℹ️ No preview segment generated - all characters have movies',
-      );
-      console.log(
-        '💡 Create some characters without movies to test the preview feature',
-      );
-      return;
+      console.log('❌ No characters available for preview');
+      process.exit(0);
     }
 
     console.log(`🎵 Processing ${segments.length} preview segments...`);
@@ -59,16 +64,19 @@ async function bootstrap() {
     }
 
     console.log('🎧 Concatenating preview segments...');
-    const outputFile = path.join(outputDir, 'preview.mp3');
+    const outputFile = path.join(outputDir, `preview-${count}chars.mp3`);
     concatService.concat(audioFiles, outputFile);
 
-    console.log('✅ Preview segment ready → radio-output/preview.mp3');
+    console.log(`✅ Preview ready → ${outputFile}`);
     console.log(
       `📊 Generated from ${audioFiles.length} individual audio segments`,
     );
-    console.log('🔮 Features: AI DJ preview, next character teaser!');
+
+    // Get file stats for duration info
+    const stats = fs.statSync(outputFile);
+    console.log(`📊 File size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
   } catch (error) {
-    console.error('❌ Error building preview segment:', error);
+    console.error('❌ Error building preview:', error);
     process.exit(1);
   } finally {
     await app.close();

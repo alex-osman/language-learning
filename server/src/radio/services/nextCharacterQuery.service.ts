@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, IsNull, MoreThanOrEqual } from 'typeorm';
 import { CharacterService } from '../../services/character.service';
 import { Character } from '../../entities/character.entity';
 
 @Injectable()
 export class NextCharacterQueryService {
-  constructor(private characterService: CharacterService) {}
+  constructor(
+    private characterService: CharacterService,
+    @InjectRepository(Character)
+    private characterRepository: Repository<Character>,
+  ) {}
 
   async getNextCharacterForPreview(): Promise<Character | null> {
     // Reuse existing logic to get next character without movie
@@ -17,6 +23,32 @@ export class NextCharacterQueryService {
 
     // Convert DTO back to entity for our radio services
     // We need the raw entity for our radio generation
+    return this.convertToEntity(characterDTO);
+  }
+
+  async getNextCharactersForPreview(count: number = 5): Promise<Character[]> {
+    // Get the first character without movie as starting point
+    const firstCharacterDTO =
+      await this.characterService.getNextCharacterWithoutMovie();
+
+    if (!firstCharacterDTO) {
+      return [];
+    }
+
+    // Get up to 'count' characters starting from the first one without movie
+    const characterDTOs = await this.characterRepository.find({
+      where: {
+        movie: IsNull(),
+        id: MoreThanOrEqual(firstCharacterDTO.id),
+      },
+      order: { id: 'ASC' },
+      take: count,
+    });
+
+    return characterDTOs.map((char) => this.convertToEntity(char));
+  }
+
+  private convertToEntity(characterDTO: any): Character {
     return {
       id: characterDTO.id,
       character: characterDTO.character,

@@ -21,6 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "radio:generate": "npm run build && node dist/radio/buildHardBlock.js",
     "radio:preview": "npm run build && node dist/radio/buildPreviewOnly.js",
+    "radio:preview:1": "npm run build && node dist/radio/buildPreviewOnly.js --count=1",
+    "radio:preview:3": "npm run build && node dist/radio/buildPreviewOnly.js --count=3",
+    "radio:preview:5": "npm run build && node dist/radio/buildPreviewOnly.js --count=5",
     "radio:complete": "npm run build && node dist/radio/buildCompleteRadio.js"
   },
   "dependencies": {

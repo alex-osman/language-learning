@@ -123,6 +123,131 @@ Create a 30-45 second script that:
     return script;
   }
 
+  async generateCharacterPreviewScript(
+    currentCharacter: Character,
+    previousCharacter?: Character,
+    nextCharacter?: Character,
+  ): Promise<string> {
+    const position = this.determinePosition(previousCharacter, nextCharacter);
+    const cacheKey = `preview_${position}_${currentCharacter.id}_${previousCharacter?.id || 'none'}_${nextCharacter?.id || 'none'}`;
+
+    // Check cache first
+    const file = path.join(this.cacheDir, `${cacheKey}.txt`);
+    if (fs.existsSync(file)) {
+      return fs.readFileSync(file, 'utf8');
+    }
+
+    const prompt = this.buildPromptForPosition(
+      position,
+      currentCharacter,
+      previousCharacter,
+      nextCharacter,
+    );
+    const script = await this.generateScript(prompt);
+
+    // Cache the result
+    fs.writeFileSync(file, script);
+    return script;
+  }
+
+  private determinePosition(
+    previous?: Character,
+    next?: Character,
+  ): 'first' | 'middle' | 'last' | 'only' {
+    if (!previous && !next) return 'only';
+    if (!previous) return 'first';
+    if (!next) return 'last';
+    return 'middle';
+  }
+
+  private buildPromptForPosition(
+    position: 'first' | 'middle' | 'last' | 'only',
+    current: Character,
+    previous?: Character,
+    next?: Character,
+  ): string {
+    const baseInfo = `Character: ${current.character} (${current.pinyin}) - ${current.definition}`;
+
+    switch (position) {
+      case 'first':
+        return `You're a witty radio DJ starting a preview segment of upcoming Chinese characters.
+
+${baseInfo}
+Next Character: ${next?.character} (${next?.pinyin}) - ${next?.definition}
+
+This is the FIRST character in a preview of multiple upcoming characters.
+
+Create a 45-60 second script that:
+1. Opens the preview segment with excitement ("But wait, there's more! Let me give you a preview of your next characters...")
+2. Introduces this character with its meaning and usage
+3. Spells out the pinyin and mentions the tone
+4. Uses it in a simple Chinese sentence
+5. Discusses how common/useful it is
+6. Creates anticipation for the next character without revealing too much
+
+Say "The character is" and we'll insert the pronunciation.
+End with a smooth transition hint toward the next character.`;
+
+      case 'middle':
+        return `You're a witty radio DJ continuing a preview of Chinese characters.
+
+Previous Character: ${previous?.character} (${previous?.pinyin}) - ${previous?.definition}
+${baseInfo}
+Next Character: ${next?.character} (${next?.pinyin}) - ${next?.definition}
+
+This is a MIDDLE character in the preview sequence.
+
+Create a 30-45 second script that:
+1. Smoothly transitions from the previous character (find a connection: meaning, sound, visual, context, or contrast)
+2. Introduces this character with its meaning and usage
+3. Spells out the pinyin and mentions the tone
+4. Uses it in a simple Chinese sentence
+5. Discusses practical applications
+6. Sets up anticipation for the next character
+
+Say "The character is" and we'll insert the pronunciation.
+Make the transition from previous character feel natural and educational.`;
+
+      case 'last':
+        return `You're a witty radio DJ concluding a preview of Chinese characters.
+
+Previous Character: ${previous?.character} (${previous?.pinyin}) - ${previous?.definition}
+${baseInfo}
+
+This is the LAST character in the preview sequence.
+
+Create a 45-60 second script that:
+1. Smoothly transitions from the previous character
+2. Introduces this character with its meaning and usage
+3. Spells out the pinyin and mentions the tone
+4. Uses it in a simple Chinese sentence
+5. Discusses its importance/frequency
+6. Wraps up the entire preview segment with motivation
+7. Ends with a call-to-action to create movies for all characters
+
+Say "The character is" and we'll insert the pronunciation.
+End with excitement and motivation for the upcoming learning journey.`;
+
+      case 'only':
+        return `You're a witty radio DJ creating a preview for a single upcoming Chinese character.
+
+${baseInfo}
+
+This is the ONLY character in the preview segment.
+
+Create a 45-60 second script that:
+1. Opens the preview segment with excitement
+2. Introduces this character with its meaning and usage
+3. Spells out the pinyin and mentions the tone
+4. Uses it in a simple Chinese sentence
+5. Discusses how common/useful it is
+6. Ends with motivation to create a movie for this character
+
+Say "The character is" and we'll insert the pronunciation.
+Make it engaging and complete as a standalone preview.`;
+    }
+  }
+
   private async generateScript(prompt: string): Promise<string> {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
