@@ -4,15 +4,9 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
 
-interface Segment {
-  lang?: string;
-  text?: string;
-  pause?: string;
-}
-
 @Injectable()
 export class RadioTtsService extends BaseAiService {
-  private readonly cacheDir = path.join(process.cwd(), 'radio-cache');
+  private readonly cacheDir = path.join(process.cwd(), 'radio-cache', 'tts');
 
   constructor() {
     super();
@@ -21,16 +15,10 @@ export class RadioTtsService extends BaseAiService {
     }
   }
 
-  private segToSSML(seg: Segment): string {
-    if (seg.pause) return `<break time="${seg.pause}"/>`;
-    if (seg.lang === 'zh') return `<lang xml:lang="zh">${seg.text}</lang>`;
-    return seg.text || '';
-  }
-
-  async ssmlToMp3(segments: Segment[]): Promise<string> {
-    const ssml = `<speak>${segments.map((seg) => this.segToSSML(seg)).join(' ')}</speak>`;
-    const hash = crypto.createHash('sha1').update(ssml).digest('hex');
-    const file = path.join(this.cacheDir, `${hash}.mp3`);
+  async textToMp3(text: string, lang: 'en' | 'zh'): Promise<string> {
+    // Create cache key based on text and language
+    const cacheKey = `${lang}_${crypto.createHash('sha1').update(text).digest('hex')}`;
+    const file = path.join(this.cacheDir, `${cacheKey}.mp3`);
 
     if (fs.existsSync(file)) return file;
 
@@ -38,9 +26,9 @@ export class RadioTtsService extends BaseAiService {
       try {
         const res = await this.openai.audio.speech.create({
           model: 'tts-1', // Correct OpenAI model name
-          voice: 'alloy',
+          voice: 'alloy', // Could vary by language if needed
           response_format: 'mp3',
-          input: ssml,
+          input: text, // Plain text, no SSML
         });
 
         fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));

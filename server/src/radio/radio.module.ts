@@ -4,6 +4,7 @@ import { Character } from '../entities/character.entity';
 import { HardWordsQueryService } from './services/hardWordsQuery.service';
 import { TemplateHardService } from './services/templateHard.service';
 import { RadioTtsService } from './services/tts.service';
+import { SilenceService } from './services/silence.service';
 import { ConcatService } from './services/concat.service';
 import { RadioController } from './radio.controller';
 import { CharacterService } from '../services/character.service';
@@ -20,6 +21,7 @@ import { RadicalProp } from '../entities/radical-prop.entity';
     HardWordsQueryService,
     TemplateHardService,
     RadioTtsService,
+    SilenceService,
     ConcatService,
     CharacterService,
     ActorService,
@@ -31,6 +33,7 @@ import { RadicalProp } from '../entities/radical-prop.entity';
     HardWordsQueryService,
     TemplateHardService,
     RadioTtsService,
+    SilenceService,
     ConcatService,
   ],
 })

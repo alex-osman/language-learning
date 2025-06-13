@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { HardWordsQueryService } from './hardWordsQuery.service';
 import { CharacterService } from '../../services/character.service';
 
-interface Segment {
-  lang?: string;
-  text?: string;
-  pause?: string;
+export interface AudioSegment {
+  type: 'text' | 'pause';
+  content?: string;
+  lang?: 'en' | 'zh';
+  duration?: string; // for pauses: "700ms", "1s"
 }
 
 @Injectable()
@@ -32,38 +33,53 @@ export class TemplateHardService {
   private readonly SHORT_PAUSE = '700ms';
   private readonly LONG_PAUSE = '1s';
 
-  async buildHardSegments(): Promise<Segment[]> {
+  async buildHardSegments(): Promise<AudioSegment[]> {
     const words = await this.hardWordsQueryService.getHardest(); // Will get 1 character by default
-    const segs: Segment[] = [];
+    const segments: AudioSegment[] = [];
 
     words.forEach((w, i) => {
       // Use existing CharacterService methods instead of duplicating logic
       const toneNumber = this.characterService.getToneNumber(w.pinyin);
       const pinyinNoTones = this.characterService.removeToneMarks(w.pinyin);
 
-      segs.push({ lang: 'en', text: `${this.ord[i]} character.` });
-      segs.push({ pause: this.SHORT_PAUSE });
+      // 1. "First character"
+      segments.push({
+        type: 'text',
+        content: `${this.ord[i]} character.`,
+        lang: 'en',
+      });
+      segments.push({ type: 'pause', duration: this.SHORT_PAUSE });
 
-      // word once (Mandarin)
-      segs.push({ lang: 'zh', text: w.character });
-      segs.push({ pause: '500ms' });
+      // 2. Chinese character
+      segments.push({ type: 'text', content: w.character, lang: 'zh' });
+      segments.push({ type: 'pause', duration: '500ms' });
 
-      // spell pinyin letters via SSML <say-as interpret-as="characters">
-      const spelled = `<say-as interpret-as="characters">${pinyinNoTones}</say-as>`;
-      segs.push({ lang: 'en', text: spelled });
-      segs.push({ pause: '300ms' });
-      segs.push({ lang: 'en', text: `tone ${toneNumber}.` });
-      segs.push({ pause: '500ms' });
+      // 3. Spell pinyin letters (no SSML, just spell them out)
+      const spelledPinyin = pinyinNoTones.split('').join(' '); // "ma" -> "m a"
+      segments.push({ type: 'text', content: spelledPinyin, lang: 'en' });
+      segments.push({ type: 'pause', duration: '300ms' });
 
-      // word again
-      segs.push({ lang: 'zh', text: w.character });
-      segs.push({ pause: this.SHORT_PAUSE });
+      // 4. Tone number
+      segments.push({
+        type: 'text',
+        content: `tone ${toneNumber}`,
+        lang: 'en',
+      });
+      segments.push({ type: 'pause', duration: '500ms' });
 
-      // English meaning
-      segs.push({ lang: 'en', text: `Means ${w.definition}.` });
-      segs.push({ pause: this.LONG_PAUSE });
+      // 5. Chinese character again
+      segments.push({ type: 'text', content: w.character, lang: 'zh' });
+      segments.push({ type: 'pause', duration: this.SHORT_PAUSE });
+
+      // 6. English meaning
+      segments.push({
+        type: 'text',
+        content: `Means ${w.definition}`,
+        lang: 'en',
+      });
+      segments.push({ type: 'pause', duration: this.LONG_PAUSE });
     });
 
-    return segs;
+    return segments;
   }
 }
