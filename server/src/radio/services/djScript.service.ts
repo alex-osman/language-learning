@@ -92,6 +92,37 @@ Create 2-3 sentences for the DJ to say. End with something like "And that's how 
     return script;
   }
 
+  async generateCompletePreviewScript(character: Character): Promise<string> {
+    const cacheKey = `preview_complete_${character.id}`;
+    const file = path.join(this.cacheDir, `${cacheKey}.txt`);
+
+    if (fs.existsSync(file)) {
+      return fs.readFileSync(file, 'utf8');
+    }
+
+    // We'll need to get actor and set info - let's build the prompt with available data
+    const prompt = `You're a witty, engaging radio DJ wrapping up a Chinese learning segment.
+Generate a complete "coming up next" preview script for the next character students will learn.
+
+Character: ${character.character}
+Pinyin: ${character.pinyin}
+Definition: ${character.definition}
+
+Create a 30-45 second script that:
+1. Introduces the 'Next Character' Segment
+2. Reveals the character's meaning
+3. Says the character a few times
+4. Spells out the character's pinyin and tone number
+5. Uses the character in a very simple chinese sentence.
+6. Talks about the character and if it's a character used often or not.  How I might see it and how it is similar or different from the literal meaning.
+7. Uses only text, the radio host will read the script exactly as written.
+`;
+
+    const script = await this.generateScript(prompt);
+    fs.writeFileSync(file, script);
+    return script;
+  }
+
   private async generateScript(prompt: string): Promise<string> {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
@@ -108,7 +139,7 @@ Create 2-3 sentences for the DJ to say. End with something like "And that's how 
               content: prompt,
             },
           ],
-          max_tokens: 150,
+          max_tokens: 650,
           temperature: 0.8,
         });
 

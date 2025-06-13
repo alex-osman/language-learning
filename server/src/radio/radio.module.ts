@@ -7,6 +7,9 @@ import { RadioTtsService } from './services/tts.service';
 import { SilenceService } from './services/silence.service';
 import { ConcatService } from './services/concat.service';
 import { DjScriptService } from './services/djScript.service';
+import { NextCharacterQueryService } from './services/nextCharacterQuery.service';
+import { TemplatePreviewService } from './services/templatePreview.service';
+import { RadioBuilderService } from './services/radioBuilder.service';
 import { RadioController } from './radio.controller';
 import { CharacterService } from '../services/character.service';
 import { ActorService } from '../services/actor.service';
@@ -25,6 +28,9 @@ import { RadicalProp } from '../entities/radical-prop.entity';
     SilenceService,
     ConcatService,
     DjScriptService,
+    NextCharacterQueryService,
+    TemplatePreviewService,
+    RadioBuilderService,
     CharacterService,
     ActorService,
     SetService,
@@ -38,6 +44,9 @@ import { RadicalProp } from '../entities/radical-prop.entity';
     SilenceService,
     ConcatService,
     DjScriptService,
+    NextCharacterQueryService,
+    TemplatePreviewService,
+    RadioBuilderService,
   ],
 })
 export class RadioModule {}
