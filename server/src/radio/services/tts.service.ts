@@ -25,12 +25,11 @@ export class RadioTtsService extends BaseAiService {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const res = await this.openai.audio.speech.create({
-          model: 'gpt-4o-mini-tts', // Correct OpenAI model name
+          model: 'tts-1', // Correct OpenAI TTS model name
           voice: 'shimmer', // Could vary by language if needed
           response_format: 'mp3',
           input: text, // Plain text, no SSML
-          instructions:
-            'You are a radio DJ host.  Speak in a fun and engaging way.  Speak slowly and clearly.',
+          // Note: instructions parameter is not supported by OpenAI TTS API
         });
 
         fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));

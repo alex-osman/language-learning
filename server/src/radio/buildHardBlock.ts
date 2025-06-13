@@ -25,11 +25,12 @@ async function bootstrap() {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    console.log('Building hard segments (1 character for testing)...');
+    console.log('🎙️ Generating AI DJ radio segments with movie context...');
     const segments = await templateService.buildHardSegments();
 
-    console.log(`Processing ${segments.length} segments...`);
-    console.log(`Debug ${JSON.stringify(segments, null, 2)}`);
+    console.log(
+      `🎵 Processing ${segments.length} segments with AI-generated DJ content...`,
+    );
     const audioFiles: string[] = [];
 
     for (let i = 0; i < segments.length; i++) {
@@ -52,19 +53,20 @@ async function bootstrap() {
       }
     }
 
-    console.log('Concatenating all audio segments...');
+    console.log('🎧 Concatenating all audio segments...');
     const outputFile = path.join(outputDir, 'hardblock.mp3');
     concatService.concat(audioFiles, outputFile);
 
-    console.log('✅ Hard block ready → radio-output/hardblock.mp3');
+    console.log('✅ AI DJ Radio segment ready → radio-output/hardblock.mp3');
     console.log(
       `📊 Generated from ${audioFiles.length} individual audio segments`,
     );
+    console.log('🎙️ Features: AI DJ host, movie context, witty commentary!');
     console.log(
-      '💡 To test with more characters, modify hardWordsQuery.service.ts getHardest() default parameter',
+      '💡 To adjust character count, modify hardWordsQuery.service.ts getHardest() parameter',
     );
   } catch (error) {
-    console.error('❌ Error building hard block:', error);
+    console.error('❌ Error building AI DJ radio segment:', error);
     process.exit(1);
   } finally {
     await app.close();
