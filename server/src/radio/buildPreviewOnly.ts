@@ -41,7 +41,7 @@ async function bootstrap() {
     const segments =
       count > 1
         ? await templateService.buildMultiCharacterPreviewSegments(count, mode)
-        : await templateService.buildPreviewSegments();
+        : await templateService.buildPreviewSegments(mode);
 
     if (segments.length === 0) {
       console.log('❌ No characters available for preview');

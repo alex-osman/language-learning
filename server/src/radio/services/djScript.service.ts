@@ -31,16 +31,19 @@ export class DjScriptService extends BaseAiService {
       return fs.readFileSync(file, 'utf8');
     }
 
-    const prompt = `You're a fun, energetic, engaging, and controversial radio DJ introducing a Chinese character to language learners.
+    const prompt = `You're a calm, clear, and slightly thoughtful language-learning guide. You're reintroducing a Chinese character that the listener has seen before but often forgets — based on their flashcard history.
 
+Details:
 Character: ${character.character}
 Pinyin: ${character.pinyin}
 Definition: ${character.definition}
 Character Number: ${this.getOrdinal(characterNumber)}
+Character ID: ${character.id}
 
-Create a 1-2 sentence witty, silly, and engaging intro that mentions this is the "${this.getOrdinal(characterNumber)} character" and builds excitement. Keep it conversational and fun, like a real radio DJ. Don't mention the movie yet - that comes later.
+Write a short 1–2 sentence introduction. Mention that this is the "${this.getOrdinal(characterNumber)} character" in today's episode and that it's character ID is ${character.id}. Avoid jokes or banter. You're here to help the listener re-encounter this character in a more memorable way, not to entertain them with fluff.  Be sure to spell out the pinyin and say the tone number exactly like this: 讨 is T - A - O.  That is tone 3.  Again spelled out slowly it is T,A,O.  That is tone 3.
 
-Example style: "Alright, let's tackle our third character today!  This one's super useful when you need to say 'I'm sorry' in Chinese because you've been a naughty naughty boy."`;
+Examples:
+"Third character today: 法.  The word again is 法.  法 is F - A.  That is tone 3.  Again spelled out slowly it is F,A.  That is tone 3.  You’ve seen this one before, but it’s still a bit slippery. Let’s make it stick this time."`;
 
     const script = await this.generateScript(prompt);
     fs.writeFileSync(file, script);
@@ -48,7 +51,6 @@ Example style: "Alright, let's tackle our third character today!  This one's sup
   }
 
   async generateSpellingIntro(
-    character: Character,
     spelledPinyin: string,
     toneNumber: number,
   ): Promise<string> {
@@ -100,22 +102,22 @@ Create 2-3 sentences for the DJ to say. End with something like "And that's how 
       return fs.readFileSync(file, 'utf8');
     }
 
-    // We'll need to get actor and set info - let's build the prompt with available data
-    const prompt = `You're a witty, engaging radio DJ wrapping up a Chinese learning segment.
-Generate a complete "coming up next" preview script for the next character students will learn.
+    const prompt = `You're a witty, engaging radio DJ hosting a Chinese learning segment.
+Generate a complete script for the next character students will learn.
 
 Character: ${character.character}
 Pinyin: ${character.pinyin}
 Definition: ${character.definition}
 
 Create a 30-45 second script that:
-1. Introduces the 'Next Character' Segment
+1. Introduces the Character
 2. Reveals the character's meaning
-3. Says the character a few times
-4. Spells out the character's pinyin and tone number
-5. Uses the character in a very simple chinese sentence.
-6. Talks about the character and if it's a character used often or not.  How I might see it and how it is similar or different from the literal meaning.
-7. Uses only text, the radio host will read the script exactly as written.
+3. Spells out the character's pinyin using the exact format:
+    "[character] spelled out slowly is [capital letter] - [capital letter] - [capital letter].  That is tone [number].  Again, spelled out slowly it is [capital letter],[capital letter],[capital letter].  That is tone [number]."
+    For example, 讨 is T - A - O.  That is tone 3.  Again spelled out slowly it is T,A,O.  That is tone 3.
+4. Uses the character in a very simple chinese sentence.
+5. Talks about the character and if it's a character used often or not.  How I might see it and how it is similar or different from the literal meaning.  If it is used in words, what are some examples?
+6. Uses only text, the radio host will read the script exactly as written.
 `;
 
     const script = await this.generateScript(prompt);
@@ -136,24 +138,25 @@ Create a 30-45 second script that:
     const characterList = characters
       .map(
         (char, index) =>
-          `${index + 1}. ${char.character} (${char.pinyin}) - ${char.definition}`,
+          `${index + 1}. ${char.character} (${char.pinyin}) - ${char.definition} - Character ID: ${char.id}`,
       )
       .join('\n');
 
-    const prompt = `You're a witty, engaging radio DJ creating a preview segment for upcoming Chinese characters.
+    const prompt = `You're a witty, engaging radio DJ creating a segment for Chinese characters.
 
 Characters to preview:
 ${characterList}
 
-Create a complete preview script that:
-1. Opens with excitement about the upcoming characters
-2. For each character, briefly mentions what it means and spells out the pinyin with tone number
-3. Keeps each character introduction concise (1-2 sentences max)
-4. No need for transitions between characters - just move from one to the next
-5. Ends with motivation to start learning these characters
-6. Uses only text that the radio host will read exactly as written
+Create a script that:
 
-Keep the entire script engaging but concise. Don't overthink transitions - just present each character clearly and move on to the next.`;
+1. Introduces each character and mentions the character ID
+2. Reveals the character's meaning
+3. Spells out the character's pinyin using the exact format:
+    "[character] spelled out slowly is [capital letter] - [capital letter] - [capital letter].  That is tone [number].  Again, spelled out slowly it is [capital letter],[capital letter],[capital letter].  That is tone [number]."
+    For example, 讨 is T - A - O.  That is tone 3.  Again spelled out slowly it is T,A,O.  That is tone 3.
+4. Uses the character in a very simple chinese sentence.
+5. Talks about the character and if it's a character used often or not.  How I might see it and how it is similar or different from the literal meaning.  If it is used in words, what are some examples?
+6. Uses only text, the radio host will read the script exactly as written.`;
 
     const script = await this.generateScript(prompt);
     fs.writeFileSync(file, script);

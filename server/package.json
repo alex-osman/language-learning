@@ -26,6 +26,7 @@
     "radio:preview:5": "npm run build && node dist/radio/buildPreviewOnly.js --count=5",
     "radio:preview:random": "npm run build && node dist/radio/buildPreviewOnly.js --count=5 --mode=random",
     "radio:preview:random:3": "npm run build && node dist/radio/buildPreviewOnly.js --count=3 --mode=random",
+    "radio:preview:random:1": "npm run build && node dist/radio/buildPreviewOnly.js --count=1 --mode=random",
     "radio:complete": "npm run build && node dist/radio/buildCompleteRadio.js"
   },
   "dependencies": {

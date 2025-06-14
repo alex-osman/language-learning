@@ -65,6 +65,7 @@ export class NextCharacterQueryService {
       where: {
         movie: IsNull(),
         definition: Not(IsNull()),
+        pinyin: Not(IsNull()),
       },
     });
 

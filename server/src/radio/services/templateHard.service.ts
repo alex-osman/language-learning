@@ -50,21 +50,23 @@ export class TemplateHardService {
    * @returns A list of audio segments with AI-generated DJ content.
    */
   async buildHardSegments(): Promise<AudioSegment[]> {
-    const words = await this.hardWordsQueryService.getHardest(1); // Test with 1 character first
+    const words = await this.hardWordsQueryService.getHardest(2); // Test with 1 character first
     const segments: AudioSegment[] = [];
 
     for (let i = 0; i < words.length; i++) {
-      const w = words[i];
+      const character = words[i];
       const characterNumber = i + 1;
 
       // Use existing CharacterService methods
-      const toneNumber = this.characterService.getToneNumber(w.pinyin);
-      const pinyinNoTones = this.characterService.removeToneMarks(w.pinyin);
+      const toneNumber = this.characterService.getToneNumber(character.pinyin);
+      const pinyinNoTones = this.characterService.removeToneMarks(
+        character.pinyin,
+      );
       const spelledPinyin = pinyinNoTones.split('').join('-').toUpperCase(); // "ma" -> "M-A"
 
       // 1. AI DJ Intro
       const djIntro = await this.djScriptService.generateIntro(
-        w,
+        character,
         characterNumber,
       );
       segments.push({ type: 'text', content: djIntro, lang: 'en' });
@@ -72,7 +74,6 @@ export class TemplateHardService {
 
       // 2. AI DJ Spelling intro + spelled pinyin + tone
       const spellingIntro = await this.djScriptService.generateSpellingIntro(
-        w,
         spelledPinyin,
         toneNumber,
       );
@@ -80,7 +81,8 @@ export class TemplateHardService {
       segments.push({ type: 'pause', duration: '300ms' });
 
       // 3. AI DJ Movie Context - connects definition to movie scene
-      const movieContext = await this.djScriptService.generateMovieContext(w);
+      const movieContext =
+        await this.djScriptService.generateMovieContext(character);
       segments.push({ type: 'text', content: movieContext, lang: 'en' });
 
       // 4. Extra long pause between characters (shorter for last character)

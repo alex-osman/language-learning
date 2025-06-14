@@ -18,9 +18,17 @@ export class TemplatePreviewService {
    * Builds preview segments for the next character to learn.
    * (Backward compatibility - single character preview)
    */
-  async buildPreviewSegments(): Promise<AudioSegment[]> {
+  async buildPreviewSegments(
+    mode: 'next' | 'random' = 'next',
+  ): Promise<AudioSegment[]> {
     const character =
-      await this.nextCharacterQueryService.getNextCharacterForPreview();
+      mode === 'random'
+        ? (
+            await this.nextCharacterQueryService.getRandomCharactersForPreview(
+              1,
+            )
+          )[0]
+        : await this.nextCharacterQueryService.getNextCharacterForPreview();
 
     if (!character) {
       console.log(
