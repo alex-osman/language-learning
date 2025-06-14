@@ -11,16 +11,17 @@ import { NextCharacterQueryService } from './services/nextCharacterQuery.service
 import { TemplatePreviewService } from './services/templatePreview.service';
 import { RadioBuilderService } from './services/radioBuilder.service';
 import { RadioController } from './radio.controller';
-import { CharacterService } from '../services/character.service';
-import { ActorService } from '../services/actor.service';
-import { SetService } from '../services/set.service';
-import { RadicalPropService } from '../services/radical-prop.service';
 import { Actor } from '../entities/actor.entity';
 import { Set } from '../entities/set.entity';
 import { RadicalProp } from '../entities/radical-prop.entity';
+import { Sentence } from '../entities/sentence.entity';
+import { CoreModule } from '../core/core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Character, Actor, Set, RadicalProp])],
+  imports: [
+    TypeOrmModule.forFeature([Character, Actor, Set, RadicalProp, Sentence]),
+    CoreModule,
+  ],
   providers: [
     HardWordsQueryService,
     TemplateHardService,
@@ -31,10 +32,6 @@ import { RadicalProp } from '../entities/radical-prop.entity';
     NextCharacterQueryService,
     TemplatePreviewService,
     RadioBuilderService,
-    CharacterService,
-    ActorService,
-    SetService,
-    RadicalPropService,
   ],
   controllers: [RadioController],
   exports: [

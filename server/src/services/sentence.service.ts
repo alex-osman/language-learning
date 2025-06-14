@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Sentence } from '../entities/sentence.entity';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
 
@@ -10,6 +10,13 @@ export class SentenceService {
     @InjectRepository(Sentence)
     private sentenceRepository: Repository<Sentence>,
   ) {}
+
+  async getSentencesForCharacter(character: string): Promise<SentenceDTO[]> {
+    const sentences = await this.sentenceRepository.find({
+      where: { sentence: Like(`%${character}%`) },
+    });
+    return sentences.map((sentence) => this.toSentenceDTO(sentence));
+  }
 
   async findAll(): Promise<SentenceDTO[]> {
     const sentences = await this.sentenceRepository.find();

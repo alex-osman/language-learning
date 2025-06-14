@@ -7,6 +7,8 @@ import { TONE_MAP, TWO_LETTER_INITIALS, VOWEL_MAP } from './pinyin.constants';
 import { SetService } from './set.service';
 import { ActorService } from './actor.service';
 import { RadicalPropService } from './radical-prop.service';
+import { SentenceService } from './sentence.service';
+import { SentenceDTO } from '@shared/interfaces/sentence.interface';
 @Injectable()
 export class CharacterService {
   constructor(
@@ -15,6 +17,7 @@ export class CharacterService {
     private actorService: ActorService,
     private setService: SetService,
     private radicalPropService: RadicalPropService,
+    private sentenceService: SentenceService,
   ) {}
 
   async getAllCharacterDTOs(): Promise<CharacterDTO[]> {
@@ -53,7 +56,10 @@ export class CharacterService {
     return this.makeCharacterDTO(character);
   }
 
-  async makeCharacterDTO(character: Character): Promise<CharacterDTO> {
+  async makeCharacterDTO(
+    character: Character,
+    sentences?: SentenceDTO[],
+  ): Promise<CharacterDTO> {
     const { final, initial } = this.parsePinyin(
       this.removeToneMarks(character.pinyin),
     );
@@ -93,6 +99,7 @@ export class CharacterService {
       nextReviewDate: character.nextReviewDate,
       lastReviewDate: character.lastReviewDate,
       dueForReview,
+      sentences,
     };
   }
 
@@ -122,10 +129,12 @@ export class CharacterService {
       where: { movie: IsNull() },
       order: { id: 'ASC' },
     });
-
     if (!character) return null;
+    const sentences = await this.sentenceService.getSentencesForCharacter(
+      character.character,
+    );
 
-    return this.makeCharacterDTO(character);
+    return this.makeCharacterDTO(character, sentences);
   }
 
   removeToneMarks(pinyin: string): string {

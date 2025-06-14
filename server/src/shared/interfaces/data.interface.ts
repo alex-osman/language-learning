@@ -1,3 +1,5 @@
+import { SentenceDTO } from './sentence.interface';
+
 export const TONES_MAPPED_TO_LOCATION = {
   '1': 'Outside the entrance',
   '2': 'Kitchen or inside entrance',
@@ -63,6 +65,8 @@ export interface CharacterDTO {
   nextReviewDate?: Date;
   lastReviewDate?: Date;
   dueForReview?: boolean;
+
+  sentences?: SentenceDTO[];
 }
 
 export interface WordDTO {
