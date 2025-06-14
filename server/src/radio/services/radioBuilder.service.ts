@@ -35,7 +35,10 @@ export class RadioBuilderService {
     // 2. Preview Segment (if available)
     console.log('🔮 Adding preview segment...');
     const previewSegments =
-      await this.templatePreviewService.buildPreviewSegments();
+      await this.templatePreviewService.buildMultiCharacterPreviewSegments(
+        5,
+        'random',
+      );
 
     if (previewSegments.length > 0) {
       // Add transition pause between segments

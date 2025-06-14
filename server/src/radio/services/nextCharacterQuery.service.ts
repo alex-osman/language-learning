@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, MoreThanOrEqual } from 'typeorm';
+import { Repository, IsNull, MoreThanOrEqual, Not } from 'typeorm';
 import { CharacterService } from '../../services/character.service';
 import { Character } from '../../entities/character.entity';
 
@@ -46,6 +46,37 @@ export class NextCharacterQueryService {
     });
 
     return characterDTOs.map((char) => this.convertToEntity(char));
+  }
+
+  async getCharactersForPreview(
+    count: number = 5,
+    mode: 'next' | 'random' = 'next',
+  ): Promise<Character[]> {
+    if (mode === 'random') {
+      return this.getRandomCharactersForPreview(count);
+    } else {
+      return this.getNextCharactersForPreview(count);
+    }
+  }
+
+  async getRandomCharactersForPreview(count: number = 5): Promise<Character[]> {
+    // Get all characters without movies that have definitions
+    const characterDTOs = await this.characterRepository.find({
+      where: {
+        movie: IsNull(),
+        definition: Not(IsNull()),
+      },
+    });
+
+    if (characterDTOs.length === 0) {
+      return [];
+    }
+
+    // Shuffle and take the requested count
+    const shuffled = characterDTOs.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+    return selected.map((char) => this.convertToEntity(char));
   }
 
   private convertToEntity(characterDTO: any): Character {

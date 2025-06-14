@@ -25,14 +25,22 @@ async function bootstrap() {
     // Get character count from command line argument (default: 5)
     const args = process.argv.slice(2);
     const countArg = args.find((arg) => arg.startsWith('--count='));
-    const count = countArg ? parseInt(countArg.split('=')[1]) : 4;
+    const count = countArg ? parseInt(countArg.split('=')[1]) : 5;
 
-    console.log(`🎙️ Building preview for ${count} character(s)...`);
+    // Get mode from command line argument (default: 'next')
+    const modeArg = args.find((arg) => arg.startsWith('--mode='));
+    const mode = modeArg
+      ? (modeArg.split('=')[1] as 'next' | 'random')
+      : 'next';
+
+    console.log(
+      `🎙️ Building preview for ${count} character(s) in ${mode} mode...`,
+    );
 
     // Use multi-character preview if count > 1, otherwise single character
     const segments =
       count > 1
-        ? await templateService.buildMultiCharacterPreviewSegments(count)
+        ? await templateService.buildMultiCharacterPreviewSegments(count, mode)
         : await templateService.buildPreviewSegments();
 
     if (segments.length === 0) {
@@ -64,7 +72,10 @@ async function bootstrap() {
     }
 
     console.log('🎧 Concatenating preview segments...');
-    const outputFile = path.join(outputDir, `preview-${count}chars.mp3`);
+    const outputFile = path.join(
+      outputDir,
+      `preview-${count}chars-${mode}.mp3`,
+    );
     concatService.concat(audioFiles, outputFile);
 
     console.log(`✅ Preview ready → ${outputFile}`);

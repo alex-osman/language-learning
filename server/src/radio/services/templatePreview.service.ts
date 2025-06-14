@@ -51,20 +51,25 @@ export class TemplatePreviewService {
    * Uses a single LLM request to generate the complete preview script.
    *
    * @param count Number of characters to preview (default: 5)
+   * @param mode Selection mode: 'next' for ordered sequence or 'random' for random selection (default: 'next')
    * @returns A list of audio segments for the multi-character preview
    */
   async buildMultiCharacterPreviewSegments(
     count: number = 5,
+    mode: 'next' | 'random' = 'next',
   ): Promise<AudioSegment[]> {
     const characters =
-      await this.nextCharacterQueryService.getNextCharactersForPreview(count);
+      await this.nextCharacterQueryService.getCharactersForPreview(count, mode);
 
     if (characters.length === 0) {
       console.log('No characters available for preview');
       return [];
     }
 
-    console.log(`🔮 Building preview for ${characters.length} characters`);
+    const modeText = mode === 'random' ? 'random' : 'next';
+    console.log(
+      `🔮 Building ${modeText} preview for ${characters.length} characters`,
+    );
     const segments: AudioSegment[] = [];
 
     // Generate complete preview script in a single LLM request
@@ -77,7 +82,9 @@ export class TemplatePreviewService {
     segments.push({ type: 'text', content: completeScript, lang: 'en' });
     segments.push({ type: 'pause', duration: this.FINAL_PAUSE });
 
-    console.log(`Preview segments built for ${characters.length} characters`);
+    console.log(
+      `Preview segments built for ${characters.length} characters (${modeText} mode)`,
+    );
     return segments;
   }
 }
