@@ -143,80 +143,96 @@ export class CharacterService {
     let initial = '';
     let final = '';
 
-    // Handle special cases first
-    if (pinyinNoTones === 'li') {
-      initial = 'li';
-      final = '';
-    } else if (pinyinNoTones === 'bian') {
-      initial = 'bi';
-      final = 'an';
-    } else if (pinyinNoTones.substring(0, 3) === 'zhu') {
+    // Handle three-letter initials first
+    if (pinyinNoTones.startsWith('zhu')) {
       initial = 'zhu';
       final = pinyinNoTones.substring(3);
-    } else if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {
-      initial = pinyinNoTones.substring(0, 2);
-      final = pinyinNoTones.substring(2);
-    } else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
-      initial =
-        pinyinNoTones[0] === 'x' || pinyinNoTones[0] === 'j'
-          ? pinyinNoTones
-          : pinyinNoTones[0];
-      final = '';
-    } else if (pinyinNoTones.startsWith('bu')) {
-      initial = 'bu';
-      final = pinyinNoTones.substring(2);
-    } else if (pinyinNoTones.startsWith('ju')) {
-      initial = 'ju';
-      final = pinyinNoTones.substring(2);
-    } else if (pinyinNoTones.startsWith('fu')) {
-      initial = 'fu';
-      final = pinyinNoTones.substring(2);
-    } else if (pinyinNoTones.startsWith('cu')) {
-      initial = 'cu';
-      final = pinyinNoTones.substring(2);
-    } else if (pinyinNoTones.startsWith('mi')) {
-      initial = 'mi';
-      final = `${pinyinNoTones.substring(2)}`;
     } else if (pinyinNoTones.startsWith('shu')) {
       initial = 'shu';
       final = pinyinNoTones.substring(3);
-    } else if (pinyinNoTones.startsWith('di')) {
+    }
+    // Handle two-letter initials with 'u'
+    else if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {
+      initial = pinyinNoTones.substring(0, 2);
+      final = pinyinNoTones.substring(2);
+    }
+    // Handle initials ending in 'i' that combine with following vowels
+    else if (pinyinNoTones.startsWith('bi') && pinyinNoTones.length > 2) {
+      initial = 'bi';
+      final = pinyinNoTones.substring(2);
+    } else if (pinyinNoTones.startsWith('mi') && pinyinNoTones.length > 2) {
+      initial = 'mi';
+      final = pinyinNoTones.substring(2);
+    } else if (pinyinNoTones.startsWith('di') && pinyinNoTones.length > 2) {
       initial = 'di';
       final = pinyinNoTones.substring(2);
-    } else if (
-      ['shi', 'chi', 'zhi', 'yi', 'si'].some((i) => pinyinNoTones.startsWith(i))
-    ) {
-      if (pinyinNoTones === 'si') {
-        initial = 's';
+    } else if (pinyinNoTones.startsWith('ji') && pinyinNoTones.length > 2) {
+      initial = 'ji';
+      final = pinyinNoTones.substring(2);
+    } else if (pinyinNoTones.startsWith('xi') && pinyinNoTones.length > 2) {
+      initial = 'xi';
+      final = pinyinNoTones.substring(2);
+    }
+    // Handle two-letter cases that are complete initials
+    else if (pinyinNoTones.length === 2 && pinyinNoTones[1] === 'i') {
+      const firstChar = pinyinNoTones[0];
+      if (['x', 'j'].includes(firstChar)) {
+        // For 'x' and 'j', use the full two letters as initial
+        initial = pinyinNoTones;
+        final = '';
+      } else if (['z', 's', 'r'].includes(firstChar)) {
+        // For 'z', 's', 'r', use just the consonant as initial
+        initial = firstChar;
+        final = '';
+      } else if (firstChar === 'l') {
+        // Special case: 'li' is a complete initial
+        initial = pinyinNoTones;
+        final = '';
       } else {
-        initial = pinyinNoTones.substring(0, 2);
+        // For other consonants, split into consonant + 'i' final
+        initial = firstChar;
+        final = 'i';
       }
-      final = '';
-    } else if (
-      pinyinNoTones.startsWith('ku') ||
-      pinyinNoTones.startsWith('hu')
+    }
+    // Handle other common initials
+    else if (
+      ['bu', 'ju', 'fu', 'cu'].some((prefix) =>
+        pinyinNoTones.startsWith(prefix),
+      )
     ) {
-      initial = pinyinNoTones.substring(0, 2);
-      final = pinyinNoTones.substring(2);
-    } else if (TWO_LETTER_INITIALS.some((i) => pinyinNoTones.startsWith(i))) {
-      initial = pinyinNoTones.substring(0, 2);
-      final = pinyinNoTones.substring(2);
-    } else {
+      const prefix = ['bu', 'ju', 'fu', 'cu'].find((p) =>
+        pinyinNoTones.startsWith(p),
+      )!;
+      initial = prefix;
+      final = pinyinNoTones.substring(prefix.length);
+    }
+    // Handle consonant clusters
+    else if (
+      ['shi', 'chi', 'zhi', 'yi'].some((cluster) =>
+        pinyinNoTones.startsWith(cluster),
+      )
+    ) {
+      const cluster = ['shi', 'chi', 'zhi', 'yi'].find((c) =>
+        pinyinNoTones.startsWith(c),
+      )!;
+      initial = cluster.substring(0, 2);
+      final = pinyinNoTones.substring(cluster.length);
+    }
+    // Handle two-letter initials from constants
+    else if (TWO_LETTER_INITIALS.some((i) => pinyinNoTones.startsWith(i))) {
+      const matchedInitial = TWO_LETTER_INITIALS.find((i) =>
+        pinyinNoTones.startsWith(i),
+      )!;
+      initial = matchedInitial;
+      final = pinyinNoTones.substring(matchedInitial.length);
+    }
+    // Default single-consonant initial
+    else {
       const firstChar = pinyinNoTones[0];
       if (firstChar === 'w') {
         initial = firstChar;
         final = '';
-      } else if (
-        (firstChar === 'd' || firstChar === 'r' || firstChar === 'y') &&
-        pinyinNoTones[1] === 'u'
-      ) {
-        initial = pinyinNoTones.substring(0, 2);
-        final = pinyinNoTones.substring(2);
-      } else if (firstChar === 'r' && pinyinNoTones === 'ri') {
-        initial = 'r';
-        final = '';
       } else {
-        // For non-standard inputs, don't apply INITIAL_MAPPINGS
         initial = firstChar;
         final = pinyinNoTones.substring(1);
       }
