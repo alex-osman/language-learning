@@ -37,7 +37,7 @@ export class RadioBuilderService {
     const previewSegments =
       await this.templatePreviewService.buildMultiCharacterPreviewSegments(
         2,
-        'random',
+        'next',
       );
 
     if (previewSegments.length > 0) {
