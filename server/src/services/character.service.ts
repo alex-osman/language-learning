@@ -144,7 +144,13 @@ export class CharacterService {
     let final = '';
 
     // Handle special cases first
-    if (pinyinNoTones.substring(0, 3) === 'zhu') {
+    if (pinyinNoTones === 'li') {
+      initial = 'li';
+      final = '';
+    } else if (pinyinNoTones === 'bian') {
+      initial = 'bi';
+      final = 'an';
+    } else if (pinyinNoTones.substring(0, 3) === 'zhu') {
       initial = 'zhu';
       final = pinyinNoTones.substring(3);
     } else if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {

@@ -80,6 +80,8 @@ describe('CharacterService', () => {
       { input: 'mu', expected: { initial: 'mu', final: '' } },
       { input: 'mian', expected: { initial: 'mi', final: 'an' } },
       { input: 'zhuo', expected: { initial: 'zhu', final: 'o' } },
+      { input: 'li', expected: { initial: 'li', final: '' } },
+      { input: 'bian', expected: { initial: 'bi', final: 'an' } },
     ];
 
     testCases.forEach(({ input, expected }) => {
