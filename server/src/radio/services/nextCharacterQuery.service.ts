@@ -27,25 +27,31 @@ export class NextCharacterQueryService {
   }
 
   async getNextCharactersForPreview(count: number = 5): Promise<Character[]> {
-    // Get the first character without movie as starting point
-    const firstCharacterDTO =
-      await this.characterService.getNextCharacterWithoutMovie();
+    try {
+      // Get the first character without movie as starting point
+      const firstCharacterDTO =
+        await this.characterService.getNextCharacterWithoutMovie();
 
-    if (!firstCharacterDTO) {
-      return [];
+      if (!firstCharacterDTO) {
+        return [];
+      }
+
+      // Get up to 'count' characters starting from the first one without movie
+      const characterDTOs = await this.characterRepository.find({
+        where: {
+          movie: IsNull(),
+          id: MoreThanOrEqual(firstCharacterDTO.id),
+        },
+        order: { id: 'ASC' },
+        take: count,
+      });
+
+      console.log(`🔍 Found ${characterDTOs.length} characters for preview`);
+      return characterDTOs.map((char) => this.convertToEntity(char));
+    } catch (error) {
+      console.error('❌ Error in getNextCharactersForPreview:', error);
+      throw error;
     }
-
-    // Get up to 'count' characters starting from the first one without movie
-    const characterDTOs = await this.characterRepository.find({
-      where: {
-        movie: IsNull(),
-        id: MoreThanOrEqual(firstCharacterDTO.id),
-      },
-      order: { id: 'ASC' },
-      take: count,
-    });
-
-    return characterDTOs.map((char) => this.convertToEntity(char));
   }
 
   async getCharactersForPreview(
@@ -60,33 +66,62 @@ export class NextCharacterQueryService {
   }
 
   async getRandomCharactersForPreview(count: number = 5): Promise<Character[]> {
-    // Get all characters without movies that have definitions
-    const characterDTOs = await this.characterRepository.find({
-      where: {
-        movie: IsNull(),
-        definition: Not(IsNull()),
-        pinyin: Not(IsNull()),
-      },
-    });
+    try {
+      // Get all characters without movies that have definitions
+      const characterDTOs = await this.characterRepository.find({
+        where: {
+          movie: IsNull(),
+          definition: Not(IsNull()),
+          pinyin: Not(IsNull()),
+        },
+      });
 
-    if (characterDTOs.length === 0) {
-      return [];
+      if (characterDTOs.length === 0) {
+        return [];
+      }
+
+      // Shuffle and take the requested count
+      const shuffled = characterDTOs.sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+      console.log(`🔍 Found ${selected.length} random characters for preview`);
+      return selected.map((char) => this.convertToEntity(char));
+    } catch (error) {
+      console.error('❌ Error in getRandomCharactersForPreview:', error);
+      throw error;
     }
-
-    // Shuffle and take the requested count
-    const shuffled = characterDTOs.sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, Math.min(count, shuffled.length));
-
-    return selected.map((char) => this.convertToEntity(char));
   }
 
   private convertToEntity(characterDTO: any): Character {
+    // Debug logging to understand the structure
+    console.log('🔍 Converting character:', {
+      id: characterDTO.id,
+      character: characterDTO.character,
+      radicalsType: typeof characterDTO.radicals,
+      radicalsValue: characterDTO.radicals,
+    });
+
+    // Handle both string and array formats for radicals
+    let radicals = '';
+    if (characterDTO.radicals) {
+      if (typeof characterDTO.radicals === 'string') {
+        // Already a string, use as-is
+        radicals = characterDTO.radicals;
+      } else if (Array.isArray(characterDTO.radicals)) {
+        // Array of radical objects, extract and join
+        radicals = characterDTO.radicals.map((r) => r.radical || r).join(',');
+      } else {
+        console.warn('⚠️ Unexpected radicals format:', characterDTO.radicals);
+        radicals = '';
+      }
+    }
+
     return {
       id: characterDTO.id,
       character: characterDTO.character,
       pinyin: characterDTO.pinyin,
       definition: characterDTO.definition,
-      radicals: characterDTO.radicals?.map((r) => r.radical).join(',') || '',
+      radicals: radicals,
       movie: undefined, // Character without movie
       imgUrl: characterDTO.imgUrl || undefined,
       easinessFactor: characterDTO.easinessFactor || 2.5,
