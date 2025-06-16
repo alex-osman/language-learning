@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NextCharacterQueryService } from './nextCharacterQuery.service';
 import { DjScriptService } from './djScript.service';
 import { AudioSegment } from './templateHard.service';
+import { assert } from 'console';
 
 @Injectable()
 export class TemplatePreviewService {
@@ -59,22 +60,40 @@ export class TemplatePreviewService {
    * Uses a single LLM request to generate the complete preview script.
    *
    * @param count Number of characters to preview (default: 5)
-   * @param mode Selection mode: 'next' for ordered sequence or 'random' for random selection (default: 'next')
+   * @param mode Selection mode: 'next' for ordered sequence, 'random' for random selection, or 'weighted' for weighted random (default: 'next')
+   * @param latestCharacterId The ID of the most recently learned character (required for 'weighted' mode)
    * @returns A list of audio segments for the multi-character preview
    */
   async buildMultiCharacterPreviewSegments(
     count: number = 5,
-    mode: 'next' | 'random' = 'next',
+    mode: 'next' | 'random' | 'weighted' = 'next',
+    latestCharacterId?: number,
   ): Promise<AudioSegment[]> {
-    const characters =
-      await this.nextCharacterQueryService.getCharactersForPreview(count, mode);
+    if (!latestCharacterId && mode === 'weighted') {
+      const lastCharacter =
+        await this.nextCharacterQueryService.getNextCharacterForPreview();
+      latestCharacterId = lastCharacter?.id;
+    }
 
+    const characters =
+      await this.nextCharacterQueryService.getCharactersForPreview(
+        count,
+        mode,
+        latestCharacterId,
+      );
+
+    console.log('🔮 Characters:', characters);
     if (characters.length === 0) {
       console.log('No characters available for preview');
       return [];
     }
 
-    const modeText = mode === 'random' ? 'random' : 'next';
+    const modeText =
+      mode === 'random'
+        ? 'random'
+        : mode === 'weighted'
+          ? 'weighted random'
+          : 'next';
     console.log(
       `🔮 Building ${modeText} preview for ${characters.length} characters`,
     );

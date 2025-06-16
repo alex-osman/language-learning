@@ -55,7 +55,6 @@ export class TemplateHardService {
 
     for (let i = 0; i < words.length; i++) {
       const character = words[i];
-      const characterNumber = i + 1;
 
       // Use existing CharacterService methods
       const toneNumber = this.characterService.getToneNumber(character.pinyin);

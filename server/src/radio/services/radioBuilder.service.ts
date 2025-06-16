@@ -20,9 +20,12 @@ export class RadioBuilderService {
    * 2. Transition Pause - 2 seconds
    * 3. Preview Segment - Next character to learn (if available)
    *
+   * @param latestCharacterId The ID of the most recently learned character (for weighted random selection)
    * @returns Combined audio segments for complete radio show
    */
-  async buildCompleteRadioShow(): Promise<AudioSegment[]> {
+  async buildCompleteRadioShow(
+    latestCharacterId?: number,
+  ): Promise<AudioSegment[]> {
     const segments: AudioSegment[] = [];
 
     console.log('🎙️ Building complete radio show...');
@@ -37,7 +40,8 @@ export class RadioBuilderService {
     const previewSegments =
       await this.templatePreviewService.buildMultiCharacterPreviewSegments(
         5,
-        'random',
+        'weighted',
+        latestCharacterId,
       );
 
     if (previewSegments.length > 0) {

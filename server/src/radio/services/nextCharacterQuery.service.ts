@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, MoreThanOrEqual, Not } from 'typeorm';
+import { Repository, IsNull, MoreThanOrEqual, Not, In } from 'typeorm';
 import { CharacterService } from '../../services/character.service';
 import { Character } from '../../entities/character.entity';
 
@@ -56,10 +56,22 @@ export class NextCharacterQueryService {
 
   async getCharactersForPreview(
     count: number = 5,
-    mode: 'next' | 'random' = 'next',
+    mode: 'next' | 'random' | 'weighted' = 'next',
+    latestCharacterId?: number,
   ): Promise<Character[]> {
     if (mode === 'random') {
       return this.getRandomCharactersForPreview(count);
+    } else if (mode === 'weighted') {
+      if (!latestCharacterId) {
+        console.warn(
+          '⚠️ Weighted mode requires latestCharacterId, falling back to random',
+        );
+        return this.getRandomCharactersForPreview(count);
+      }
+      return this.getWeightedRandomCharactersForPreview(
+        count,
+        latestCharacterId,
+      );
     } else {
       return this.getNextCharactersForPreview(count);
     }
@@ -88,6 +100,108 @@ export class NextCharacterQueryService {
       return selected.map((char) => this.convertToEntity(char));
     } catch (error) {
       console.error('❌ Error in getRandomCharactersForPreview:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Gets characters for preview using a normal distribution around the latest character.
+   * Characters closer to the latest learned character have higher probability.
+   *
+   * @param count Number of characters to preview
+   * @param latestCharacterId The ID of the most recently learned character
+   * @param options Configuration options for the distribution
+   * @returns Array of characters for preview
+   */
+  async getWeightedRandomCharactersForPreview(
+    count: number = 5,
+    latestCharacterId: number,
+    options: {
+      stdDev?: number; // Controls spread of distribution (default: 10)
+      minDistance?: number; // Minimum distance from latest character (default: 1)
+      maxDistance?: number; // Maximum distance from latest character (default: 30)
+    } = {},
+  ): Promise<Character[]> {
+    try {
+      console.log(
+        `🔮 Getting normally distributed characters from latest ID: ${latestCharacterId}`,
+      );
+
+      // First, get the latest character to use as reference point
+      const latestCharacter = await this.characterRepository.findOne({
+        where: { id: latestCharacterId },
+      });
+
+      if (!latestCharacter) {
+        console.warn(
+          `⚠️ Latest character with ID ${latestCharacterId} not found`,
+        );
+        return this.getRandomCharactersForPreview(count);
+      }
+
+      // Configuration with defaults
+      const config = {
+        stdDev: options.stdDev ?? 20, // Default spread
+        minDistance: options.minDistance ?? 2,
+        maxDistance: options.maxDistance ?? 400,
+      };
+
+      console.log(`📊 Distribution config:`, config);
+
+      // Generate random numbers from a normal distribution
+      const targetIds: number[] = [];
+
+      // Generate the target IDs
+      for (let i = 0; i < count * 2; i++) {
+        // Generate extra to account for potential duplicates
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const z0 =
+          Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+        // Scale to our desired range and add to the latest character ID
+        // We use abs() to ensure we only get positive distances
+        const distance = Math.floor(Math.abs(z0 * config.stdDev));
+
+        // Clamp the distance to our min/max range
+        const clampedDistance = Math.max(
+          config.minDistance,
+          Math.min(config.maxDistance, distance),
+        );
+
+        const targetId = latestCharacterId + clampedDistance;
+
+        // Only add if it's greater than the latest character ID
+        if (targetId > latestCharacterId) {
+          targetIds.push(targetId);
+        }
+      }
+
+      // Remove duplicates and sort
+      const uniqueTargetIds = [...new Set(targetIds)].sort((a, b) => a - b);
+      console.log(`🔢 Generated target IDs: ${uniqueTargetIds.join(', ')}`);
+
+      // Fetch only the characters we need
+      const characters = await this.characterRepository.find({
+        where: {
+          id: In(uniqueTargetIds.slice(0, count)),
+          movie: IsNull(),
+          definition: Not(IsNull()),
+          pinyin: Not(IsNull()),
+        },
+      });
+
+      console.log(
+        `✅ Found ${characters.length} characters for the generated IDs`,
+      );
+
+      // Convert to entities
+      return characters.map((char) => this.convertToEntity(char));
+    } catch (error) {
+      console.error(
+        '❌ Error in getWeightedRandomCharactersForPreview:',
+        error,
+      );
       throw error;
     }
   }
