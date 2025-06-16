@@ -32,6 +32,7 @@ export class RadioController {
 
     // Process each segment individually
     for (const segment of segments) {
+      console.log('🎙️ Processing segment:', segment);
       if (segment.type === 'text') {
         const mp3File = await this.ttsService.textToMp3(
           segment.content!,
@@ -54,8 +55,10 @@ export class RadioController {
       `podcast_${timestamp}.mp3`,
     );
 
+    console.log('🎙️ Concatenating audio files...');
     this.concatService.concat(audioFiles, tempFile);
 
+    console.log('🎙️ Reading buffer...');
     const buffer = fs.readFileSync(tempFile);
 
     // Clean up temp file
