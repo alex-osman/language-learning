@@ -152,7 +152,7 @@ export class NextCharacterQueryService {
       const targetIds: number[] = [];
 
       // Generate the target IDs
-      for (let i = 0; i < count * 2; i++) {
+      for (let i = 0; i < count * 1.2; i++) {
         // Generate extra to account for potential duplicates
         const u1 = Math.random();
         const u2 = Math.random();
