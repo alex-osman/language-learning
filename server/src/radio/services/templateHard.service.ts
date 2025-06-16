@@ -50,7 +50,7 @@ export class TemplateHardService {
    * @returns A list of audio segments with AI-generated DJ content.
    */
   async buildHardSegments(): Promise<AudioSegment[]> {
-    const words = await this.hardWordsQueryService.getHardest(2); // Test with 1 character first
+    const words = await this.hardWordsQueryService.getHardest(5); // Test with 1 character first
     const segments: AudioSegment[] = [];
 
     for (let i = 0; i < words.length; i++) {
@@ -64,15 +64,7 @@ export class TemplateHardService {
       );
       const spelledPinyin = pinyinNoTones.split('').join('-').toUpperCase(); // "ma" -> "M-A"
 
-      // 1. AI DJ Intro
-      const djIntro = await this.djScriptService.generateIntro(
-        character,
-        characterNumber,
-      );
-      segments.push({ type: 'text', content: djIntro, lang: 'en' });
-      segments.push({ type: 'pause', duration: this.SHORT_PAUSE });
-
-      // 2. AI DJ Spelling intro + spelled pinyin + tone
+      // 1. AI DJ Spelling intro + spelled pinyin + tone
       const spellingIntro = await this.djScriptService.generateSpellingIntro(
         spelledPinyin,
         toneNumber,
@@ -80,12 +72,12 @@ export class TemplateHardService {
       segments.push({ type: 'text', content: spellingIntro, lang: 'en' });
       segments.push({ type: 'pause', duration: '300ms' });
 
-      // 3. AI DJ Movie Context - connects definition to movie scene
+      // 2. AI DJ Movie Context - connects definition to movie scene
       const movieContext =
         await this.djScriptService.generateMovieContext(character);
       segments.push({ type: 'text', content: movieContext, lang: 'en' });
 
-      // 4. Extra long pause between characters (shorter for last character)
+      // 3. Extra long pause between characters (shorter for last character)
       const pauseDuration =
         i === words.length - 1 ? this.LONG_PAUSE : this.EXTRA_LONG_PAUSE;
       segments.push({ type: 'pause', duration: pauseDuration });

@@ -36,8 +36,8 @@ export class RadioBuilderService {
     console.log('🔮 Adding preview segment...');
     const previewSegments =
       await this.templatePreviewService.buildMultiCharacterPreviewSegments(
-        2,
-        'next',
+        5,
+        'random',
       );
 
     if (previewSegments.length > 0) {

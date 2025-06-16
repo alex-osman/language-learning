@@ -56,9 +56,7 @@ Examples:
   ): Promise<string> {
     // Predefined DJ phrases for spelling introduction
     const spellingPhrases = [
-      'Let me break that down for you slowly:',
       "Here's how we spell it out slowly:",
-      'Breaking it down nice and slow:',
       "Let's spell that out together slowly:",
       "Here's how its spelled slowly:",
     ];
@@ -87,7 +85,7 @@ Character: ${character.character}
 Definition: ${character.definition}
 Movie Scene: ${movieSnippet}
 
-Create 2-3 sentences for the DJ to say. End with something like "And that's how you'll never forget [character]!"`;
+Create 2-3 sentences for the DJ to say.  If the character has a notable look or radicals, mention that.`;
 
     const script = await this.generateScript(prompt);
     fs.writeFileSync(file, script);
@@ -291,7 +289,7 @@ Create a 45-60 second script that:
             {
               role: 'system',
               content:
-                'You are a professional radio DJ script writer. Create engaging, natural-sounding radio content that is educational but fun. Keep responses concise, casual, and controversial.',
+                'You are a professional radio DJ script writer. Create engaging, natural-sounding radio content that is educational but fun. Keep responses concise, casual, and controversial.  Respond only in text, no markdown or other formatting.',
             },
             {
               role: 'user',
