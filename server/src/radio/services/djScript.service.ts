@@ -296,7 +296,7 @@ Create a 45-60 second script that:
               content: prompt,
             },
           ],
-          max_tokens: 650,
+          max_tokens: 1000,
           temperature: 0.8,
         });
 

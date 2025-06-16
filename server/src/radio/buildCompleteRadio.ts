@@ -36,10 +36,12 @@ async function bootstrap() {
 
       if (segment.type === 'text') {
         // Generate TTS for text
+        console.log('🔊 Generating TTS for segment...');
         const mp3File = await ttsService.textToMp3(
           segment.content!,
           segment.lang!,
         );
+        console.log('🔊 TTS generated for segment');
         audioFiles.push(mp3File);
       } else if (segment.type === 'pause') {
         // Generate silence for pause

@@ -23,6 +23,10 @@ export class RadioTtsService extends BaseAiService {
     if (fs.existsSync(file)) return file;
 
     for (let attempt = 0; attempt < 3; attempt++) {
+      console.log(
+        '🔊 Attempting to generate TTS for segment, attempt:',
+        attempt,
+      );
       try {
         const res = await this.openai.audio.speech.create({
           model: 'tts-1', // Correct OpenAI TTS model name
