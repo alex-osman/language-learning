@@ -47,7 +47,7 @@ export class ActorsComponent implements OnInit {
             ...group,
             actors: validActors
               .filter(actor => actor.type === group.type)
-              .sort((a, b) => a.initial.localeCompare(b.initial)),
+              .sort((a, b) => a.initial?.localeCompare(b.initial) ?? 0),
           }))
           .filter(group => group.actors.length > 0); // Only include groups with actors
 

@@ -138,6 +138,9 @@ export class CharacterService {
   }
 
   removeToneMarks(pinyin: string): string {
+    if (!pinyin) {
+      return '';
+    }
     return pinyin
       .toLowerCase()
       .split('')
@@ -261,6 +264,7 @@ export class CharacterService {
   }
 
   getToneNumber(pinyin: string): number {
+    if (!pinyin) return 5;
     for (const char of pinyin) {
       const tone = TONE_MAP[char];
       if (tone) return tone;
