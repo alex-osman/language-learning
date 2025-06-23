@@ -20,30 +20,17 @@ export class DjScriptService extends BaseAiService {
     }
   }
 
-  async generateIntro(
-    character: Character,
-    characterNumber: number,
-  ): Promise<string> {
-    const cacheKey = `intro_${character.id}_${characterNumber}`;
+  async generateIntro(character: Character): Promise<string> {
+    const cacheKey = `intro_${character.id}`;
     const file = path.join(this.cacheDir, `${cacheKey}.txt`);
 
     if (fs.existsSync(file)) {
       return fs.readFileSync(file, 'utf8');
     }
 
-    const prompt = `You're a calm, clear, and slightly thoughtful language-learning guide. You're reintroducing a Chinese character that the listener has seen before but often forgets — based on their flashcard history.
+    const prompt = `You're a fun DJ hosting a Chinese learning podcast.  You're reminding the listener about a character they have seen before but often forget. The character is: ${character.character}.  The pinyin is: ${character.pinyin}.  The definition is: ${character.definition}.
 
-Details:
-Character: ${character.character}
-Pinyin: ${character.pinyin}
-Definition: ${character.definition}
-Character Number: ${this.getOrdinal(characterNumber)}
-Character ID: ${character.id}
-
-Write a short 1–2 sentence introduction. Mention that this is the "${this.getOrdinal(characterNumber)} character" in today's episode and that it's character ID is ${character.id}. Avoid jokes or banter. You're here to help the listener re-encounter this character in a more memorable way, not to entertain them with fluff.  Be sure to spell out the pinyin and say the tone number exactly like this: 讨 is T - A - O.  That is tone 3.  Again spelled out slowly it is T,A,O.  That is tone 3.
-
-Examples:
-"Third character today: 法.  The word again is 法.  法 is F - A.  That is tone 3.  Again spelled out slowly it is F,A.  That is tone 3.  You’ve seen this one before, but it’s still a bit slippery. Let’s make it stick this time."`;
+    Write a short 1 sentence intro. Before we tell the listener how to spell the character.`;
 
     const script = await this.generateScript(prompt);
     fs.writeFileSync(file, script);
@@ -82,6 +69,7 @@ Examples:
     const prompt = `You're a witty radio DJ explaining how a Chinese character connects to a memorable movie scene. Help students remember the character through the story.
 
 Character: ${character.character}
+Radicals: ${character.radicals}
 Definition: ${character.definition}
 Movie Scene: ${movieSnippet}
 

@@ -10,6 +10,7 @@ export interface AudioSegment {
   duration?: string; // for pauses: "700ms", "1s"
 }
 
+const INTRO_TEXT = `Welcome to the Hard Words Review.  Lets begin.`;
 @Injectable()
 export class TemplateHardService {
   constructor(
@@ -32,7 +33,6 @@ export class TemplateHardService {
   ];
 
   // Hardcoded config values
-  private readonly SHORT_PAUSE = '700ms';
   private readonly LONG_PAUSE = '1s';
   private readonly EXTRA_LONG_PAUSE = '2s'; // For between characters
 
@@ -50,11 +50,17 @@ export class TemplateHardService {
    * @returns A list of audio segments with AI-generated DJ content.
    */
   async buildHardSegments(): Promise<AudioSegment[]> {
-    const words = await this.hardWordsQueryService.getHardest(5); // Test with 1 character first
+    const words = await this.hardWordsQueryService.getHardest(3); // Test with 1 character first
     const segments: AudioSegment[] = [];
 
     for (let i = 0; i < words.length; i++) {
       const character = words[i];
+      segments.push({
+        type: 'text',
+        content: i
+          ? `The next character is ${character.pinyin}.`
+          : `${INTRO_TEXT}  The first character is ${character.pinyin}.`,
+      });
 
       // Use existing CharacterService methods
       const toneNumber = this.characterService.getToneNumber(character.pinyin);
