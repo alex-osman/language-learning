@@ -10,6 +10,9 @@ server/src/data.json
 /radio-cache/tts
 /radio-output
 
+# Allow podcast files in radio-cache but ignore other cache files
+!/radio-cache/podcast-*.mp3
+
 # Logs
 logs
 *.log

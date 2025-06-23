@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
+export interface PodcastStatus {
+  exists: boolean;
+  date: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -16,6 +21,13 @@ export class PodcastService {
    */
   get onGenerationComplete(): Observable<boolean> {
     return this.generationComplete.asObservable();
+  }
+
+  /**
+   * Check if today's podcast exists
+   */
+  checkTodayPodcastExists(): Observable<PodcastStatus> {
+    return this.http.get<PodcastStatus>(`${this.apiUrl}/today-podcast-exists`);
   }
 
   /**
@@ -45,7 +57,15 @@ export class PodcastService {
           // Create a temporary link element and trigger download
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'chinese-learning-podcast.mp3';
+
+          // Use date-based filename for download
+          const today = new Date();
+          const day = today.getDate().toString().padStart(2, '0');
+          const month = (today.getMonth() + 1).toString().padStart(2, '0');
+          const year = today.getFullYear();
+          const dateString = `${day}-${month}-${year}`;
+
+          link.download = `chinese-learning-podcast-${dateString}.mp3`;
           document.body.appendChild(link);
           link.click();
 

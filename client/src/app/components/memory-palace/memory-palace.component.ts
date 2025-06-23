@@ -40,14 +40,32 @@ import { Subscription } from 'rxjs';
                 patient!</small
               >
             </p>
+
+            <div *ngIf="todayDate" class="podcast-status">
+              <p class="status-text" [class.cached]="todayPodcastExists">
+                <span *ngIf="todayPodcastExists">✅</span>
+                <span *ngIf="!todayPodcastExists">📅</span>
+                {{ todayPodcastExists ? 'Todays podcast is ready' : 'No podcast for today yet' }}
+                <span class="date-info">({{ todayDate }})</span>
+              </p>
+            </div>
+
             <button
               class="podcast-btn"
               [class.generating]="isGeneratingPodcast"
               [disabled]="isGeneratingPodcast"
               (click)="generatePodcast()"
-              title="Generate and download latest podcast"
+              [title]="
+                todayPodcastExists
+                  ? 'Download todays cached podcast'
+                  : 'Generate and download todays podcast'
+              "
             >
-              <span *ngIf="!isGeneratingPodcast">🎙️ Generate Podcast</span>
+              <span *ngIf="!isGeneratingPodcast">
+                <span *ngIf="todayPodcastExists">📥</span>
+                <span *ngIf="!todayPodcastExists">🎙️</span>
+                {{ todayPodcastExists ? 'Download Podcast' : 'Generate Podcast' }}
+              </span>
               <span *ngIf="isGeneratingPodcast">
                 <span class="spinner"></span>
                 Generating... ({{ generationTimeElapsed }}s)
@@ -65,9 +83,16 @@ import { Subscription } from 'rxjs';
               [class.success]="lastGenerationResult.success"
               [class.error]="!lastGenerationResult.success"
             >
-              <span *ngIf="lastGenerationResult.success"
-                >✅ Podcast generated successfully! Check your downloads.</span
-              >
+              <span *ngIf="lastGenerationResult.success">
+                <span *ngIf="lastGenerationResult.cached">✅</span>
+                <span *ngIf="!lastGenerationResult.cached">🎙️</span>
+                {{
+                  lastGenerationResult.cached
+                    ? 'Cached podcast downloaded successfully!'
+                    : 'New podcast generated and downloaded!'
+                }}
+                Check your downloads.
+              </span>
               <span *ngIf="!lastGenerationResult.success"
                 >❌ Failed to generate podcast. Please try again.</span
               >
@@ -230,6 +255,34 @@ import { Subscription } from 'rxjs';
         font-weight: 600;
       }
 
+      .podcast-status {
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .status-text {
+        margin: 0;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        color: #6c757d;
+        transition: all 0.3s ease;
+      }
+
+      .status-text.cached {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .date-info {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-left: 0.5rem;
+      }
+
       .podcast-btn {
         background: linear-gradient(135deg, #e67e22 0%, #d68910 100%);
         color: white;
@@ -350,7 +403,9 @@ export class MemoryPalaceComponent implements OnDestroy {
   isGeneratingPodcast = false;
   generationTimeElapsed = 0;
   generationProgress = 0;
-  lastGenerationResult: { success: boolean } | null = null;
+  lastGenerationResult: { success: boolean; cached?: boolean } | null = null;
+  todayPodcastExists = false;
+  todayDate = '';
 
   private generationTimer: any;
   private completionSubscription: Subscription | null = null;
@@ -369,6 +424,9 @@ export class MemoryPalaceComponent implements OnDestroy {
     this.completionSubscription = this.podcastService.onGenerationComplete.subscribe(success => {
       this.onGenerationComplete(success);
     });
+
+    // Check if today's podcast exists on component initialization
+    this.checkTodayPodcast();
   }
 
   ngOnDestroy(): void {
@@ -380,6 +438,20 @@ export class MemoryPalaceComponent implements OnDestroy {
 
   toggleSection(section: keyof typeof this.visibleSections) {
     this.visibleSections[section] = !this.visibleSections[section];
+  }
+
+  private checkTodayPodcast(): void {
+    this.podcastService.checkTodayPodcastExists().subscribe({
+      next: status => {
+        this.todayPodcastExists = status.exists;
+        this.todayDate = status.date;
+        console.log(`📅 Today's podcast (${status.date}) exists: ${status.exists}`);
+      },
+      error: error => {
+        console.error("❌ Error checking today's podcast:", error);
+        this.todayPodcastExists = false;
+      },
+    });
   }
 
   generatePodcast(): void {
@@ -400,7 +472,13 @@ export class MemoryPalaceComponent implements OnDestroy {
 
   private onGenerationComplete(success: boolean): void {
     this.generationProgress = 100;
-    this.lastGenerationResult = { success };
+
+    // Check if this was a cached podcast
+    const wasCached = this.todayPodcastExists;
+    this.lastGenerationResult = { success, cached: wasCached };
+
+    // Update the cached status
+    this.todayPodcastExists = true;
 
     // Small delay to show 100% progress
     setTimeout(() => {

@@ -17,6 +17,38 @@ export class RadioController {
     private readonly radioBuilderService: RadioBuilderService,
   ) {}
 
+  /**
+   * Get today's date in DD-MM-YYYY format
+   */
+  private getTodayDateString(): string {
+    const today = new Date();
+    const day = today.getDate().toString().padStart(2, '0');
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const year = today.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  /**
+   * Get the path for today's podcast file
+   */
+  private getTodayPodcastPath(): string {
+    const dateString = this.getTodayDateString();
+    return path.join(process.cwd(), 'radio-cache', `podcast-${dateString}.mp3`);
+  }
+
+  /**
+   * Check if today's podcast exists
+   */
+  @Get('today-podcast-exists')
+  async checkTodayPodcastExists(): Promise<{ exists: boolean; date: string }> {
+    const todayPath = this.getTodayPodcastPath();
+    const exists = fs.existsSync(todayPath);
+    return {
+      exists,
+      date: this.getTodayDateString(),
+    };
+  }
+
   @Get('latest-podcast')
   @Header('Content-Type', 'audio/mpeg')
   @Header(
@@ -24,7 +56,17 @@ export class RadioController {
     'attachment; filename="chinese-learning-podcast.mp3"',
   )
   async getLatestPodcast(): Promise<StreamableFile> {
-    console.log('🎙️ Generating latest podcast...');
+    const todayPath = this.getTodayPodcastPath();
+    const dateString = this.getTodayDateString();
+
+    // Check if today's podcast already exists
+    if (fs.existsSync(todayPath)) {
+      console.log(`🎙️ Using cached podcast for ${dateString}`);
+      const buffer = fs.readFileSync(todayPath);
+      return new StreamableFile(buffer);
+    }
+
+    console.log(`🎙️ Generating new podcast for ${dateString}...`);
 
     // Build complete radio show
     const segments = await this.radioBuilderService.buildCompleteRadioShow();
@@ -47,31 +89,26 @@ export class RadioController {
       }
     }
 
-    // Create temporary output file with timestamp
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const tempFile = path.join(
-      process.cwd(),
-      'radio-cache',
-      `podcast_${timestamp}.mp3`,
-    );
+    // Ensure radio-cache directory exists
+    const cacheDir = path.join(process.cwd(), 'radio-cache');
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
 
     console.log('🎙️ Concatenating audio files...');
-    this.concatService.concat(audioFiles, tempFile);
+    this.concatService.concat(audioFiles, todayPath);
 
     console.log('🎙️ Reading buffer...');
-    const buffer = fs.readFileSync(tempFile);
+    const buffer = fs.readFileSync(todayPath);
 
-    // Clean up temp file
-    fs.unlinkSync(tempFile);
-
-    // Clean up individual segment files
+    // Clean up individual segment files (but keep the final podcast)
     audioFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         fs.unlinkSync(file);
       }
     });
 
-    console.log('✅ Podcast generated successfully');
+    console.log(`✅ Podcast generated and cached for ${dateString}`);
     return new StreamableFile(buffer);
   }
 
