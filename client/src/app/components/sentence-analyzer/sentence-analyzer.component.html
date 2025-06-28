@@ -37,6 +37,9 @@
         <span *ngIf="result.charData?.definition" class="definition">{{
           result.charData?.definition
         }}</span>
+        <span *ngIf="result.charData?.freq" class="frequency"
+          >Freq: {{ result.charData.freq }}</span
+        >
         <span *ngIf="!result.known && result.charData" class="char-id"
           >ID: {{ result.charData.id }}</span
         >

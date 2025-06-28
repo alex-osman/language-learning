@@ -84,6 +84,14 @@
     word-break: break-word;
   }
 
+  .frequency {
+    font-size: 0.7rem;
+    text-align: center;
+    color: #007bff;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
   .audio-control {
     display: flex;
     justify-content: center;

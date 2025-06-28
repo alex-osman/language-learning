@@ -53,6 +53,7 @@ export interface CharacterDTO {
   movie?: string;
   imgUrl?: string;
   radicals?: PropDTO[];
+  freq?: number;
 
   // Spaced Repetition Fields
   easinessFactor?: number;

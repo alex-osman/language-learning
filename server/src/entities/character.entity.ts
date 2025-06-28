@@ -23,6 +23,9 @@ export class Character {
   @Column({ type: 'varchar', length: 200, nullable: true })
   imgUrl: string;
 
+  @Column({ type: 'int', default: 0 })
+  freq: number;
+
   // Spaced Repetition Fields
   @Column({ type: 'float', default: 2.5 })
   easinessFactor: number;

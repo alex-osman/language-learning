@@ -92,6 +92,7 @@ export class CharacterService {
       initialActor: initialActor ?? undefined,
       movie: character.movie,
       imgUrl: character.imgUrl,
+      freq: character.freq,
       // Add spaced repetition fields
       easinessFactor: character.easinessFactor,
       repetitions: character.repetitions,
