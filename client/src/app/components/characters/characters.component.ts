@@ -193,10 +193,21 @@ export class CharactersComponent implements OnInit {
 
   // Easiness color methods - delegated to service
   getEasinessGradientStyle(char: CharacterDTO): { [key: string]: string } {
+    if (char.repetitions === 0 && char.interval === 0) {
+      return {
+        'background-color': '#e0e0e0',
+        'border-color': '#bdbdbd',
+      };
+    }
     return this.easinessColorService.getGradientStyles(char.easinessFactor);
   }
 
   getEasinessTextStyle(char: CharacterDTO): { [key: string]: string } {
+    if (char.repetitions === 0 && char.interval === 0) {
+      return {
+        color: '#757575',
+      };
+    }
     return this.easinessColorService.getTextColor(char.easinessFactor);
   }
 }

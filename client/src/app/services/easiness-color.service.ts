@@ -20,9 +20,9 @@ export interface EasinessColorOptions {
 })
 export class EasinessColorService {
   private readonly DEFAULT_COLOR_SCHEME: ColorScheme = {
-    name: 'red-to-blue',
+    name: 'red-to-green',
     hardestHue: 0, // Red
-    easiestHue: 240, // Blue
+    easiestHue: 120, // Green
     saturation: 45,
     lightness: 92,
   };
@@ -31,7 +31,7 @@ export class EasinessColorService {
     minEasiness: 1.3,
     maxEasiness: 2.5,
     colorScheme: this.DEFAULT_COLOR_SCHEME,
-    fallbackColor: '#e3f2fd',
+    fallbackColor: '#e0e0e0', // Neutral grey
   };
 
   /**
@@ -87,7 +87,7 @@ export class EasinessColorService {
     // Return default text color if no easiness factor
     if (!easinessFactor) {
       return {
-        color: '#1565c0',
+        color: '#757575', // Neutral dark grey for text
       };
     }
 

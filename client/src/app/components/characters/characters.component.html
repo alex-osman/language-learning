@@ -5,16 +5,26 @@
     <ng-container *ngFor="let char of characters">
       <div
         class="cell"
-        [class.has-data]="hasCharacterData(char)"
-        [class.no-data]="!char.movie"
-        [ngStyle]="hasCharacterData(char) ? getEasinessGradientStyle(char) : {}"
+        [class.has-data]="
+          hasCharacterData(char) && !(char.repetitions === 0 && char.interval === 0)
+        "
+        [class.no-data]="char.repetitions === 0 && char.interval === 0"
+        [ngStyle]="
+          hasCharacterData(char) && !(char.repetitions === 0 && char.interval === 0)
+            ? getEasinessGradientStyle(char)
+            : {}
+        "
         (click)="onCharacterClick(char)"
         [class.selected]="selectedCharacter?.character === char.character"
       >
         <div class="cell-content">
           <div
             class="character"
-            [ngStyle]="hasCharacterData(char) ? getEasinessTextStyle(char) : {}"
+            [ngStyle]="
+              hasCharacterData(char) && !(char.repetitions === 0 && char.interval === 0)
+                ? getEasinessTextStyle(char)
+                : {}
+            "
           >
             {{ char.character }}
           </div>
