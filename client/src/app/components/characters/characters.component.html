@@ -12,15 +12,12 @@
         [class.selected]="selectedCharacter?.character === char.character"
       >
         <div class="cell-content">
-          <div
-            class="character"
-            [ngStyle]="hasCharacterData(char) ? getEasinessTextStyle(char) : {}"
-          >
+          <div class="character">
             {{ char.character }}
           </div>
           <ng-container *ngIf="hasCharacterData(char)">
-            <div class="pinyin" [ngStyle]="getEasinessTextStyle(char)">{{ char.pinyin }}</div>
-            <div class="definition" [ngStyle]="getEasinessTextStyle(char)">
+            <div class="pinyin">{{ char.pinyin }}</div>
+            <div class="definition">
               {{ char.definition }}
             </div>
             <div class="frequency" *ngIf="char.freq">Freq: {{ char.freq }}</div>
