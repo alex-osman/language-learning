@@ -6,6 +6,7 @@ import { MovieService, MovieGenerationRequest } from '../../services/movie.servi
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
 import { PinyinService } from '../../services/pinyin.service';
 import { FlashcardService } from '../../services/flashcard.service';
+import { EasinessColorService } from '../../services/easiness-color.service';
 
 @Component({
   selector: 'app-characters',
@@ -32,7 +33,8 @@ export class CharactersComponent implements OnInit {
     private dataService: DataService,
     private movieService: MovieService,
     private pinyinService: PinyinService,
-    private flashcardService: FlashcardService
+    private flashcardService: FlashcardService,
+    private easinessColorService: EasinessColorService
   ) {}
 
   ngOnInit() {
@@ -187,5 +189,25 @@ export class CharactersComponent implements OnInit {
         this.error = 'Failed to add character to learning. Please try again.';
       },
     });
+  }
+
+  // Easiness color methods - delegated to service
+  getEasinessGradientStyle(char: CharacterDTO): { [key: string]: string } {
+    if (char.repetitions === 0 && char.interval === 0) {
+      return {
+        'background-color': '#e0e0e0',
+        'border-color': '#bdbdbd',
+      };
+    }
+    return this.easinessColorService.getGradientStyles(char.easinessFactor);
+  }
+
+  getEasinessTextStyle(char: CharacterDTO): { [key: string]: string } {
+    if (char.repetitions === 0 && char.interval === 0) {
+      return {
+        color: '#757575',
+      };
+    }
+    return this.easinessColorService.getTextColor(char.easinessFactor);
   }
 }
