@@ -19,6 +19,8 @@ export interface SentenceAnalysis {
   all_characters: AnalyzedCharacter[];
 }
 
+const IGNORE_CHARACTERS = ['佩', '西', '苏', '佩', '乔', '治'];
+
 @Injectable()
 export class SentenceAnalyzerService {
   constructor(private readonly characterService: CharacterService) {}
@@ -28,6 +30,7 @@ export class SentenceAnalyzerService {
     const chars = text
       .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
       .replace(/[^\u4e00-\u9fff]/g, '') // Keep only Chinese characters
+      .replace(new RegExp(`[${IGNORE_CHARACTERS.join('')}]`, 'g'), '') // Remove ignored characters
       .split('');
 
     // Count occurrences of each character

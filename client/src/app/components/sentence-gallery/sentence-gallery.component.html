@@ -15,11 +15,21 @@
         <p class="pinyin" *ngIf="sentence.pinyin">{{ sentence.pinyin }}</p>
         <p class="translation">{{ sentence.translation }}</p>
       </div>
-      <div class="sentence-progress" *ngIf="sentence.progress">
-        <div class="progress-bar">
-          <div class="progress-bar-fill" [style.width.%]="sentence.progress.percentKnown"></div>
+
+      <div class="sentence-content">
+        <div class="sentence-progress" *ngIf="sentenceAnalysisData[sentence.id]">
+          <div class="progress-section">
+            <span class="progress-label">
+              {{ sentenceAnalysisData[sentence.id].known_percent }}% known
+            </span>
+            <div class="progress-bar">
+              <div
+                class="progress-bar-fill"
+                [style.width.%]="sentenceAnalysisData[sentence.id].known_percent"
+              ></div>
+            </div>
+          </div>
         </div>
-        <span class="progress-label"> {{ sentence.progress.percentKnown }}% known </span>
       </div>
     </div>
   </div>

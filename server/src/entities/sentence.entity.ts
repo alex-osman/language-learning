@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Scene } from './scene.entity';
 
 @Entity('sentences')
 export class Sentence {
@@ -38,4 +45,8 @@ export class Sentence {
 
   @Column({ type: 'date', nullable: true })
   lastReviewDate: Date;
+
+  @ManyToOne(() => Scene, (scene) => scene.sentences, { nullable: true })
+  @JoinColumn({ name: 'sceneId' })
+  scene: Scene;
 }

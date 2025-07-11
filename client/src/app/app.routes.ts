@@ -10,6 +10,7 @@ import { MediaGalleryComponent } from './components/media-gallery/media-gallery.
 import { SeasonGalleryComponent } from './components/season-gallery/season-gallery.component';
 import { EpisodeGalleryComponent } from './components/episode-gallery/episode-gallery.component';
 import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
+import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,10 @@ export const routes: Routes = [
   {
     path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes',
     component: SceneGalleryComponent,
+  },
+  {
+    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes/:sceneId',
+    component: SceneOverviewComponent,
   },
   {
     path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes/:sceneId/sentences',
