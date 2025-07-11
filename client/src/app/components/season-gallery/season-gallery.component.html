@@ -1,0 +1,20 @@
+<div class="season-gallery">
+  <h2>Seasons</h2>
+
+  <div *ngIf="isLoading" class="loading">Loading seasons...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="season-list" *ngIf="!isLoading && !error">
+    <div class="season-card" *ngFor="let season of seasons" (click)="onSeasonClick(season)">
+      <div class="season-info">
+        <h3>{{ season.title }}</h3>
+        <div class="progress-bar-container" *ngIf="season.progress">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" [style.width.%]="season.progress.percentKnown"></div>
+          </div>
+          <span class="progress-label"> {{ season.progress.percentKnown }}% known </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

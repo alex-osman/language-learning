@@ -1,0 +1,21 @@
+<div class="media-gallery">
+  <h2>Media Gallery</h2>
+
+  <div *ngIf="isLoading" class="loading">Loading media...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="media-list" *ngIf="!isLoading && !error">
+    <div class="media-card" *ngFor="let media of mediaList" (click)="onMediaClick(media)">
+      <img *ngIf="media.imageUrl" [src]="media.imageUrl" [alt]="media.title" class="media-image" />
+      <div class="media-info">
+        <h3>{{ media.title }}</h3>
+        <div class="progress-bar-container" *ngIf="media.progress">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" [style.width.%]="media.progress.percentKnown"></div>
+          </div>
+          <span class="progress-label"> {{ media.progress.percentKnown }}% known </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
