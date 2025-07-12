@@ -241,6 +241,21 @@ export class SceneOverviewComponent implements OnInit {
     // TODO: Implement navigation to practice mode
   }
 
+  toggleVideoPlayPause() {
+    if (this.sceneVideo?.nativeElement) {
+      const video = this.sceneVideo.nativeElement;
+      if (video.paused) {
+        video.play();
+        console.log('Video resumed');
+      } else {
+        video.pause();
+        console.log('Video paused');
+      }
+    } else {
+      console.warn('Video element not found');
+    }
+  }
+
   goToTimestamp(timestamp: number) {
     if (this.sceneVideo?.nativeElement) {
       // Convert milliseconds to seconds

@@ -17,7 +17,7 @@
   <!-- Content -->
   <ng-container *ngIf="!isLoading && !error && sceneData">
     <!-- Scene Card -->
-    <div class="scene-card">
+    <div class="scene-card" (click)="toggleVideoPlayPause()">
       <div class="scene-image">
         <!-- <img src="assets/images/episode_3.png" [alt]="sceneData.title" /> -->
         <video #sceneVideo src="assets/videos/scene1.mp4" autoplay loop></video>
