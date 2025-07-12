@@ -20,7 +20,7 @@
     <div class="scene-card">
       <div class="scene-image">
         <!-- <img src="assets/images/episode_3.png" [alt]="sceneData.title" /> -->
-        <video src="assets/videos/scene1.mp4" autoplay loop [muted]="true"></video>
+        <video #sceneVideo src="assets/videos/scene1.mp4" autoplay loop></video>
       </div>
       <div class="scene-info">
         <h2>{{ sceneData.title }}</h2>
@@ -43,7 +43,11 @@
     <div class="sentence-gallery">
       <h3>Sentence gallery</h3>
       <div class="sentences-list">
-        <div *ngFor="let sentence of sceneData.sentences" class="sentence-card">
+        <div
+          *ngFor="let sentence of sceneData.sentences"
+          class="sentence-card"
+          (click)="goToTimestamp(sentence.startMs)"
+        >
           <div class="sentence-content">
             <p class="chinese">{{ sentence.chinese }}</p>
             <div class="sentence-meta">

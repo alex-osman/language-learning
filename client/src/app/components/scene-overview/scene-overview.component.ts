@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, Scene } from '../../services/media.service';
@@ -18,6 +18,7 @@ interface SceneOverviewData {
     id: string;
     chinese: string;
     percentKnown: number;
+    startMs: number;
   }>;
 }
 
@@ -48,6 +49,9 @@ export class SceneOverviewComponent implements OnInit {
   // Template helpers
   Math = Math;
 
+  // Video reference
+  @ViewChild('sceneVideo') sceneVideo!: ElementRef<HTMLVideoElement>;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -76,6 +80,7 @@ export class SceneOverviewComponent implements OnInit {
         id: sentence.id,
         chinese: sentence.chinese,
         percentKnown: this.sentenceAnalysisData[sentence.id]?.known_percent || 0,
+        startMs: sentence.startMs,
       })),
     };
   }
@@ -234,5 +239,20 @@ export class SceneOverviewComponent implements OnInit {
   startPractice() {
     console.log('Starting practice for scene:', this.sceneId);
     // TODO: Implement navigation to practice mode
+  }
+
+  goToTimestamp(timestamp: number) {
+    if (this.sceneVideo?.nativeElement) {
+      // Convert milliseconds to seconds
+      const timeInSeconds = timestamp / 1000;
+      this.sceneVideo.nativeElement.currentTime = timeInSeconds;
+
+      // Pause the video if it's playing to let user see the specific moment
+      // this.sceneVideo.nativeElement.pause();
+
+      console.log(`Navigated to timestamp: ${timeInSeconds}s`);
+    } else {
+      console.warn('Video element not found');
+    }
   }
 }

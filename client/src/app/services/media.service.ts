@@ -12,8 +12,8 @@ export interface Sentence {
   chinese: string;
   translation: string;
   pinyin?: string;
-  knownCharacters: number;
-  totalCharacters: number;
+  startMs: number;
+  endMs: number;
 }
 
 export interface Scene {
@@ -50,78 +50,78 @@ export interface Media {
   progress: ProgressInfo;
 }
 
-const SCENE_1_SENTENCES = [
+export const SCENE_1_SENTENCES: Sentence[] = [
   {
     id: '1',
     chinese: '最好的朋友',
     translation: 'Best friends',
     pinyin: 'Zuì hǎo de péngyǒu',
-    knownCharacters: 0,
-    totalCharacters: 5,
+    startMs: 9256,
+    endMs: 12936,
   },
   {
     id: '2',
     chinese: '佩奇在等他。最好的朋友小羊苏西。',
     translation: 'Peppa is waiting for her — her best friend, Little Sheep Suzy.',
     pinyin: 'Pèi qí zài děng tā. Zuì hǎo de péngyǒu Xiǎo Yáng Sū xī.',
-    knownCharacters: 0,
-    totalCharacters: 14,
+    startMs: 15059,
+    endMs: 20420,
   },
   {
     id: '3',
     chinese: '你好，苏西。你好，佩奇。',
     translation: 'Hello, Suzy. Hello, Peppa.',
     pinyin: 'Nǐ hǎo, Sū xī. Nǐ hǎo, Pèi qí.',
-    knownCharacters: 0,
-    totalCharacters: 8,
+    startMs: 23483,
+    endMs: 27765,
   },
   {
     id: '4',
     chinese: '小羊苏西来找佩奇玩了。',
     translation: 'Little Sheep Suzy has come to play with Peppa.',
     pinyin: 'Xiǎo yáng Sū xī lái zhǎo Pèi qí wán le.',
-    knownCharacters: 0,
-    totalCharacters: 10,
+    startMs: 27765,
+    endMs: 29326,
   },
   {
     id: '5',
     chinese: '佩奇喜欢苏西，苏西也喜欢佩奇。',
     translation: 'Peppa likes Suzy, and Suzy also likes Peppa.',
     pinyin: 'Pèi qí xǐ huān Sū xī, Sū xī yě xǐ huān Pèi qí.',
-    knownCharacters: 0,
-    totalCharacters: 13,
+    startMs: 33143,
+    endMs: 37025,
   },
   {
     id: '6',
     chinese: '他们是最好的朋友。',
     translation: 'They are best friends.',
     pinyin: 'Tā men shì zuì hǎo de péng yǒu.',
-    knownCharacters: 0,
-    totalCharacters: 8,
+    startMs: 37025,
+    endMs: 41186,
   },
   {
-    id: '8',
+    id: '8a',
     chinese: '佩奇，你为什么不和苏西去你的卧室玩好',
     translation: "Peppa, why don't you and Suzy go play in your bedroom?",
     pinyin: 'Pèi qí, nǐ wèishéme bù hé Sū xī qù nǐ de wò shì wán ne?',
-    knownCharacters: 0,
-    totalCharacters: 15,
+    startMs: 44890,
+    endMs: 48732,
   },
   {
-    id: '8',
+    id: '8b',
     chinese: '好的妈妈',
     translation: 'Okay, Mom.',
     pinyin: 'Hǎo de, mā ma',
-    knownCharacters: 0,
-    totalCharacters: 10,
+    startMs: 48732,
+    endMs: 56615,
   },
   {
     id: '9',
     chinese: '乔治也想一起玩。',
     translation: 'George wants to play too.',
     pinyin: 'Qiáo zhì yě xiǎng yì qǐ wán.',
-    knownCharacters: 0,
-    totalCharacters: 10,
+    startMs: 48732,
+    endMs: 56615,
   },
 ];
 
