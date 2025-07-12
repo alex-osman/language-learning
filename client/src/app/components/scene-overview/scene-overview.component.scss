@@ -3,7 +3,6 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #f5f5f5;
-  padding-bottom: 80px; // Space for sticky footer
 }
 
 // Loading and Error States
@@ -31,31 +30,6 @@
   display: flex;
   align-items: center;
   padding: 16px 20px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
-
-  .back-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: #333;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: #f0f0f0;
-    }
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
 
   h1 {
     flex: 1;
@@ -67,12 +41,20 @@
   }
 }
 
+// Main Content Container
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  flex: 1;
+}
+
 // Scene Card
 .scene-card {
   display: flex;
   align-items: center;
   background: white;
-  margin: 20px;
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -84,9 +66,14 @@
     height: 80px;
     border-radius: 12px;
     overflow: hidden;
-    background: #87ceeb;
 
     img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -130,44 +117,9 @@
   }
 }
 
-// Unique Characters Section
-.unique-characters {
-  margin: 0 20px 20px 20px;
-
-  h3 {
-    margin: 0 0 16px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .characters-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    .ellipsis-tile {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: #ffe0a3;
-      color: #222;
-      font-size: 1.7rem;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 0.4em 0.9em;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-      border: 1.5px solid #ffd180;
-      min-width: 2.2em;
-      min-height: 2.2em;
-      user-select: none;
-    }
-  }
-}
-
 // Sentence Gallery
 .sentence-gallery {
-  margin: 0 20px 20px 20px;
+  padding: 20px;
   flex: 1;
 
   h3 {
@@ -216,7 +168,7 @@
   }
 }
 
-// Sticky Footer
+// Sticky Footer (Mobile)
 .footer {
   position: fixed;
   bottom: 0;
@@ -250,7 +202,106 @@
   }
 }
 
-// Responsive design
+// Desktop Layout
+@media (min-width: 1024px) {
+  .scene-overview {
+    padding-bottom: 0; // Remove bottom padding for desktop
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .header {
+    padding: 20px 0;
+
+    h1 {
+      font-size: 28px;
+    }
+  }
+
+  .scene-card {
+    margin: 0 0 40px 0;
+    padding: 30px;
+
+    .scene-image {
+      width: 120px;
+      height: 120px;
+    }
+
+    .scene-info {
+      h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+      }
+
+      p {
+        font-size: 18px;
+        margin: 6px 0;
+      }
+    }
+
+    .progress-circle {
+      svg {
+        width: 100px;
+        height: 100px;
+      }
+
+      .progress-text {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .sentence-gallery {
+    padding: 0 0 40px 0;
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .sentences-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+
+      .sentence-card {
+        padding: 20px;
+
+        .sentence-content {
+          .chinese {
+            font-size: 20px;
+            margin-bottom: 12px;
+          }
+
+          .sentence-meta {
+            font-size: 16px;
+            gap: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  // Desktop Footer
+  .footer {
+    position: static;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-top: 20px;
+
+    .start-practice-btn {
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+      padding: 20px 32px;
+      font-size: 20px;
+    }
+  }
+}
+
+// Responsive design for tablets
 @media (max-width: 768px) {
   .scene-card {
     margin: 16px;
@@ -277,8 +328,18 @@
     }
   }
 
+  .content-container {
+    margin: 0 16px;
+    padding: 0;
+  }
+
   .unique-characters,
   .sentence-gallery {
-    margin: 0 16px 16px 16px;
+    margin: 0 0 16px 0;
+  }
+
+  // Hide desktop footer on mobile
+  .right-column .footer {
+    display: none;
   }
 }

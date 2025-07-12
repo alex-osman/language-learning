@@ -1,24 +1,6 @@
 <div class="scene-overview">
   <!-- Header -->
   <div class="header">
-    <button class="back-button" (click)="goBack()" aria-label="Go back">
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M19 12H5M12 19L5 12L12 5"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-      Back
-    </button>
     <h1>Scene Overview</h1>
   </div>
 
@@ -37,7 +19,8 @@
     <!-- Scene Card -->
     <div class="scene-card">
       <div class="scene-image">
-        <img [src]="sceneData.imageUrl" [alt]="sceneData.title" />
+        <!-- <img src="assets/images/episode_3.png" [alt]="sceneData.title" /> -->
+        <video src="assets/videos/scene1.mp4" autoplay loop [muted]="true"></video>
       </div>
       <div class="scene-info">
         <h2>{{ sceneData.title }}</h2>
@@ -64,18 +47,6 @@
       </div>
     </div>
 
-    <!-- Unique Characters Section -->
-    <div class="unique-characters">
-      <h3>Unique characters in this scene</h3>
-      <div class="characters-grid">
-        <app-character-tile
-          *ngFor="let character of displayedCharacters"
-          [character]="character"
-        ></app-character-tile>
-        <div class="ellipsis-tile" *ngIf="hasMoreCharacters">...</div>
-      </div>
-    </div>
-
     <!-- Sentence Gallery -->
     <div class="sentence-gallery">
       <h3>Sentence gallery</h3>
@@ -85,7 +56,6 @@
             <p class="chinese">{{ sentence.chinese }}</p>
             <div class="sentence-meta">
               <span class="percent-known">{{ sentence.percentKnown }}% known</span>
-              <span class="status">status: {{ sentence.status }}</span>
             </div>
           </div>
         </div>
