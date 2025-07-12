@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Scene, MediaService } from '../../services/media.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 @Component({
   selector: 'app-scene-gallery',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProgressIndicatorComponent],
   templateUrl: './scene-gallery.component.html',
   styleUrls: ['./scene-gallery.component.scss'],
 })

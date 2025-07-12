@@ -6,11 +6,12 @@ import {
   SentenceAnalysisResult,
   SentenceAnalysisService,
 } from 'src/app/services/sentence-analysis.service';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 @Component({
   selector: 'app-sentence-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProgressIndicatorComponent],
   templateUrl: './sentence-gallery.component.html',
   styleUrls: ['./sentence-gallery.component.scss'],
 })

@@ -19,15 +19,14 @@
       <div class="sentence-content">
         <div class="sentence-progress" *ngIf="sentenceAnalysisData[sentence.id]">
           <div class="progress-section">
-            <span class="progress-label">
-              {{ sentenceAnalysisData[sentence.id].known_percent }}% known
-            </span>
-            <div class="progress-bar">
-              <div
-                class="progress-bar-fill"
-                [style.width.%]="sentenceAnalysisData[sentence.id].known_percent"
-              ></div>
-            </div>
+            <app-progress-indicator
+              type="linear"
+              [value]="sentenceAnalysisData[sentence.id].known_percent"
+              theme="success"
+              [height]="8"
+              [showLabel]="true"
+              labelText="known"
+            ></app-progress-indicator>
           </div>
         </div>
       </div>

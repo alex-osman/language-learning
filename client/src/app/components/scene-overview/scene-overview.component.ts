@@ -6,6 +6,7 @@ import {
   SentenceAnalysisService,
   SentenceAnalysisResult,
 } from '../../services/sentence-analysis.service';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 interface SceneOverviewData {
   title: string;
@@ -23,7 +24,7 @@ interface SceneOverviewData {
 @Component({
   selector: 'app-scene-overview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProgressIndicatorComponent],
   templateUrl: './scene-overview.component.html',
   styleUrl: './scene-overview.component.scss',
 })

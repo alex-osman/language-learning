@@ -9,10 +9,14 @@
       <div class="season-info">
         <h3>{{ season.title }}</h3>
         <div class="progress-bar-container" *ngIf="season.progress">
-          <div class="progress-bar">
-            <div class="progress-bar-fill" [style.width.%]="season.progress.percentKnown"></div>
-          </div>
-          <span class="progress-label"> {{ season.progress.percentKnown }}% known </span>
+          <app-progress-indicator
+            type="linear"
+            [value]="season.progress.percentKnown"
+            theme="primary"
+            [height]="10"
+            [showLabel]="true"
+            labelText="known"
+          ></app-progress-indicator>
         </div>
       </div>
     </div>

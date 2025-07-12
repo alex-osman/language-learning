@@ -75,30 +75,12 @@
 }
 
 .review-progress {
-  width: 100%;
   margin-bottom: 2rem;
+  text-align: center;
 
   p {
-    text-align: center;
+    color: #666;
     margin-bottom: 0.5rem;
-  }
-
-  .progress-bar {
-    height: 10px;
-    width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-
-    .progress {
-      height: 100%;
-      background-color: #2196f3;
-      transition: width 0.3s ease;
-    }
-  }
-
-  @media (max-width: 480px) {
-    margin-bottom: 1.5rem;
   }
 }
 

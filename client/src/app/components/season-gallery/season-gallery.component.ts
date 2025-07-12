@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Season, MediaService } from '../../services/media.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 @Component({
   selector: 'app-season-gallery',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProgressIndicatorComponent],
   templateUrl: './season-gallery.component.html',
   styleUrls: ['./season-gallery.component.scss'],
 })

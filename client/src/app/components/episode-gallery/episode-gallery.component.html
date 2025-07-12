@@ -31,10 +31,14 @@
       <div class="episode-info">
         <h3>{{ episode.title }}</h3>
         <div class="progress-bar-container" *ngIf="episode.progress">
-          <div class="progress-bar">
-            <div class="progress-bar-fill" [style.width.%]="episode.progress.percentKnown"></div>
-          </div>
-          <span class="progress-label"> {{ episode.progress.percentKnown }}% known </span>
+          <app-progress-indicator
+            type="linear"
+            [value]="episode.progress.percentKnown"
+            theme="warning"
+            [height]="10"
+            [showLabel]="true"
+            labelText="known"
+          ></app-progress-indicator>
         </div>
       </div>
     </div>

@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Media, MediaService } from '../../services/media.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 @Component({
   selector: 'app-media-gallery',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProgressIndicatorComponent],
   templateUrl: './media-gallery.component.html',
   styleUrls: ['./media-gallery.component.scss'],
 })

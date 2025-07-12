@@ -128,27 +128,6 @@
   width: 100%;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background: #eee;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 0.3rem;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ab47bc 0%, #ce93d8 100%);
-  border-radius: 5px 0 0 5px;
-  transition: width 0.3s;
-}
-
-.progress-label {
-  font-size: 0.9rem;
-  color: #666;
-}
-
 .loading,
 .error {
   margin-top: 2rem;

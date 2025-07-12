@@ -7,6 +7,7 @@ import { SetsComponent } from '../sets/sets.component';
 import { AddRadicalPropComponent } from '../add-radical-prop/add-radical-prop.component';
 import { WordsComponent } from '../words/words.component';
 import { SentenceAnalyzerComponent } from '../sentence-analyzer/sentence-analyzer.component';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 import { PodcastService } from '../../services/podcast.service';
 import { Subscription } from 'rxjs';
 
@@ -22,6 +23,7 @@ import { Subscription } from 'rxjs';
     AddRadicalPropComponent,
     WordsComponent,
     SentenceAnalyzerComponent,
+    ProgressIndicatorComponent,
   ],
   template: `
     <div class="memory-palace">
@@ -72,9 +74,14 @@ import { Subscription } from 'rxjs';
               </span>
             </button>
             <div *ngIf="isGeneratingPodcast" class="progress-info">
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="generationProgress"></div>
-              </div>
+              <app-progress-indicator
+                type="linear"
+                [value]="generationProgress"
+                theme="orange"
+                [height]="8"
+                [showLabel]="false"
+                [animated]="true"
+              ></app-progress-indicator>
               <p class="progress-text">Building your personalized Chinese learning content...</p>
             </div>
             <div
@@ -335,26 +342,10 @@ import { Subscription } from 'rxjs';
         text-align: center;
       }
 
-      .progress-bar {
-        width: 100%;
-        height: 8px;
-        background-color: #ecf0f1;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 0.5rem;
-      }
-
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #e67e22 0%, #f39c12 100%);
-        border-radius: 4px;
-        transition: width 0.3s ease;
-      }
-
       .progress-text {
         color: #7f8c8d;
         font-size: 0.9rem;
-        margin: 0;
+        margin: 0.5rem 0 0 0;
       }
 
       .result-message {

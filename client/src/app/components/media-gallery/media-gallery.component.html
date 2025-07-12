@@ -10,10 +10,14 @@
       <div class="media-info">
         <h3>{{ media.title }}</h3>
         <div class="progress-bar-container" *ngIf="media.progress">
-          <div class="progress-bar">
-            <div class="progress-bar-fill" [style.width.%]="media.progress.percentKnown"></div>
-          </div>
-          <span class="progress-label"> {{ media.progress.percentKnown }}% known </span>
+          <app-progress-indicator
+            type="linear"
+            [value]="media.progress.percentKnown"
+            theme="success"
+            [height]="10"
+            [showLabel]="true"
+            labelText="known"
+          ></app-progress-indicator>
         </div>
       </div>
     </div>
