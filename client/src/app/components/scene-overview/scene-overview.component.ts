@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CharacterTileComponent } from '../character-tile/character-tile.component';
 import { MediaService, Scene } from '../../services/media.service';
 import {
   SentenceAnalysisService,
@@ -24,7 +23,7 @@ interface SceneOverviewData {
 @Component({
   selector: 'app-scene-overview',
   standalone: true,
-  imports: [CommonModule, CharacterTileComponent],
+  imports: [CommonModule],
   templateUrl: './scene-overview.component.html',
   styleUrl: './scene-overview.component.scss',
 })
