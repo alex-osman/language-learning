@@ -1,0 +1,24 @@
+.character-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffe0a3;
+  color: #222;
+  font-size: 1.7rem;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.4em 0.9em;
+  margin: 0.2em 0.2em 0.2em 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid #ffd180;
+  transition: box-shadow 0.2s, border 0.2s;
+  min-width: 2.2em;
+  min-height: 2.2em;
+  user-select: none;
+}
+
+.character-tile.highlighted {
+  background: #ffd180;
+  border-color: #ff9800;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.15);
+}

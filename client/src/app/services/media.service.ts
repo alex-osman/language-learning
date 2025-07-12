@@ -143,6 +143,47 @@ export class MediaService {
     ]);
   }
 
+  getScene(
+    mediaId: string,
+    seasonId: string,
+    episodeId: string,
+    sceneId: string
+  ): Observable<Scene> {
+    // TODO: Replace with real API call
+    return of({
+      id: sceneId,
+      title: 'Pepp.3',
+      number: parseInt(sceneId) || 1,
+      sentences: [
+        {
+          id: '1',
+          chinese: '佩奇出门玩雪。',
+          translation: 'Peppa goes out to play in the snow.',
+          pinyin: 'Pèi qí chū mén wán xuě.',
+          knownCharacters: 0,
+          totalCharacters: 6,
+        },
+        {
+          id: '2',
+          chinese: '佩奇在等玩他玩。',
+          translation: 'Peppa is waiting to play with him.',
+          pinyin: 'Pèi qí zài děng wán tā wán.',
+          knownCharacters: 0,
+          totalCharacters: 7,
+        },
+        {
+          id: '3',
+          chinese: '小海苏化冬。',
+          translation: 'Little Suzy melts winter.',
+          pinyin: 'Xiǎo hǎi sū huà dōng.',
+          knownCharacters: 0,
+          totalCharacters: 5,
+        },
+      ],
+      progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
+    });
+  }
+
   getSentencesForScene(
     mediaId: string,
     seasonId: string,
@@ -210,7 +251,7 @@ export class MediaService {
       {
         id: '8',
         chinese: '你为什么不和苏西去你的卧室玩好',
-        translation: 'Why don’t you and Suzy go play in your bedroom?',
+        translation: "Why don't you and Suzy go play in your bedroom?",
         pinyin: 'Nǐ wèishéme bù hé Sū xī qù nǐ de wò shì wán ne?',
         knownCharacters: 0,
         totalCharacters: 15,
@@ -226,7 +267,7 @@ export class MediaService {
       {
         id: '10',
         chinese: '佩奇和苏西喜欢在佩奇的卧室里玩。',
-        translation: 'Peppa and Suzy like playing in Peppa’s bedroom.',
+        translation: "Peppa and Suzy like playing in Peppa's bedroom.",
         pinyin: 'Pèi qí hé Sū xī xǐ huān zài Pèi qí de wò shì lǐ wán.',
         knownCharacters: 0,
         totalCharacters: 15,
