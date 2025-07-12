@@ -11,6 +11,7 @@ import { SeasonGalleryComponent } from './components/season-gallery/season-galle
 import { EpisodeGalleryComponent } from './components/episode-gallery/episode-gallery.component';
 import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
 import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
+import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,11 @@ export const routes: Routes = [
   {
     path: 'flashcards',
     component: FlashcardsComponent,
+  },
+  {
+    path: 'sentence-flashcard/:sceneId',
+    component: SentenceFlashcardComponent,
+    title: 'Sentence Practice',
   },
   {
     path: 'sentence-gallery',

@@ -237,8 +237,13 @@ export class SceneOverviewComponent implements OnInit {
   }
 
   startPractice() {
-    console.log('Starting practice for scene:', this.sceneId);
-    // TODO: Implement navigation to practice mode
+    this.router.navigate(['/sentence-flashcard', this.sceneId], {
+      queryParams: {
+        mediaId: this.mediaId,
+        seasonId: this.seasonId,
+        episodeId: this.episodeId,
+      },
+    });
   }
 
   toggleVideoPlayPause() {

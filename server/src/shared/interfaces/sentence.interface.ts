@@ -8,10 +8,23 @@ export interface SentenceDTO {
   level?: number;
 
   // Spaced Repetition Fields
-  easinessFactor?: number;
-  repetitions?: number;
-  interval?: number;
+  easinessFactor: number;
+  repetitions: number;
+  interval: number;
   nextReviewDate?: Date;
   lastReviewDate?: Date;
-  dueForReview?: boolean;
+  dueForReview: boolean;
+
+  // Scene context
+  sceneId?: string;
+  startMs?: number;
+  endMs?: number;
+}
+
+export interface SceneProgressStats {
+  totalSentences: number;
+  practicedSentences: number;
+  averageEasiness: number;
+  averageInterval: number;
+  completionPercentage: number;
 }

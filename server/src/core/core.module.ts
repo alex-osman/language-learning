@@ -14,6 +14,7 @@ import { SentenceService } from '../services/sentence.service';
 import { WordService } from '../services/word.service';
 import { FlashcardService } from '../services/flashcard.service';
 import { SentenceAnalyzerService } from '../services/sentence-analyzer.service';
+import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { SentenceAnalyzerService } from '../services/sentence-analyzer.service';
     WordService,
     FlashcardService,
     SentenceAnalyzerService,
+    SentenceFlashcardService,
   ],
   exports: [
     CharacterService,
@@ -45,6 +47,7 @@ import { SentenceAnalyzerService } from '../services/sentence-analyzer.service';
     WordService,
     FlashcardService,
     SentenceAnalyzerService,
+    SentenceFlashcardService,
   ],
 })
 export class CoreModule {}

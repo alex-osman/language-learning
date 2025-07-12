@@ -29,12 +29,19 @@ export class SentenceService {
     return this.toSentenceDTO(sentence);
   }
 
-  private toSentenceDTO(sentence: Sentence): SentenceDTO {
+  public toSentenceDTO(sentence: Sentence): SentenceDTO {
     // Calculate if the sentence is due for review
     const now = new Date();
-    const dueForReview = sentence.nextReviewDate
-      ? sentence.nextReviewDate <= now
-      : false;
+    const farFutureThreshold = new Date();
+    farFutureThreshold.setFullYear(farFutureThreshold.getFullYear() + 50);
+
+    // Check if sentence has been practiced and is due for review
+    const hasBeenPracticed =
+      sentence.lastReviewDate && sentence.lastReviewDate < farFutureThreshold;
+    const dueForReview =
+      hasBeenPracticed && sentence.nextReviewDate
+        ? sentence.nextReviewDate <= now
+        : false;
 
     return {
       id: sentence.id,
@@ -51,6 +58,10 @@ export class SentenceService {
       nextReviewDate: sentence.nextReviewDate,
       lastReviewDate: sentence.lastReviewDate,
       dueForReview,
+      // Scene context (if available)
+      sceneId: sentence.scene?.id?.toString(),
+      startMs: 0, // TODO: Add startMs to sentence entity if needed
+      endMs: 0, // TODO: Add endMs to sentence entity if needed
     };
   }
 }

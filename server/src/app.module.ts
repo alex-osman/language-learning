@@ -19,6 +19,7 @@ import { CharacterController } from './controllers/character.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SentenceAnalyzerController } from './controllers/sentence-analyzer.controller';
+import { SentenceFlashcardController } from './controllers/sentence-flashcard.controller';
 import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
 
@@ -45,6 +46,7 @@ import { CoreModule } from './core/core.module';
     WordsController,
     CharacterController,
     SentenceAnalyzerController,
+    SentenceFlashcardController,
   ],
   providers: [
     AppService,
