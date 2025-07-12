@@ -56,7 +56,6 @@ export class SceneGalleryComponent implements OnInit {
       this.episodeId,
       'scenes',
       scene.id,
-      'sentences',
     ]);
   }
 }

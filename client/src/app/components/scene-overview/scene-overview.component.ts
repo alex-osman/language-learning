@@ -263,7 +263,7 @@ export class SceneOverviewComponent implements OnInit {
       this.sceneVideo.nativeElement.currentTime = timeInSeconds;
 
       // Pause the video if it's playing to let user see the specific moment
-      // this.sceneVideo.nativeElement.pause();
+      this.sceneVideo.nativeElement.play();
 
       console.log(`Navigated to timestamp: ${timeInSeconds}s`);
     } else {
