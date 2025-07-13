@@ -58,6 +58,8 @@ export class SentenceFlashcardService {
         audioUrl: '',
         source: '',
         level: 0,
+        startMs: s.startMs,
+        endMs: s.endMs,
       })),
       total: SCENE_1_SENTENCES.length,
     });
