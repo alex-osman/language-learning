@@ -159,12 +159,15 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
           // Add a short delay before transitioning to the next sentence
           setTimeout(() => {
             this.showNextSentence();
-          }, 600);
+          }, 300);
         },
         error: err => {
           console.error('Error submitting review:', err);
           this.error = 'Failed to submit review. Please try again.';
           this.isProcessingReview = false;
+          setTimeout(() => {
+            this.showNextSentence();
+          }, 300);
         },
       });
 

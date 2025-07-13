@@ -63,7 +63,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     id: '2',
     chinese: '佩奇在等他最好的朋友小羊苏西。',
     translation: 'Peppa is waiting for her best friend, Little Sheep Suzy.',
-    pinyin: 'Pèi qí zài děng tā. Zuì hǎo de péngyǒu Xiǎo Yáng Sū xī.',
+    pinyin: 'Pèi qí zài děng tā zuì hǎo de péngyǒu Xiǎo Yáng Sū xī.',
     startMs: 15059,
     endMs: 20420,
   },

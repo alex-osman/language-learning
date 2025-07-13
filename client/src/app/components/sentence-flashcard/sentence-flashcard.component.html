@@ -1,21 +1,15 @@
 <div class="sentence-flashcards-container">
   <!-- Header -->
+  <button class="back-btn" (click)="goBackToScene()" aria-label="Back to scene">
+    ← Back to Scene
+  </button>
   <div class="header">
-    <button class="back-btn" (click)="goBackToScene()" aria-label="Back to scene">
-      ← Back to Scene
-    </button>
     <h1>Sentence Practice</h1>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <p>Loading sentences...</p>
-  </div>
-
-  <!-- Error Message -->
-  <div *ngIf="error" class="error-message">
-    <p>{{ error }}</p>
-    <button (click)="loadSceneSentences()">Try Again</button>
   </div>
 
   <!-- Review in Progress -->
