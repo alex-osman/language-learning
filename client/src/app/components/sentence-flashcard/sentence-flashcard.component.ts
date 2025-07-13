@@ -76,18 +76,22 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
 
   private initializeVideoPlayer() {
     if (!this.videoElement) return;
-    console.log('init video player');
 
     const video = this.videoElement.nativeElement;
 
     // Wait for video to load
     video.addEventListener('loadedmetadata', () => {
       this.isVideoReady = true;
+      video.pause(); // Start paused
       console.log('Video loaded and ready');
     });
 
     video.addEventListener('ended', () => {
       this.isVideoPlaying = false;
+      // If video ends naturally (especially on last sentence), trigger reveal state
+      if (this.currentSentence && !this.canRevealAnswer) {
+        this.pauseVideoAtSentenceEnd();
+      }
       console.log('Video ended');
     });
 
@@ -145,7 +149,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     const video = this.videoElement.nativeElement;
 
     // Set video to start time of current sentence
-    console.log(this.currentSentence);
     if (fromBeginning) {
       video.currentTime = 0;
     } else {
