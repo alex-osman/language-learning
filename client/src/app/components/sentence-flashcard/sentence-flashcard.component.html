@@ -35,15 +35,7 @@
 
     <!-- Video Player Section -->
     <div class="video-container" [class.playing]="isVideoPlaying">
-      <video #sceneVideo src="assets/videos/scene1.mp4" [muted]="false"></video>
-
-      <!-- Video Status Overlay -->
-      <div class="video-status-overlay" *ngIf="isVideoPlaying">
-        <div class="status-indicator playing">
-          <span class="icon">▶️</span>
-          <span class="text">Playing sentence...</span>
-        </div>
-      </div>
+      <video #sceneVideo src="assets/videos/scene1.mp4"></video>
 
       <!-- Video Controls -->
       <div class="video-controls" *ngIf="sentencePlaybackCompleted && !isFlipped">

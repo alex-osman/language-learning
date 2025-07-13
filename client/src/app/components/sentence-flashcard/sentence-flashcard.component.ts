@@ -76,13 +76,13 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
 
   private initializeVideoPlayer() {
     if (!this.videoElement) return;
+    console.log('init video player');
 
     const video = this.videoElement.nativeElement;
 
     // Wait for video to load
     video.addEventListener('loadedmetadata', () => {
       this.isVideoReady = true;
-      video.pause(); // Start paused
       console.log('Video loaded and ready');
     });
 
@@ -139,14 +139,16 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     console.log('Video paused at sentence end');
   }
 
-  private playVideoForCurrentSentence() {
-    if (!this.videoElement || !this.currentSentence) return;
+  private playVideoForCurrentSentence(fromBeginning: boolean = false) {
+    if (!this.videoElement || !this.currentSentence || !this.currentSentence.startMs) return;
 
     const video = this.videoElement.nativeElement;
 
     // Set video to start time of current sentence
     console.log(this.currentSentence);
-    if (this.currentSentence.startMs) {
+    if (fromBeginning) {
+      video.currentTime = 0;
+    } else {
       video.currentTime = this.currentSentence.startMs / 1000;
     }
 
@@ -160,11 +162,10 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     video
       .play()
       .then(() => {
+        if (!this.currentSentence) return;
         this.isVideoPlaying = true;
         console.log(
-          `Playing sentence ${this.currentSentence!.id} from ${
-            this.currentSentence!.startMs
-          }ms to ${this.currentSentence!.endMs}ms`
+          `Playing sentence ${this.currentSentence.id} from ${this.currentSentence.startMs}ms to ${this.currentSentence.endMs}ms`
         );
       })
       .catch(err => {
@@ -221,6 +222,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   // ===== FLASHCARD LOGIC =====
 
   private showNextSentence() {
+    console.log('this.sceneSentences', this.sceneSentences);
     // Reset review state
     this.selectedRating = null;
     this.isFlipped = false;
@@ -229,6 +231,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     this.canRevealAnswer = false;
 
     if (this.sceneSentences.length > 0) {
+      const isFirstSentence = !this.currentSentence;
       this.currentSentence = this.sceneSentences.shift() || null;
       this.reviewStats.current = this.reviewStats.total - this.sceneSentences.length;
       this.isReviewing = true;
@@ -237,7 +240,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
       // Wait a moment for UI to update, then start video playback
       setTimeout(() => {
         if (this.isVideoReady) {
-          this.playVideoForCurrentSentence();
+          this.playVideoForCurrentSentence(isFirstSentence);
         }
       }, 500);
     } else {
@@ -253,6 +256,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   // ===== USER INTERACTIONS =====
 
   revealAnswer() {
+    console.log('revealAnswer', this.canRevealAnswer, this.isProcessingReview);
     if (!this.canRevealAnswer || this.isProcessingReview) return;
 
     this.isFlipped = true;
