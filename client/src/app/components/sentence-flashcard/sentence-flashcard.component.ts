@@ -2,13 +2,19 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SentenceFlashcardService, SentenceDTO } from '../../services/sentence-flashcard.service';
+import {
+  SentenceAnalysisService,
+  AnalyzedCharacter,
+  SentenceAnalysisResult,
+} from '../../services/sentence-analysis.service';
 import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
+import { CharacterAnalysisComponent } from '../character-analysis/character-analysis.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sentence-flashcard',
   standalone: true,
-  imports: [CommonModule, ProgressIndicatorComponent],
+  imports: [CommonModule, ProgressIndicatorComponent, CharacterAnalysisComponent],
   templateUrl: './sentence-flashcard.component.html',
   styleUrls: ['./sentence-flashcard.component.scss'],
 })
@@ -33,6 +39,18 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   canRevealAnswer = false;
   sentencePlaybackCompleted = false;
 
+  // Character analysis state
+  showAnalysis = false;
+  analysisResults: AnalyzedCharacter[] = [];
+  analysisStats = {
+    totalCharacters: 0,
+    knownCharacters: 0,
+    unknownCharacters: 0,
+    knownPercentage: 0,
+  };
+  isAnalyzing = false;
+  analysisError: string | null = null;
+
   // Scene context (required)
   sceneId: string = '';
   mediaId: string = '';
@@ -56,7 +74,8 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private sentenceFlashcardService: SentenceFlashcardService
+    private sentenceFlashcardService: SentenceFlashcardService,
+    private sentenceAnalysisService: SentenceAnalysisService
   ) {}
 
   ngOnInit() {
@@ -143,15 +162,14 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     console.log('Video paused at sentence end');
   }
 
-  private playVideoForCurrentSentence(fromBeginning: boolean = false) {
-    if (!this.videoElement || !this.currentSentence || !this.currentSentence.startMs) return;
+  private playVideoForCurrentSentence() {
+    if (!this.videoElement || !this.currentSentence) return;
 
     const video = this.videoElement.nativeElement;
 
     // Set video to start time of current sentence
-    if (fromBeginning) {
-      video.currentTime = 0;
-    } else {
+    console.log(this.currentSentence);
+    if (this.currentSentence.startMs) {
       video.currentTime = this.currentSentence.startMs / 1000;
     }
 
@@ -165,10 +183,11 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     video
       .play()
       .then(() => {
-        if (!this.currentSentence) return;
         this.isVideoPlaying = true;
         console.log(
-          `Playing sentence ${this.currentSentence.id} from ${this.currentSentence.startMs}ms to ${this.currentSentence.endMs}ms`
+          `Playing sentence ${this.currentSentence!.id} from ${
+            this.currentSentence!.startMs
+          }ms to ${this.currentSentence!.endMs}ms`
         );
       })
       .catch(err => {
@@ -225,7 +244,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   // ===== FLASHCARD LOGIC =====
 
   private showNextSentence() {
-    console.log('this.sceneSentences', this.sceneSentences);
     // Reset review state
     this.selectedRating = null;
     this.isFlipped = false;
@@ -233,8 +251,19 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     this.isWaitingForUserInput = false;
     this.canRevealAnswer = false;
 
+    // Reset analysis state
+    this.showAnalysis = false;
+    this.analysisResults = [];
+    this.analysisStats = {
+      totalCharacters: 0,
+      knownCharacters: 0,
+      unknownCharacters: 0,
+      knownPercentage: 0,
+    };
+    this.isAnalyzing = false;
+    this.analysisError = null;
+
     if (this.sceneSentences.length > 0) {
-      const isFirstSentence = !this.currentSentence;
       this.currentSentence = this.sceneSentences.shift() || null;
       this.reviewStats.current = this.reviewStats.total - this.sceneSentences.length;
       this.isReviewing = true;
@@ -243,7 +272,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
       // Wait a moment for UI to update, then start video playback
       setTimeout(() => {
         if (this.isVideoReady) {
-          this.playVideoForCurrentSentence(isFirstSentence);
+          this.playVideoForCurrentSentence();
         }
       }, 500);
     } else {
@@ -331,5 +360,51 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   playAudio() {
     // TODO: Implement audio playback
     console.log('Playing audio for sentence:', this.currentSentence?.sentence);
+  }
+
+  // ===== CHARACTER ANALYSIS =====
+
+  analyzeSentence() {
+    if (!this.currentSentence || this.isAnalyzing) return;
+
+    this.isAnalyzing = true;
+    this.analysisError = null;
+
+    const sub = this.sentenceAnalysisService
+      .analyzeSentence(this.currentSentence.sentence)
+      .subscribe({
+        next: (analysis: SentenceAnalysisResult) => {
+          this.analysisResults = analysis.all_characters;
+          this.analysisStats = {
+            totalCharacters: analysis.total_characters,
+            knownCharacters: analysis.known_count,
+            unknownCharacters: analysis.unknown_count,
+            knownPercentage: analysis.known_percent,
+          };
+          this.showAnalysis = true;
+          this.isAnalyzing = false;
+        },
+        error: err => {
+          console.error('Error analyzing sentence:', err);
+          this.analysisError = 'Failed to analyze sentence. Please try again.';
+          this.isAnalyzing = false;
+        },
+      });
+
+    this.subscriptions.push(sub);
+  }
+
+  toggleAnalysis() {
+    if (this.showAnalysis) {
+      this.showAnalysis = false;
+    } else if (this.analysisResults.length > 0) {
+      this.showAnalysis = true;
+    } else {
+      this.analyzeSentence();
+    }
+  }
+
+  closeAnalysis() {
+    this.showAnalysis = false;
   }
 }

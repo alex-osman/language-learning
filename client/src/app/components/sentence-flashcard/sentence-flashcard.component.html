@@ -122,7 +122,39 @@
             >
               🎬 Replay Video
             </button>
+            <button
+              class="analyze-btn"
+              (click)="toggleAnalysis()"
+              [disabled]="isProcessingReview || isAnalyzing"
+              aria-label="Analyze characters"
+            >
+              📊 {{ isAnalyzing ? 'Analyzing...' : showAnalysis ? 'Hide Analysis' : 'Analyze' }}
+            </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Character Analysis Section -->
+    <div class="analysis-overlay" *ngIf="showAnalysis" (click)="closeAnalysis()">
+      <div class="analysis-modal" (click)="$event.stopPropagation()">
+        <div class="analysis-header">
+          <h3>Character Analysis</h3>
+          <button class="close-btn" (click)="closeAnalysis()" aria-label="Close analysis">✕</button>
+        </div>
+
+        <div class="analysis-content">
+          <app-character-analysis
+            [analysisResults]="analysisResults"
+            [totalCharacters]="analysisStats.totalCharacters"
+            [knownCharacters]="analysisStats.knownCharacters"
+            [unknownCharacters]="analysisStats.unknownCharacters"
+            [knownPercentage]="analysisStats.knownPercentage"
+            [isLoading]="isAnalyzing"
+            [error]="analysisError"
+            [showStats]="true"
+            [compact]="true"
+          ></app-character-analysis>
         </div>
       </div>
     </div>

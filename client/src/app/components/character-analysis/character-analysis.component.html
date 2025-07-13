@@ -1,0 +1,50 @@
+<div class="character-analysis" [class.compact]="compact">
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading" *ngIf="isLoading">Analyzing characters...</div>
+
+  <div class="analysis-section" *ngIf="analysisResults.length > 0 && !isLoading">
+    <div class="stats" *ngIf="showStats">
+      <div class="stat-item">
+        <span class="stat-number">{{ totalCharacters }}</span>
+        <span class="stat-label">Total Characters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ knownCharacters }}</span>
+        <span class="stat-label">Known Characters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ unknownCharacters }}</span>
+        <span class="stat-label">Unknown Characters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ knownPercentage }}%</span>
+        <span class="stat-label">Known Percentage</span>
+      </div>
+    </div>
+
+    <div class="character-grid">
+      <div
+        *ngFor="let result of analysisResults"
+        class="character-item"
+        [class.known]="result.known"
+        [class.unknown]="!result.known"
+      >
+        <span class="char">{{ result.char }}</span>
+        <span class="count" *ngIf="result.count > 1">({{ result.count }})</span>
+        <span *ngIf="result.charData?.pinyin" class="pinyin">{{ result.charData?.pinyin }}</span>
+        <span *ngIf="result.charData?.definition" class="definition">{{
+          result.charData?.definition
+        }}</span>
+        <span *ngIf="result.charData?.freq" class="frequency"
+          >Freq: {{ result.charData.freq }}</span
+        >
+        <span *ngIf="!result.known && result.charData" class="char-id"
+          >ID: {{ result.charData.id }}</span
+        >
+      </div>
+    </div>
+  </div>
+</div>

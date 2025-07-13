@@ -442,6 +442,15 @@
         .replay-video-btn {
           font-size: 0.9rem;
         }
+
+        .analyze-btn {
+          font-size: 0.9rem;
+          background-color: rgba(255, 255, 255, 0.25);
+
+          &:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.4);
+          }
+        }
       }
     }
   }
@@ -738,7 +747,75 @@
   }
 }
 
-// Mobile Responsive
+// Character Analysis Overlay & Modal
+.analysis-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.analysis-modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+
+  .analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+
+    h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #e0e0e0;
+        color: #333;
+      }
+    }
+  }
+
+  .analysis-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .sentence-flashcards-container {
     padding: 0.5rem;
@@ -765,6 +842,23 @@
           font-size: 1.5rem;
         }
       }
+    }
+  }
+
+  .analysis-modal {
+    max-width: 95vw;
+    max-height: 95vh;
+
+    .analysis-header {
+      padding: 1rem;
+
+      h3 {
+        font-size: 1.1rem;
+      }
+    }
+
+    .analysis-content {
+      padding: 1rem;
     }
   }
 }
