@@ -255,7 +255,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
           if (!index) {
             return {
               ...sentence,
-              startMs: 0,
+              // startMs: 0,
             };
           }
           return sentence;
