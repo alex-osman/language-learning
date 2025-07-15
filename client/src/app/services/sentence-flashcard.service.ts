@@ -52,7 +52,7 @@ export class SentenceFlashcardService {
         repetitions: 0,
         interval: 0,
         dueForReview: false,
-        sentence: s.chinese,
+        sentence: s.sentence,
         pinyin: s.pinyin || '',
         translation: s.translation,
         audioUrl: '',

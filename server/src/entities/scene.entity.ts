@@ -15,14 +15,14 @@ export class Scene {
   id: number;
 
   @ManyToOne(() => Episode, (episode: Episode) => episode.scenes)
-  @JoinColumn({ name: 'episodeId' })
+  @JoinColumn({ name: 'episode_id' })
   episode: Episode;
 
   @Column({ type: 'varchar', length: 200 })
   title: string;
 
-  @Column({ type: 'int' })
-  number: number;
+  @Column({ type: 'varchar', length: 200 })
+  assetUrl: string;
 
   @OneToMany(() => Sentence, (sentence: Sentence) => sentence.scene)
   sentences: Sentence[];

@@ -22,6 +22,7 @@ import { SentenceAnalyzerController } from './controllers/sentence-analyzer.cont
 import { SentenceFlashcardController } from './controllers/sentence-flashcard.controller';
 import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
+import { SceneController } from './controllers/scene.controller';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CoreModule } from './core/core.module';
   controllers: [
     DataController,
     AiController,
+    SceneController,
     FlashcardController,
     SentenceController,
     WordsController,

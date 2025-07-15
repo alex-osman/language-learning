@@ -21,7 +21,10 @@ export class SceneService {
   }
 
   async findOne(id: number): Promise<Scene | null> {
-    return this.sceneRepository.findOne({ where: { id } });
+    return this.sceneRepository.findOne({
+      where: { id },
+      relations: ['sentences'],
+    });
   }
 
   async update(

@@ -10,7 +10,7 @@ import { ProgressIndicatorComponent } from '../progress-indicator/progress-indic
 
 interface SceneOverviewData {
   title: string;
-  imageUrl: string;
+  assetUrl: string;
   percentUnderstood: number;
   newSentencesCount: number;
   uniqueCharacters: string[];
@@ -72,13 +72,13 @@ export class SceneOverviewComponent implements OnInit {
 
     return {
       title: this.scene.title,
-      imageUrl: '/assets/images/peppa-pig-scene.jpg',
+      assetUrl: this.scene.assetUrl,
       percentUnderstood: actualProgress.percentKnown,
       newSentencesCount: this.scene.sentences.length,
       uniqueCharacters: this.extractUniqueCharacters(),
       sentences: this.scene.sentences.map(sentence => ({
         id: sentence.id,
-        chinese: sentence.chinese,
+        chinese: sentence.sentence,
         percentKnown: this.sentenceAnalysisData[sentence.id]?.known_percent || 0,
         startMs: sentence.startMs,
       })),
@@ -144,7 +144,7 @@ export class SceneOverviewComponent implements OnInit {
     if (!this.scene) return;
 
     this.scene.sentences.forEach(sentence => {
-      this.analyzeSentence(sentence.id, sentence.chinese);
+      this.analyzeSentence(sentence.id, sentence.sentence);
     });
   }
 
@@ -212,7 +212,7 @@ export class SceneOverviewComponent implements OnInit {
   private extractUniqueCharacters(): string[] {
     if (!this.scene) return [];
 
-    const allText = this.scene.sentences.map(s => s.chinese).join('');
+    const allText = this.scene.sentences.map(s => s.sentence).join('');
     const uniqueChars = [...new Set(allText.split(''))].filter(char =>
       /[\u4e00-\u9fff]/.test(char)
     );

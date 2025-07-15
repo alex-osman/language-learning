@@ -11,7 +11,7 @@
 
     <div *ngFor="let sentence of sentences" class="sentence-card">
       <div class="sentence-content">
-        <p class="chinese">{{ sentence.chinese }}</p>
+        <p class="chinese">{{ sentence.sentence }}</p>
         <p class="pinyin" *ngIf="sentence.pinyin">{{ sentence.pinyin }}</p>
         <p class="translation">{{ sentence.translation }}</p>
       </div>

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
@@ -9,7 +10,7 @@ export interface ProgressInfo {
 
 export interface Sentence {
   id: string;
-  chinese: string;
+  sentence: string;
   translation: string;
   pinyin?: string;
   startMs: number;
@@ -19,7 +20,7 @@ export interface Sentence {
 export interface Scene {
   id: string;
   title: string;
-  number: number;
+  assetUrl: string;
   sentences: Sentence[];
   progress: ProgressInfo;
 }
@@ -53,7 +54,7 @@ export interface Media {
 export const SCENE_1_SENTENCES: Sentence[] = [
   {
     id: '1',
-    chinese: '最好的朋友',
+    sentence: '最好的朋友',
     translation: 'Best friends',
     pinyin: 'Zuì hǎo de péngyǒu',
     startMs: 8656,
@@ -61,7 +62,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '2',
-    chinese: '佩奇在等他最好的朋友小羊苏西。',
+    sentence: '佩奇在等他最好的朋友小羊苏西。',
     translation: 'Peppa is waiting for her best friend, Little Sheep Suzy.',
     pinyin: 'Pèi qí zài děng tā zuì hǎo de péngyǒu Xiǎo Yáng Sū xī.',
     startMs: 15059,
@@ -69,7 +70,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '3',
-    chinese: '你好，苏西。你好，佩奇。',
+    sentence: '你好，苏西。你好，佩奇。',
     translation: 'Hello, Suzy. Hello, Peppa.',
     pinyin: 'Nǐ hǎo, Sū xī. Nǐ hǎo, Pèi qí.',
     startMs: 23483,
@@ -77,7 +78,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '4',
-    chinese: '小羊苏西来找佩奇玩了。',
+    sentence: '小羊苏西来找佩奇玩了。',
     translation: 'Little Sheep Suzy has come to play with Peppa.',
     pinyin: 'Xiǎo yáng Sū xī lái zhǎo Pèi qí wán le.',
     startMs: 27765,
@@ -85,7 +86,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '5',
-    chinese: '佩奇喜欢苏西，苏西也喜欢佩奇。',
+    sentence: '佩奇喜欢苏西，苏西也喜欢佩奇。',
     translation: 'Peppa likes Suzy, and Suzy also likes Peppa.',
     pinyin: 'Pèi qí xǐ huān Sū xī, Sū xī yě xǐ huān Pèi qí.',
     startMs: 33143,
@@ -93,7 +94,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '6',
-    chinese: '他们是最好的朋友。',
+    sentence: '他们是最好的朋友。',
     translation: 'They are best friends.',
     pinyin: 'Tā men shì zuì hǎo de péng yǒu.',
     startMs: 37025,
@@ -101,7 +102,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '8a',
-    chinese: '佩奇，你为什么不和苏西去你的卧室玩好',
+    sentence: '佩奇，你为什么不和苏西去你的卧室玩好',
     translation: "Peppa, why don't you and Suzy go play in your bedroom?",
     pinyin: 'Pèi qí, nǐ wèishéme bù hé Sū xī qù nǐ de wò shì wán ne?',
     startMs: 44890,
@@ -109,7 +110,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '8b',
-    chinese: '好的妈妈',
+    sentence: '好的妈妈',
     translation: 'Okay, Mom.',
     pinyin: 'Hǎo de, mā ma',
     startMs: 48000,
@@ -117,7 +118,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   },
   {
     id: '9',
-    chinese: '乔治也想一起玩。',
+    sentence: '乔治也想一起玩。',
     translation: 'George wants to play too.',
     pinyin: 'Qiáo zhì yě xiǎng yì qǐ wán.',
     startMs: 52015,
@@ -129,7 +130,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
   providedIn: 'root',
 })
 export class MediaService {
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   getAllMedia(): Observable<Media[]> {
     // TODO: Replace with real API call
@@ -199,19 +200,18 @@ export class MediaService {
   }
 
   getScenesForEpisode(mediaId: string, seasonId: string, episodeId: string): Observable<Scene[]> {
-    // TODO: Replace with real API call
     return of([
       {
         id: '1',
         title: 'Scene 1',
-        number: 1,
+        assetUrl: 'assets/videos/scene1.mp4',
         sentences: [],
         progress: { percentKnown: 80, knownCharacters: 8, totalCharacters: 10 },
       },
       {
         id: '2',
         title: 'Scene 2',
-        number: 2,
+        assetUrl: 'assets/videos/scene2.mp4',
         sentences: [],
         progress: { percentKnown: 50, knownCharacters: 5, totalCharacters: 10 },
       },
@@ -225,13 +225,14 @@ export class MediaService {
     sceneId: string
   ): Observable<Scene> {
     // TODO: Replace with real API call
-    return of({
-      id: sceneId,
-      title: 'Intro',
-      number: parseInt(sceneId) || 1,
-      sentences: SCENE_1_SENTENCES,
-      progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
-    });
+    // return of({
+    //   id: sceneId,
+    //   title: 'Intro',
+    //   number: parseInt(sceneId) || 1,
+    //   sentences: SCENE_1_SENTENCES,
+    //   progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
+    // });
+    return this.http.get<Scene>(`/api/scenes/${sceneId}`);
   }
 
   getSentencesForScene(

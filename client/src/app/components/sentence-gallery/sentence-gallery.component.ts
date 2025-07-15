@@ -58,7 +58,7 @@ export class SentenceGalleryComponent implements OnInit {
 
   getProgress(): void {
     this.sentences.forEach(sentence => {
-      this.sentenceAnalysisService.analyzeSentence(sentence.chinese).subscribe({
+      this.sentenceAnalysisService.analyzeSentence(sentence.sentence).subscribe({
         next: result => {
           this.sentenceAnalysisData[sentence.id] = result;
         },

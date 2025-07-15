@@ -40,6 +40,12 @@ export class Sentence {
   @Column({ type: 'int', nullable: true })
   interval: number;
 
+  @Column({ type: 'int', nullable: true })
+  startMs: number;
+
+  @Column({ type: 'int', nullable: true })
+  endMs: number;
+
   @Column({ type: 'date', nullable: true })
   nextReviewDate: Date;
 
@@ -47,6 +53,6 @@ export class Sentence {
   lastReviewDate: Date;
 
   @ManyToOne(() => Scene, (scene) => scene.sentences, { nullable: true })
-  @JoinColumn({ name: 'sceneId' })
+  @JoinColumn({ name: 'scene_id' })
   scene: Scene;
 }

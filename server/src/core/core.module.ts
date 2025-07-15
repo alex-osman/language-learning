@@ -15,6 +15,8 @@ import { WordService } from '../services/word.service';
 import { FlashcardService } from '../services/flashcard.service';
 import { SentenceAnalyzerService } from '../services/sentence-analyzer.service';
 import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
+import { SceneService } from 'src/services/scene.service';
+import { Scene } from 'src/entities/scene.entity';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { SentenceFlashcardService } from '../services/sentence-flashcard.service
       Set,
       Sentence,
       Word,
+      Scene,
     ]),
   ],
   providers: [
@@ -37,6 +40,7 @@ import { SentenceFlashcardService } from '../services/sentence-flashcard.service
     FlashcardService,
     SentenceAnalyzerService,
     SentenceFlashcardService,
+    SceneService,
   ],
   exports: [
     CharacterService,
@@ -48,6 +52,7 @@ import { SentenceFlashcardService } from '../services/sentence-flashcard.service
     FlashcardService,
     SentenceAnalyzerService,
     SentenceFlashcardService,
+    SceneService,
   ],
 })
 export class CoreModule {}
