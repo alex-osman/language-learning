@@ -4,7 +4,7 @@
     ← Back to Scene
   </button>
   <div class="header">
-    <h1>Interactive Scene Practice</h1>
+    <h1>{{ title }}</h1>
     <p class="subtitle">Watch, Listen, and Practice</p>
   </div>
 
@@ -15,7 +15,7 @@
 
   <!-- Review in Progress -->
   <div
-    *ngIf="isReviewing && currentSentence"
+    *ngIf="!isLoading && isReviewing && currentSentence"
     class="review-container"
     [class.flipped-mode]="isFlipped"
     [class.video-playing]="isVideoPlaying"
@@ -35,7 +35,7 @@
 
     <!-- Video Player Section -->
     <div class="video-container" [class.playing]="isVideoPlaying">
-      <video #sceneVideo src="assets/videos/scene1.mp4"></video>
+      <video #sceneVideo [src]="assetUrl"></video>
 
       <!-- Video Controls -->
       <div class="video-controls" *ngIf="sentencePlaybackCompleted && !isFlipped">

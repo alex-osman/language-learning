@@ -32,6 +32,9 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   error: string | null = null;
   reviewCompleted = false;
 
+  title: string = '';
+  assetUrl: string = '';
+
   // Video timing state
   isVideoPlaying = false;
   isVideoReady = false;
@@ -100,6 +103,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
 
     // Wait for video to load
     video.addEventListener('loadedmetadata', () => {
+      console.log('Video loaded metadata');
       this.isVideoReady = true;
       video.pause(); // Start paused
       console.log('Video loaded and ready');
@@ -226,9 +230,12 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
 
     const sub = this.sentenceFlashcardService.getSentencesForScene(this.sceneId).subscribe({
       next: response => {
+        this.title = response.title;
+        this.assetUrl = response.assetUrl;
         this.sceneSentences = response.sentences;
         this.reviewStats.total = response.total;
         this.isLoading = false;
+        console.log('Loaded scene sentences', this.sceneSentences);
         this.showNextSentence();
       },
       error: err => {
@@ -264,6 +271,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     this.analysisError = null;
 
     if (this.sceneSentences.length > 0) {
+      console.log('Showing next sentence', this.sceneSentences);
       this.currentSentence = this.sceneSentences.shift() || null;
       this.reviewStats.current = this.reviewStats.total - this.sceneSentences.length;
       this.isReviewing = true;
@@ -271,9 +279,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
 
       // Wait a moment for UI to update, then start video playback
       setTimeout(() => {
-        if (this.isVideoReady) {
-          this.playVideoForCurrentSentence();
-        }
+        this.playVideoForCurrentSentence();
       }, 500);
     } else {
       // All sentences completed

@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
 import { SentenceService } from '../services/sentence.service';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
+import { SceneService } from 'src/services/scene.service';
 
 interface ReviewRequest {
   quality: number; // 0-5 quality rating
@@ -12,25 +21,45 @@ export class SentenceFlashcardController {
   constructor(
     private readonly sentenceFlashcardService: SentenceFlashcardService,
     private readonly sentenceService: SentenceService,
+    private readonly sceneService: SceneService,
   ) {}
 
   /**
    * Get all sentences for a specific scene
    */
   @Get('scene/:sceneId')
-  async getSentencesForScene(
-    @Param('sceneId') sceneId: string,
-  ): Promise<{ sentences: SentenceDTO[]; total: number }> {
-    const sentences =
-      await this.sentenceFlashcardService.getSentencesForScene(sceneId);
-    const total =
-      await this.sentenceFlashcardService.getTotalSentenceCount(sceneId);
+  async getSentencesForScene(@Param('sceneId') sceneId: string): Promise<{
+    title: string;
+    assetUrl: string;
+    sentences: SentenceDTO[];
+    total: number;
+  }> {
+    const scene = await this.sceneService.findOne(parseInt(sceneId));
+    if (!scene) {
+      throw new NotFoundException('Scene not found');
+    }
+    const sentences = scene.sentences;
+    const total = sentences.length;
 
     // Convert to DTOs
     return {
-      sentences: sentences.map((sentence) =>
-        this.sentenceService.toSentenceDTO(sentence),
-      ),
+      title: scene.title,
+      assetUrl: scene.assetUrl,
+      sentences: sentences.map((s) => ({
+        id: s.id,
+        sentence: s.sentence,
+        pinyin: s.pinyin,
+        translation: s.translation,
+        audioUrl: s.audioUrl,
+        source: s.source,
+        level: s.level,
+        easinessFactor: s.easinessFactor,
+        repetitions: s.repetitions,
+        interval: s.interval,
+        startMs: s.startMs,
+        endMs: s.endMs,
+        dueForReview: false,
+      })),
       total,
     };
   }

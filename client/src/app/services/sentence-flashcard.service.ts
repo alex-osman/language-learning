@@ -43,33 +43,40 @@ export class SentenceFlashcardService {
   /**
    * Get all sentences for a specific scene
    */
-  getSentencesForScene(sceneId: string): Observable<{ sentences: SentenceDTO[]; total: number }> {
-    return of({
-      sentences: SCENE_1_SENTENCES.map(s => ({
-        id: s.id,
-        sceneId,
-        easinessFactor: 2.5,
-        repetitions: 0,
-        interval: 0,
-        dueForReview: false,
-        sentence: s.sentence,
-        pinyin: s.pinyin || '',
-        translation: s.translation,
-        audioUrl: '',
-        source: '',
-        level: 0,
-        startMs: s.startMs,
-        endMs: s.endMs,
-      })),
-      total: SCENE_1_SENTENCES.length,
-    });
+  getSentencesForScene(
+    sceneId: string
+  ): Observable<{ title: string; assetUrl: string; sentences: SentenceDTO[]; total: number }> {
+    // return of({
+    //   title: 'Scene 1',
+    //   assetUrl: 'assets/videos/scene1.mp4',
 
-    // return this.http.get<{ sentences: SentenceDTO[]; total: number }>(
-    //   `${this.baseUrl}/scene/${sceneId}`,
-    //   {
-    //     responseType: 'json',
-    //   }
-    // );
+    //   sentences: SCENE_1_SENTENCES.map(s => ({
+    //     id: s.id,
+    //     sceneId,
+    //     easinessFactor: 2.5,
+    //     repetitions: 0,
+    //     interval: 0,
+    //     dueForReview: false,
+    //     sentence: s.sentence,
+    //     pinyin: s.pinyin || '',
+    //     translation: s.translation,
+    //     audioUrl: '',
+    //     source: '',
+    //     level: 0,
+    //     startMs: s.startMs,
+    //     endMs: s.endMs,
+    //   })),
+    //   total: SCENE_1_SENTENCES.length,
+    // });
+
+    return this.http.get<{
+      title: string;
+      assetUrl: string;
+      sentences: SentenceDTO[];
+      total: number;
+    }>(`${this.baseUrl}/scene/${sceneId}`, {
+      responseType: 'json',
+    });
   }
 
   /**

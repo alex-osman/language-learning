@@ -225,14 +225,14 @@ export class MediaService {
     sceneId: string
   ): Observable<Scene> {
     // TODO: Replace with real API call
-    // return of({
-    //   id: sceneId,
-    //   title: 'Intro',
-    //   number: parseInt(sceneId) || 1,
-    //   sentences: SCENE_1_SENTENCES,
-    //   progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
-    // });
-    return this.http.get<Scene>(`/api/scenes/${sceneId}`);
+    return of({
+      id: sceneId,
+      title: 'Intro',
+      assetUrl: 'assets/videos/scene1.mp4',
+      sentences: SCENE_1_SENTENCES,
+      progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
+    });
+    // return this.http.get<Scene>(`/api/scenes/${sceneId}`);
   }
 
   getSentencesForScene(
