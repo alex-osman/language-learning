@@ -19,7 +19,20 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./sentence-flashcard.component.scss'],
 })
 export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('sceneVideo', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
+  // Video element reference is provided lazily when it first appears in the DOM (inside an *ngIf)
+  private videoInitialised = false;
+
+  private videoElement!: ElementRef<HTMLVideoElement>; // Assigned in the setter below
+
+  @ViewChild('sceneVideo', { static: false })
+  set sceneVideo(el: ElementRef<HTMLVideoElement> | undefined) {
+    // This setter is called every time the view is checked. We only need to initialise once.
+    if (el && !this.videoInitialised) {
+      this.videoElement = el;
+      this.initializeVideoPlayer();
+      this.videoInitialised = true;
+    }
+  }
 
   // State management
   sceneSentences: SentenceDTO[] = [];
@@ -86,7 +99,8 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   ngAfterViewInit() {
-    this.initializeVideoPlayer();
+    // View initialised; actual video player setup happens once the element is available via the setter above.
+    console.log('ngAfterViewInit');
   }
 
   ngOnDestroy() {
@@ -97,9 +111,15 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   // ===== VIDEO INITIALIZATION =====
 
   private initializeVideoPlayer() {
-    if (!this.videoElement) return;
+    console.log('initializeVideoPlayer');
+    if (!this.videoElement) {
+      console.log('no video element');
+      return;
+    }
+    console.log('videoElement', this.videoElement);
 
     const video = this.videoElement.nativeElement;
+    console.log('video', video);
 
     // Wait for video to load
     video.addEventListener('loadedmetadata', () => {
@@ -172,7 +192,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     const video = this.videoElement.nativeElement;
 
     // Set video to start time of current sentence
-    console.log(this.currentSentence);
     if (this.currentSentence.startMs) {
       video.currentTime = this.currentSentence.startMs / 1000;
     }
@@ -232,7 +251,15 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
       next: response => {
         this.title = response.title;
         this.assetUrl = response.assetUrl;
-        this.sceneSentences = response.sentences;
+        this.sceneSentences = response.sentences.map((sentence, index) => {
+          if (!index) {
+            return {
+              ...sentence,
+              startMs: 0,
+            };
+          }
+          return sentence;
+        });
         this.reviewStats.total = response.total;
         this.isLoading = false;
         console.log('Loaded scene sentences', this.sceneSentences);
@@ -280,7 +307,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
       // Wait a moment for UI to update, then start video playback
       setTimeout(() => {
         this.playVideoForCurrentSentence();
-      }, 500);
+      }, 1000);
     } else {
       // All sentences completed
       this.currentSentence = null;

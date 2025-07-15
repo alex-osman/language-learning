@@ -15,7 +15,7 @@
 
   <!-- Review in Progress -->
   <div
-    *ngIf="!isLoading && isReviewing && currentSentence"
+    *ngIf="isReviewing && currentSentence"
     class="review-container"
     [class.flipped-mode]="isFlipped"
     [class.video-playing]="isVideoPlaying"
@@ -35,7 +35,7 @@
 
     <!-- Video Player Section -->
     <div class="video-container" [class.playing]="isVideoPlaying">
-      <video #sceneVideo [src]="assetUrl"></video>
+      <video #sceneVideo [src]="assetUrl" [muted]="false" [autoplay]="true"></video>
 
       <!-- Video Controls -->
       <div class="video-controls" *ngIf="sentencePlaybackCompleted && !isFlipped">
