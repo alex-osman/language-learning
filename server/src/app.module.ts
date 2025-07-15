@@ -27,7 +27,7 @@ import { SceneController } from './controllers/scene.controller';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
+      rootPath: join(__dirname, '..', '..', '..', 'client', 'dist', 'browser'),
     }),
     MulterModule.register({
       storage: memoryStorage(),
