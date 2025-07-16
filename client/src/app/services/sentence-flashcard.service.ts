@@ -36,7 +36,7 @@ export interface SceneProgressStats {
   providedIn: 'root',
 })
 export class SentenceFlashcardService {
-  private baseUrl = 'http://localhost:3000/api/sentence-flashcards';
+  private baseUrl = 'api/sentence-flashcards';
 
   constructor(private http: HttpClient) {}
 
