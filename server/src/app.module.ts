@@ -23,6 +23,7 @@ import { SentenceFlashcardController } from './controllers/sentence-flashcard.co
 import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
 import { SceneController } from './controllers/scene.controller';
+import { EpisodeController } from './controllers/episode.controller';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { SceneController } from './controllers/scene.controller';
     DataController,
     AiController,
     SceneController,
+    EpisodeController,
     FlashcardController,
     SentenceController,
     WordsController,

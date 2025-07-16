@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
-import { CreateEpisodeDTO } from '../../shared/dto/episode.dto';
+import { CreateEpisodeDTO, EpisodeDTO } from '../../shared/dto/episode.dto';
+import { Scene } from 'src/entities/scene.entity';
 
 @Injectable()
 export class EpisodeService {
   constructor(
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
+    @InjectRepository(Scene)
+    private sceneRepository: Repository<Scene>,
   ) {}
 
   async create(createEpisodeDto: CreateEpisodeDTO): Promise<Episode> {
@@ -38,5 +41,21 @@ export class EpisodeService {
 
   async getEpisodesForSeason(seasonId: number): Promise<Episode[]> {
     return this.episodeRepository.find({ where: { season: { id: seasonId } } });
+  }
+
+  async getScenesForEpisode(episodeId: number): Promise<EpisodeDTO> {
+    const episode = await this.episodeRepository.findOne({
+      where: { id: episodeId },
+      relations: ['scenes'],
+    });
+    if (!episode) {
+      throw new NotFoundException('Episode not found');
+    }
+    return {
+      id: episode.id,
+      title: episode.title,
+      assetUrl: episode.assetUrl,
+      scenes: episode.scenes,
+    };
   }
 }

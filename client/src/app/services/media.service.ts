@@ -2,6 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+export interface EpisodeDTO {
+  id: string;
+  title: string;
+  assetUrl: string;
+  scenes: Scene[];
+}
+
 export interface ProgressInfo {
   percentKnown: number; // 0-100
   knownCharacters: number;
@@ -22,7 +29,7 @@ export interface Scene {
   title: string;
   assetUrl: string;
   sentences: Sentence[];
-  progress: ProgressInfo;
+  knownPercent: number;
 }
 
 export interface Episode {
@@ -199,23 +206,8 @@ export class MediaService {
     ]);
   }
 
-  getScenesForEpisode(mediaId: string, seasonId: string, episodeId: string): Observable<Scene[]> {
-    return of([
-      {
-        id: '1',
-        title: 'Scene 1',
-        assetUrl: 'assets/videos/scene1.mp4',
-        sentences: [],
-        progress: { percentKnown: 80, knownCharacters: 8, totalCharacters: 10 },
-      },
-      {
-        id: '2',
-        title: 'Scene 2',
-        assetUrl: 'assets/videos/scene2.mp4',
-        sentences: [],
-        progress: { percentKnown: 50, knownCharacters: 5, totalCharacters: 10 },
-      },
-    ]);
+  getScenesForEpisode(episodeId: string): Observable<EpisodeDTO> {
+    return this.http.get<EpisodeDTO>(`/api/episodes/${episodeId}/scenes`);
   }
 
   getScene(

@@ -7,9 +7,7 @@ export class CreateEpisodeDTO {
 
 export class EpisodeDTO {
   id: number;
-  seasonId: number;
-  mediaId?: number;
   title: string;
-  number: number;
   scenes?: any[];
+  assetUrl: string;
 }

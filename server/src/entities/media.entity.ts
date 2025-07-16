@@ -18,7 +18,4 @@ export class Media {
 
   @OneToMany(() => Season, (season: Season) => season.media)
   seasons: Season[];
-
-  @OneToMany(() => Episode, (episode: Episode) => episode.media)
-  episodes: Episode[];
 }
