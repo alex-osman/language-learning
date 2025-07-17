@@ -24,6 +24,9 @@ export class Scene {
   @Column({ type: 'varchar', length: 200 })
   assetUrl: string;
 
+  @Column({ type: 'int' })
+  knownCache: number;
+
   @OneToMany(() => Sentence, (sentence: Sentence) => sentence.scene)
   sentences: Sentence[];
 }

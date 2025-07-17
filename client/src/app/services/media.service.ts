@@ -29,7 +29,7 @@ export interface Scene {
   title: string;
   assetUrl: string;
   sentences: Sentence[];
-  knownPercent: number;
+  knownCache: number;
 }
 
 export interface Episode {

@@ -30,10 +30,10 @@
     <div class="scene-card" *ngFor="let scene of scenes" (click)="onSceneClick(scene)">
       <div class="scene-info">
         <h3>{{ scene.title }}</h3>
-        <div class="progress-bar-container" *ngIf="scene.knownPercent">
+        <div class="progress-bar-container" *ngIf="scene.knownCache">
           <app-progress-indicator
             type="linear"
-            [value]="scene.knownPercent"
+            [value]="scene.knownCache"
             theme="purple"
             [height]="10"
             [showLabel]="true"
