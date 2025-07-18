@@ -45,6 +45,8 @@ export class CharactersComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'desc';
   learningFilter: LearningFilter = 'all';
   filteredCharacters: CharacterDTO[] = [];
+  knownCharactersCount: number = 0;
+  lastIdKnown: number = 0;
 
   constructor(
     private dataService: DataService,
@@ -72,6 +74,10 @@ export class CharactersComponent implements OnInit {
 
     this.dataService.getCharacters().subscribe(characters => {
       this.characters = characters;
+      this.knownCharactersCount = characters.filter(char => !!char.lastReviewDate).length;
+      this.lastIdKnown = characters
+        .filter(char => !!char.lastReviewDate)
+        .sort((a, b) => b.id - a.id)[0].id;
       this.updateFilteredCharacters();
       this.isLoading = false;
     });
@@ -145,14 +151,12 @@ export class CharactersComponent implements OnInit {
       console.log('Playing audio for:', char.character, char.pinyin);
 
       // Get audio URLs for each syllable in the pinyin
-      const audioUrls = this.pinyinService.getAudioUrls(char.pinyin);
-      console.log('Audio URLs:', audioUrls);
+      const audioUrl = this.pinyinService.getAudioUrl(char.pinyin);
+      console.log('Audio URLs:', audioUrl);
 
       // Play each syllable in sequence
-      for (const url of audioUrls) {
-        console.log('Playing syllable URL:', url);
-        await this.pinyinService.playAudioFile(url);
-      }
+      console.log('Playing syllable URL:', audioUrl);
+      await this.pinyinService.playAudioFile(audioUrl);
 
       console.log('Finished playing audio');
     } catch (error) {
@@ -352,24 +356,5 @@ export class CharactersComponent implements OnInit {
       return this.sortDirection === 'desc' ? 'Recently Learned First' : 'Oldest Learned First';
     }
     return this.sortDirection === 'desc' ? 'Descending' : 'Ascending';
-  }
-
-  getFilteredCharactersStatus(): string {
-    const total = this.characters.length;
-    const filtered = this.filteredCharacters.length;
-
-    if (filtered === total) {
-      return `All ${total} characters`;
-    }
-
-    if (this.learningFilter === 'learned') {
-      return `${filtered} learned characters`;
-    }
-
-    if (this.learningFilter === 'notLearned') {
-      return `${filtered} not learned characters`;
-    }
-
-    return `${filtered} of ${total} characters`;
   }
 }

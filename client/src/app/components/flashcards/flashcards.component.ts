@@ -297,12 +297,10 @@ export class FlashcardsComponent implements OnInit, OnDestroy {
 
     try {
       // Get audio URLs for each syllable in the pinyin
-      const audioUrls = this.pinyinService.getAudioUrls(character.pinyin);
+      const audioUrl = this.pinyinService.getAudioUrl(character.pinyin);
 
       // Play each syllable in sequence
-      for (const url of audioUrls) {
-        this.pinyinService.playAudioFile(url);
-      }
+      this.pinyinService.playAudioFile(audioUrl);
 
       // Visual feedback that audio is playing
       document.body.classList.add('audio-playing');

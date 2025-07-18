@@ -1,6 +1,6 @@
 <div class="section characters">
   <h2>Characters Progress</h2>
-  <h4>{{ getFilteredCharactersStatus() }}</h4>
+  <h4>{{ knownCharactersCount }} of {{ characters.length }} known</h4>
 
   <!-- Sorting & Filtering Controls -->
   <div class="controls-panel">
@@ -90,6 +90,10 @@
               {{ char.definition }}
             </div>
             <div class="frequency" *ngIf="char.freq">Freq: {{ char.freq }}</div>
+            <div class="frequency">
+              ID: {{ char.id }}
+              <span *ngIf="char.id > lastIdKnown">({{ char.id - lastIdKnown }})</span>
+            </div>
             <div class="audio-control">
               <button
                 class="play-audio-btn"

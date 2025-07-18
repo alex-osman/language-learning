@@ -25,10 +25,8 @@ export class PinyinService {
     );
   }
 
-  getAudioUrls(pinyin: string): string[] {
-    // Split the pinyin into syllables and generate URLs
-    const syllables = this.splitPinyinWord(pinyin);
-    return syllables.map(syllable => this.getAudioUrlForSyllable(syllable));
+  getAudioUrl(pinyin: string): string {
+    return this.getAudioUrlForSyllable(pinyin);
   }
 
   private getAudioUrlForSyllable(syllable: string): string {

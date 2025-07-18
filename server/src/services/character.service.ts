@@ -30,17 +30,17 @@ export class CharacterService {
       },
     });
     const latestChar = all[0];
-    const plusFive = await this.characterRepository.find({
+    const additional = await this.characterRepository.find({
       where: {
         id: MoreThan(latestChar.id),
       },
       order: {
         id: 'ASC',
       },
-      take: 5,
+      take: 500,
     });
     return Promise.all(
-      [...all, ...plusFive].map(async (character) =>
+      [...all, ...additional].map(async (character) =>
         this.makeCharacterDTO(character),
       ),
     );

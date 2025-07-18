@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CharactersComponent } from './characters.component';
-import { DataService } from '../../services/data.service';
+import { CharacterDTO, DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { PinyinService } from '../../services/pinyin.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -21,11 +21,7 @@ describe('CharactersComponent', () => {
       'getMovieScene',
     ]);
     movieService = jasmine.createSpyObj('MovieService', ['generateMovie']);
-    pinyinService = jasmine.createSpyObj('PinyinService', [
-      'getAudioUrls',
-      'playAudioFile',
-      'stop',
-    ]);
+    pinyinService = jasmine.createSpyObj('PinyinService', ['getAudioUrl', 'playAudioFile', 'stop']);
 
     // Setup default return values
     dataService.getCharacters.and.returnValue(of([]));
@@ -55,11 +51,11 @@ describe('CharactersComponent', () => {
       { character: '你', pinyin: 'nǐ', definition: 'you' },
       { character: '好', pinyin: 'hǎo', definition: 'good' },
     ];
-    dataService.getCharacters.and.returnValue(of(mockCharacters));
+    dataService.getCharacters.and.returnValue(of(mockCharacters as CharacterDTO[]));
 
     component.ngOnInit();
 
-    expect(component.characters).toEqual(mockCharacters);
+    expect(component.characters).toEqual(mockCharacters as CharacterDTO[]);
     expect(component.isLoading).toBeFalse();
   });
 });

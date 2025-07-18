@@ -109,23 +109,18 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
 
       if (chars) {
         // Get audio URLs first, as this will properly split the pinyin
-        const audioUrls = this.pinyinService.getAudioUrls(pinyin);
+        const url = this.pinyinService.getAudioUrl(pinyin);
 
         // Now get the individual syllables by converting the URLs back to pinyin
-        const pinyinSyllables = audioUrls.map(url => {
-          // Extract the pinyin from the URL (e.g., from "https://cdn.yoyochinese.com/audio/pychart/zhong1.mp3")
-          const syllable = url.split('/').pop()?.replace('.mp3', '') || '';
-          // Convert number notation back to tone marks
-          return this.pinyinService.convertNumberToToneMark(syllable);
-        });
+        const pinyinSyllables = this.pinyinService.convertNumberToToneMark(url);
 
         this.currentHighlighted = {
           characters: chars,
           pinyin: pinyin,
           definition: this.pinyinService.getDefinition(chars),
-          audioUrls: audioUrls,
+          audioUrls: [url],
           groupIndex: this.highlightedGroup,
-          pinyinSyllables: pinyinSyllables,
+          pinyinSyllables: [pinyinSyllables],
         };
 
         this.wordHighlighted.emit(this.currentHighlighted);
@@ -234,7 +229,7 @@ export class SentenceComponent implements OnInit, OnDestroy, OnChanges {
       });
 
     // Get audio URLs for each group's pinyin
-    return Array.from(groups.values()).flatMap(pinyin => this.pinyinService.getAudioUrls(pinyin));
+    return Array.from(groups.values()).flatMap(pinyin => this.pinyinService.getAudioUrl(pinyin));
   }
 
   public isPunctuation(char: string): boolean {
