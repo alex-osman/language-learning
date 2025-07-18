@@ -1,3 +1,199 @@
+// Controls Panel Styling
+.controls-panel {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 500;
+      color: #495057;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+  }
+
+  .sort-select,
+  .filter-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 0.9rem;
+    color: #495057;
+    min-width: 140px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #1976d2;
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #adb5bd;
+    }
+
+    &:disabled {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+
+  .direction-btn {
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #495057;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #e9ecef;
+      border-color: #adb5bd;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #dee2e6;
+    }
+
+    &:disabled {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    span {
+      line-height: 1;
+      font-weight: bold;
+    }
+  }
+
+  .reset-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #5a6268;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #545b62;
+    }
+
+    &:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}
+
+// Loading State
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+// No Results State
+.no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+
+  .no-results-content {
+    text-align: center;
+    color: #6c757d;
+
+    h3 {
+      margin: 0 0 0.5rem;
+      color: #495057;
+    }
+
+    p {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+    }
+
+    .reset-btn {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #1565c0;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .controls-panel {
+    .controls-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .control-group {
+      justify-content: space-between;
+
+      &:has(.direction-btn) {
+        justify-content: center;
+      }
+    }
+
+    .sort-select,
+    .filter-select {
+      min-width: auto;
+      flex: 1;
+    }
+  }
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

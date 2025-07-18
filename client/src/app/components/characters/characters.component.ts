@@ -8,6 +8,17 @@ import { PinyinService } from '../../services/pinyin.service';
 import { FlashcardService } from '../../services/flashcard.service';
 import { EasinessColorService } from '../../services/easiness-color.service';
 
+// Supporting Types for Sorting and Filtering
+type SortOption =
+  | 'id'
+  | 'frequency'
+  | 'difficulty'
+  | 'learnedDate'
+  | 'dueStatus'
+  | 'character'
+  | 'pinyin';
+type LearningFilter = 'all' | 'learned' | 'notLearned';
+
 @Component({
   selector: 'app-characters',
   standalone: true,
@@ -28,6 +39,12 @@ export class CharactersComponent implements OnInit {
   radicalProps: RadicalProp[] = [];
   userStoryInput: string = '';
   generatedImageUrl: string | null = null;
+
+  // Sorting and Filtering State
+  sortBy: SortOption = 'id';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  learningFilter: LearningFilter = 'all';
+  filteredCharacters: CharacterDTO[] = [];
 
   constructor(
     private dataService: DataService,
@@ -54,7 +71,8 @@ export class CharactersComponent implements OnInit {
     this.error = null;
 
     this.dataService.getCharacters().subscribe(characters => {
-      this.characters = characters.sort((a, b) => b.id - a.id);
+      this.characters = characters;
+      this.updateFilteredCharacters();
       this.isLoading = false;
     });
   }
@@ -181,6 +199,8 @@ export class CharactersComponent implements OnInit {
           this.characters[charIndex] = response;
           this.selectedCharacter = response;
         }
+        // Update filtered characters since learning status changed
+        this.updateFilteredCharacters();
         this.isStartingLearning = false;
       },
       error: error => {
@@ -209,5 +229,147 @@ export class CharactersComponent implements OnInit {
       };
     }
     return this.easinessColorService.getTextColor(char.easinessFactor);
+  }
+
+  // Core Sorting and Filtering Logic
+  private applySorting(characters: CharacterDTO[]): CharacterDTO[] {
+    return characters.sort((a, b) => {
+      let comparison = 0;
+
+      switch (this.sortBy) {
+        case 'frequency':
+          const aFreq = a.freq || Infinity;
+          const bFreq = b.freq || Infinity;
+          comparison = aFreq - bFreq;
+          break;
+
+        case 'difficulty':
+          const aEase = a.easinessFactor || 0;
+          const bEase = b.easinessFactor || 0;
+          comparison = aEase - bEase;
+          break;
+
+        case 'learnedDate':
+          const aDate = a.lastReviewDate ? new Date(a.lastReviewDate).getTime() : 0;
+          const bDate = b.lastReviewDate ? new Date(b.lastReviewDate).getTime() : 0;
+          comparison = bDate - aDate;
+          break;
+
+        case 'dueStatus':
+          // Due for review first, then by next review date
+          if (a.dueForReview && !b.dueForReview) return -1;
+          if (!a.dueForReview && b.dueForReview) return 1;
+
+          const aNext = a.nextReviewDate ? new Date(a.nextReviewDate).getTime() : Infinity;
+          const bNext = b.nextReviewDate ? new Date(b.nextReviewDate).getTime() : Infinity;
+          comparison = aNext - bNext;
+          break;
+
+        case 'character':
+          comparison = a.character.localeCompare(b.character);
+          break;
+
+        case 'pinyin':
+          const aPinyin = a.pinyin || '';
+          const bPinyin = b.pinyin || '';
+          comparison = aPinyin.localeCompare(bPinyin);
+          break;
+
+        case 'id':
+        default:
+          comparison = a.id - b.id;
+          break;
+      }
+
+      return this.sortDirection === 'desc' ? -comparison : comparison;
+    });
+  }
+
+  private applyFilters(characters: CharacterDTO[]): CharacterDTO[] {
+    return characters.filter(char => {
+      switch (this.learningFilter) {
+        case 'learned':
+          return !!char.lastReviewDate;
+        case 'notLearned':
+          return !char.lastReviewDate;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+  }
+
+  private updateFilteredCharacters(): void {
+    let filtered = this.applyFilters(this.characters);
+    this.filteredCharacters = this.applySorting(filtered);
+  }
+
+  // Public methods for UI to trigger sorting/filtering changes
+  onSortByChange(sortBy: SortOption): void {
+    this.sortBy = sortBy;
+    this.updateFilteredCharacters();
+  }
+
+  onSortDirectionToggle(): void {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.updateFilteredCharacters();
+  }
+
+  onLearningFilterChange(filter: LearningFilter): void {
+    this.learningFilter = filter;
+    this.updateFilteredCharacters();
+  }
+
+  onResetFilters(): void {
+    this.sortBy = 'id';
+    this.sortDirection = 'desc';
+    this.learningFilter = 'all';
+    this.updateFilteredCharacters();
+  }
+
+  // Helper methods for UI display
+  getSortOptionLabel(sortBy: SortOption): string {
+    const labels: Record<SortOption, string> = {
+      id: 'Creation Order',
+      frequency: 'Frequency',
+      difficulty: 'Difficulty',
+      learnedDate: 'Learned Date',
+      dueStatus: 'Due Status',
+      character: 'Character (A-Z)',
+      pinyin: 'Pinyin (A-Z)',
+    };
+    return labels[sortBy];
+  }
+
+  getSortDirectionLabel(): string {
+    if (this.sortBy === 'frequency') {
+      return this.sortDirection === 'asc' ? 'Most Common First' : 'Least Common First';
+    }
+    if (this.sortBy === 'difficulty') {
+      return this.sortDirection === 'asc' ? 'Easiest First' : 'Hardest First';
+    }
+    if (this.sortBy === 'learnedDate') {
+      return this.sortDirection === 'desc' ? 'Recently Learned First' : 'Oldest Learned First';
+    }
+    return this.sortDirection === 'desc' ? 'Descending' : 'Ascending';
+  }
+
+  getFilteredCharactersStatus(): string {
+    const total = this.characters.length;
+    const filtered = this.filteredCharacters.length;
+
+    if (filtered === total) {
+      return `All ${total} characters`;
+    }
+
+    if (this.learningFilter === 'learned') {
+      return `${filtered} learned characters`;
+    }
+
+    if (this.learningFilter === 'notLearned') {
+      return `${filtered} not learned characters`;
+    }
+
+    return `${filtered} of ${total} characters`;
   }
 }

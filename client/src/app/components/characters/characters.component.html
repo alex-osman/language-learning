@@ -1,8 +1,77 @@
 <div class="section characters">
   <h2>Characters Progress</h2>
-  <h4>{{ characters.length }} characters</h4>
-  <div class="grid">
-    <ng-container *ngFor="let char of characters">
+  <h4>{{ getFilteredCharactersStatus() }}</h4>
+
+  <!-- Sorting & Filtering Controls -->
+  <div class="controls-panel">
+    <div class="controls-row">
+      <div class="control-group">
+        <label for="sortBy">Sort By:</label>
+        <select
+          id="sortBy"
+          [(ngModel)]="sortBy"
+          (ngModelChange)="onSortByChange($event)"
+          class="sort-select"
+          [disabled]="isLoading"
+        >
+          <option value="id">Creation Order</option>
+          <option value="frequency">Frequency</option>
+          <option value="difficulty">Difficulty</option>
+          <option value="learnedDate">Learned Date</option>
+          <option value="dueStatus">Due Status</option>
+          <option value="character">Character (A-Z)</option>
+          <option value="pinyin">Pinyin (A-Z)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <button
+          class="direction-btn"
+          (click)="onSortDirectionToggle()"
+          [title]="getSortDirectionLabel()"
+          [disabled]="isLoading"
+          [attr.aria-label]="'Sort direction: ' + getSortDirectionLabel()"
+        >
+          <span *ngIf="sortDirection === 'desc'">↓</span>
+          <span *ngIf="sortDirection === 'asc'">↑</span>
+        </button>
+      </div>
+
+      <div class="control-group">
+        <label for="learningFilter">Show:</label>
+        <select
+          id="learningFilter"
+          [(ngModel)]="learningFilter"
+          (ngModelChange)="onLearningFilterChange($event)"
+          class="filter-select"
+          [disabled]="isLoading"
+        >
+          <option value="all">All Characters</option>
+          <option value="learned">Learned Only</option>
+          <option value="notLearned">Not Learned</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <button
+          class="reset-btn"
+          (click)="onResetFilters()"
+          title="Reset to default sorting and show all characters"
+          [disabled]="isLoading"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading characters...</p>
+  </div>
+
+  <div class="grid" *ngIf="!isLoading">
+    <ng-container *ngFor="let char of filteredCharacters">
       <div
         class="cell"
         [class.has-data]="hasCharacterData(char)"
@@ -37,6 +106,16 @@
         </div>
       </div>
     </ng-container>
+
+    <!-- No Results State -->
+    <div *ngIf="filteredCharacters.length === 0" class="no-results">
+      <div class="no-results-content">
+        <h3>No characters found</h3>
+        <p *ngIf="learningFilter === 'learned'">No characters have been learned yet.</p>
+        <p *ngIf="learningFilter === 'notLearned'">All characters have been learned!</p>
+        <button class="reset-btn" (click)="onResetFilters()">Show All Characters</button>
+      </div>
+    </div>
   </div>
 
   <!-- Movie Scene Info Panel -->
