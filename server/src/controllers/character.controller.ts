@@ -90,6 +90,7 @@ export class CharacterController {
       const updatedCharacter = await this.characterService.update(characterId, {
         movie: movieData.movie,
         imgUrl: movieData.imageUrl,
+        learnedDate: new Date(),
       });
 
       if (!updatedCharacter) {

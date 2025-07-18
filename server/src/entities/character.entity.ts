@@ -23,6 +23,9 @@ export class Character {
   @Column({ type: 'varchar', length: 200, nullable: true })
   imgUrl: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  learnedDate: Date;
+
   @Column({ type: 'int', default: 0 })
   freq: number;
 
