@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Scene } from './scene.entity';
 
 @Entity('sentences')
 export class Sentence {
@@ -33,9 +40,19 @@ export class Sentence {
   @Column({ type: 'int', nullable: true })
   interval: number;
 
+  @Column({ type: 'int', nullable: true })
+  startMs: number;
+
+  @Column({ type: 'int', nullable: true })
+  endMs: number;
+
   @Column({ type: 'date', nullable: true })
   nextReviewDate: Date;
 
   @Column({ type: 'date', nullable: true })
   lastReviewDate: Date;
+
+  @ManyToOne(() => Scene, (scene) => scene.sentences, { nullable: true })
+  @JoinColumn({ name: 'scene_id' })
+  scene: Scene;
 }

@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FlashcardService } from '../../services/flashcard.service';
 import { CharacterDTO } from '../../services/data.service';
 import { PinyinService } from '../../services/pinyin.service';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-flashcards',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProgressIndicatorComponent],
   templateUrl: './flashcards.component.html',
   styleUrls: ['./flashcards.component.scss'],
 })

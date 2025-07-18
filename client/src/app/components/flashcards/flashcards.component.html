@@ -19,20 +19,14 @@
         }}
         cards reviewed
       </p>
-      <div
-        class="progress-bar"
-        role="progressbar"
-        [attr.aria-valuenow]="reviewStats.correct + reviewStats.incorrect"
-        [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="reviewStats.totalDue"
-      >
-        <div
-          class="progress"
-          [style.width.%]="
-            ((reviewStats.correct + reviewStats.incorrect) / reviewStats.totalDue) * 100
-          "
-        ></div>
-      </div>
+      <app-progress-indicator
+        type="linear"
+        [value]="((reviewStats.correct + reviewStats.incorrect) / reviewStats.totalDue) * 100"
+        theme="primary"
+        [height]="12"
+        [showLabel]="false"
+        [animated]="true"
+      ></app-progress-indicator>
     </div>
 
     <div

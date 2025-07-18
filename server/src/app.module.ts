@@ -19,13 +19,16 @@ import { CharacterController } from './controllers/character.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SentenceAnalyzerController } from './controllers/sentence-analyzer.controller';
+import { SentenceFlashcardController } from './controllers/sentence-flashcard.controller';
 import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
+import { SceneController } from './controllers/scene.controller';
+import { EpisodeController } from './controllers/episode.controller';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'dist', 'browser'),
+      rootPath: join(__dirname, '..', '..', '..', 'client', 'dist', 'browser'),
     }),
     MulterModule.register({
       storage: memoryStorage(),
@@ -40,11 +43,14 @@ import { CoreModule } from './core/core.module';
   controllers: [
     DataController,
     AiController,
+    SceneController,
+    EpisodeController,
     FlashcardController,
     SentenceController,
     WordsController,
     CharacterController,
     SentenceAnalyzerController,
+    SentenceFlashcardController,
   ],
   providers: [
     AppService,

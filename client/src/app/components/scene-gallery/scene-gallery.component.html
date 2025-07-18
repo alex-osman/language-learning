@@ -1,0 +1,46 @@
+<div class="scene-gallery">
+  <!-- Scene Card Header (Mock Style) -->
+  <div class="scene-header-card">
+    <div class="scene-header-info">
+      <div class="scene-title">Scene 3 of 26</div>
+      <div class="scene-subtitle">Bus Ride</div>
+      <div class="scene-progress-bar-container">
+        <div class="scene-progress-bar">
+          <div class="scene-progress-bar-fill" style="width: 60%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sentence-thumbnails-row">
+      <div class="sentence-thumbnail" *ngFor="let n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/en/e/e6/Peppa_Pig_characters.png"
+          alt="Sentence {{ n }}"
+        />
+        <span class="sentence-number">{{ n }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="completion-stats">Sentences completed: 16 out of 374</div>
+
+  <h2>Scenes</h2>
+  <div *ngIf="isLoading" class="loading">Loading scenes...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="scene-list" *ngIf="!isLoading && !error && scenes.length > 0">
+    <div class="scene-card" *ngFor="let scene of scenes" (click)="onSceneClick(scene)">
+      <div class="scene-info">
+        <h3>{{ scene.title }}</h3>
+        <div class="progress-bar-container" *ngIf="scene.knownCache">
+          <app-progress-indicator
+            type="linear"
+            [value]="scene.knownCache"
+            theme="purple"
+            [height]="10"
+            [showLabel]="true"
+            labelText="known"
+          ></app-progress-indicator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

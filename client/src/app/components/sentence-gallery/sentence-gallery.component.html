@@ -1,66 +1,34 @@
 <div class="sentence-gallery">
-  <div class="gallery-header">
-    <h2>Sentence Gallery</h2>
+  <h2>Sentences</h2>
 
-    <div class="controls">
-      <div class="search-container">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          placeholder="Search sentences..."
-          (input)="onSearch()"
-        />
-        <button *ngIf="searchTerm" class="clear-btn" (click)="clearSearch()">×</button>
-      </div>
+  <div *ngIf="isLoading" class="loading">Loading sentences...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
 
-      <div class="filter-buttons">
-        <button [class.active]="currentFilter === 'all'" (click)="setFilter('all')">
-          All Sentences
-        </button>
-        <button [class.active]="currentFilter === 'due'" (click)="setFilter('due')">
-          Due for Review
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="isLoading" class="loading">
-    <div class="spinner"></div>
-    <p>Loading sentences...</p>
-  </div>
-
-  <div *ngIf="error" class="error-message">
-    <p>{{ error }}</p>
-  </div>
-
-  <div *ngIf="!isLoading && !error" class="sentences-list">
-    <div *ngIf="filteredSentences.length === 0" class="no-results">
-      <p>No sentences found matching your criteria.</p>
+  <div class="sentences-list" *ngIf="!isLoading && !error">
+    <div *ngIf="sentences.length === 0" class="no-results">
+      <p>No sentences found for this scene.</p>
     </div>
 
-    <div
-      *ngFor="let sentence of filteredSentences"
-      class="sentence-card"
-      (click)="viewSentenceDetail(sentence.id)"
-    >
-      <div class="sentence-header">
-        <span class="sentence-id">#{{ sentence.id }}</span>
-        <span *ngIf="sentence.level" class="level-badge" [ngClass]="getLevelClass(sentence.level)">
-          Level {{ sentence.level }}
-        </span>
-        <span *ngIf="sentence.dueForReview" class="due-badge">Due for Review</span>
-      </div>
-
+    <div *ngFor="let sentence of sentences" class="sentence-card">
       <div class="sentence-content">
         <p class="chinese">{{ sentence.sentence }}</p>
-        <p class="pinyin">{{ sentence.pinyin }}</p>
+        <p class="pinyin" *ngIf="sentence.pinyin">{{ sentence.pinyin }}</p>
         <p class="translation">{{ sentence.translation }}</p>
       </div>
 
-      <div class="sentence-footer">
-        <span class="audio-indicator" (click)="playAudio(sentence.id)">
-          <i class="audio-icon">🔊</i>
-        </span>
+      <div class="sentence-content">
+        <div class="sentence-progress" *ngIf="sentenceAnalysisData[sentence.id]">
+          <div class="progress-section">
+            <app-progress-indicator
+              type="linear"
+              [value]="sentenceAnalysisData[sentence.id].known_percent"
+              theme="success"
+              [height]="8"
+              [showLabel]="true"
+              labelText="known"
+            ></app-progress-indicator>
+          </div>
+        </div>
       </div>
     </div>
   </div>

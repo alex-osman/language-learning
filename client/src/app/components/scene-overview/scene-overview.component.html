@@ -1,0 +1,73 @@
+<div class="scene-overview">
+  <!-- Header -->
+  <div class="header">
+    <h1>Scene Overview</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading scene data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!isLoading && !error && sceneData">
+    <!-- Scene Card -->
+    <div class="scene-card" (click)="toggleVideoPlayPause()">
+      <div class="scene-image">
+        <!-- <img src="assets/images/episode_3.png" [alt]="sceneData.title" /> -->
+        <video #sceneVideo [src]="sceneData.assetUrl" loop></video>
+      </div>
+      <div class="scene-info">
+        <h2>{{ sceneData.title }}</h2>
+        <p>{{ sceneData.percentUnderstood }}% understood</p>
+        <p>{{ sceneData.newSentencesCount }} new sentences</p>
+      </div>
+      <div class="progress-circle">
+        <app-progress-indicator
+          type="circular"
+          [value]="sceneData.percentUnderstood"
+          theme="warning"
+          [size]="80"
+          [strokeWidth]="8"
+          [showLabel]="true"
+        ></app-progress-indicator>
+      </div>
+    </div>
+
+    <!-- Sentence Gallery -->
+    <div class="sentence-gallery">
+      <h3>Sentence gallery</h3>
+      <div class="sentences-list">
+        <div
+          *ngFor="let sentence of sceneData.sentences"
+          class="sentence-card"
+          (click)="goToTimestamp(sentence.startMs)"
+        >
+          <div class="sentence-content">
+            <p class="chinese">{{ sentence.chinese }}</p>
+            <div class="sentence-meta">
+              <app-progress-indicator
+                type="linear"
+                [value]="sentence.percentKnown"
+                theme="success"
+                [height]="6"
+                [showLabel]="true"
+                labelText="known"
+              ></app-progress-indicator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Sticky Footer -->
+  <div class="footer" *ngIf="!isLoading && !error">
+    <button class="start-practice-btn" (click)="startPractice()">Start Practice</button>
+  </div>
+</div>

@@ -1,0 +1,271 @@
+<div class="sentence-flashcards-container">
+  <!-- Header -->
+  <button class="back-btn" (click)="goBackToScene()" aria-label="Back to scene">
+    ← Back to Scene
+  </button>
+  <div class="header">
+    <h1>{{ title }}</h1>
+    <p class="subtitle">Watch, Listen, and Practice</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading scene and sentences...</p>
+  </div>
+
+  <!-- Review in Progress -->
+  <div
+    *ngIf="isReviewing && currentSentence"
+    class="review-container"
+    [class.flipped-mode]="isFlipped"
+    [class.video-playing]="isVideoPlaying"
+    [class.waiting-for-input]="isWaitingForUserInput"
+  >
+    <div class="review-progress">
+      <p>{{ reviewStats.current }} of {{ reviewStats.total }} sentences</p>
+      <app-progress-indicator
+        type="linear"
+        [value]="(reviewStats.current / reviewStats.total) * 100"
+        theme="primary"
+        [height]="12"
+        [showLabel]="false"
+        [animated]="true"
+      ></app-progress-indicator>
+    </div>
+
+    <!-- Video Player Section -->
+    <div class="video-container" [class.playing]="isVideoPlaying">
+      <video #sceneVideo [src]="assetUrl" [muted]="false" [autoplay]="true"></video>
+
+      <!-- Video Controls -->
+      <div class="video-controls" *ngIf="sentencePlaybackCompleted && !isFlipped">
+        <button
+          class="replay-btn"
+          (click)="replayVideoSegment()"
+          [disabled]="isProcessingReview"
+          aria-label="Replay video segment"
+        >
+          🔁 Replay
+        </button>
+      </div>
+    </div>
+
+    <!-- Sentence Flashcard -->
+    <div
+      class="flashcard"
+      [class.flipped]="isFlipped"
+      [class.processing]="isProcessingReview"
+      [class.ready-for-input]="canRevealAnswer"
+      [class.video-playing]="isVideoPlaying"
+      role="button"
+      [attr.aria-label]="
+        canRevealAnswer
+          ? 'Sentence flashcard - click reveal answer to see translation'
+          : 'Sentence flashcard - wait for video to complete'
+      "
+    >
+      <div class="flashcard-inner">
+        <!-- Front of card (Chinese sentence) -->
+        <div class="flashcard-front">
+          <div class="video-instruction" *ngIf="isVideoPlaying">
+            <p class="instruction-text">🎬 Watch and listen...</p>
+          </div>
+
+          <div
+            class="sentence-chinese"
+            [class.processing]="isProcessingReview"
+            [class.highlighted]="sentencePlaybackCompleted"
+          >
+            {{ currentSentence.sentence }}
+          </div>
+
+          <!-- Action buttons based on state -->
+          <div class="flashcard-actions">
+            <div *ngIf="isVideoPlaying" class="waiting-message">
+              <p>Video is playing...</p>
+            </div>
+
+            <div *ngIf="canRevealAnswer && !isFlipped" class="reveal-section">
+              <p class="hint">How well do you understand this sentence?</p>
+              <button
+                class="reveal-btn"
+                (click)="revealAnswer()"
+                [disabled]="isProcessingReview"
+                aria-label="Reveal answer"
+              >
+                Reveal Answer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back of card (Full translation) -->
+        <div class="flashcard-back" [class.processing]="isProcessingReview">
+          <div class="sentence-chinese">{{ currentSentence.sentence }}</div>
+          <div class="sentence-pinyin">{{ currentSentence.pinyin }}</div>
+          <div class="sentence-translation">{{ currentSentence.translation }}</div>
+
+          <div class="audio-section">
+            <button
+              class="audio-btn"
+              (click)="playAudio()"
+              [disabled]="isProcessingReview"
+              aria-label="Play audio pronunciation"
+            >
+              🔊 Play Audio
+            </button>
+            <button
+              class="replay-video-btn"
+              (click)="replayVideoSegment()"
+              [disabled]="isProcessingReview"
+              aria-label="Replay video segment"
+            >
+              🎬 Replay Video
+            </button>
+            <button
+              class="analyze-btn"
+              (click)="toggleAnalysis()"
+              [disabled]="isProcessingReview || isAnalyzing"
+              aria-label="Analyze characters"
+            >
+              📊 {{ isAnalyzing ? 'Analyzing...' : showAnalysis ? 'Hide Analysis' : 'Analyze' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Character Analysis Section -->
+    <div class="analysis-overlay" *ngIf="showAnalysis" (click)="closeAnalysis()">
+      <div class="analysis-modal" (click)="$event.stopPropagation()">
+        <div class="analysis-header">
+          <h3>Character Analysis</h3>
+          <button class="close-btn" (click)="closeAnalysis()" aria-label="Close analysis">✕</button>
+        </div>
+
+        <div class="analysis-content">
+          <app-character-analysis
+            [analysisResults]="analysisResults"
+            [totalCharacters]="analysisStats.totalCharacters"
+            [knownCharacters]="analysisStats.knownCharacters"
+            [unknownCharacters]="analysisStats.unknownCharacters"
+            [knownPercentage]="analysisStats.knownPercentage"
+            [isLoading]="isAnalyzing"
+            [error]="analysisError"
+            [showStats]="true"
+            [compact]="true"
+          ></app-character-analysis>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating buttons that appear when card is flipped -->
+    <div class="review-actions-wrapper" *ngIf="isFlipped" [class.processing]="isProcessingReview">
+      <div class="review-actions-content">
+        <p class="rating-prompt">How well did you understand this sentence?</p>
+        <div class="rating-buttons-compact" [class.disabled]="isProcessingReview">
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(0)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 0"
+            aria-label="0 - Complete illusion"
+          >
+            <span class="rating-number">0</span>
+            <span class="rating-text">Didn't understand</span>
+          </button>
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(1)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 1"
+            aria-label="1 - Remembered with help"
+          >
+            <span class="rating-number">1</span>
+            <span class="rating-text">Barely understood</span>
+          </button>
+          <button
+            class="rating-btn bad"
+            (click)="submitReview(2)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 2"
+            aria-label="2 - Incorrect but seems easy"
+          >
+            <span class="rating-number">2</span>
+            <span class="rating-text">Partially understood</span>
+          </button>
+          <button
+            class="rating-btn ok"
+            (click)="submitReview(3)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 3"
+            aria-label="3 - Correct by thinking"
+          >
+            <span class="rating-number">3</span>
+            <span class="rating-text">Understood with effort</span>
+          </button>
+          <button
+            class="rating-btn good"
+            (click)="submitReview(4)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 4"
+            aria-label="4 - Correct with hesitation"
+          >
+            <span class="rating-number">4</span>
+            <span class="rating-text">Understood easily</span>
+          </button>
+          <button
+            class="rating-btn perfect"
+            (click)="submitReview(5)"
+            [disabled]="isProcessingReview"
+            [class.selected]="selectedRating === 5"
+            aria-label="5 - Perfect recall"
+          >
+            <span class="rating-number">5</span>
+            <span class="rating-text">Perfect understanding</span>
+          </button>
+        </div>
+        <div *ngIf="isProcessingReview" class="processing-indicator">
+          <div class="spinner"></div>
+          <p>Processing your response...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Completed -->
+  <div *ngIf="reviewCompleted" class="review-completed">
+    <div class="completion-message">
+      <h2>🎉 Scene Practice Complete!</h2>
+      <p>
+        You've practiced all {{ reviewStats.total }} sentences from this scene with video context.
+      </p>
+      <div class="completion-stats">
+        <div class="stat">
+          <span class="stat-number">{{ reviewStats.correct }}</span>
+          <span class="stat-label">Well Understood</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">{{ reviewStats.incorrect }}</span>
+          <span class="stat-label">Need More Practice</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number"
+            >{{ Math.round((reviewStats.correct / reviewStats.total) * 100) }}%</span
+          >
+          <span class="stat-label">Comprehension</span>
+        </div>
+      </div>
+      <button class="completion-btn" (click)="goBackToScene()">Back to Scene</button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-message">
+      <h3>⚠️ Error</h3>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadSceneSentences()">Retry</button>
+    </div>
+  </div>
+</div>

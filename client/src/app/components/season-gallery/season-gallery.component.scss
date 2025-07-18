@@ -1,0 +1,48 @@
+.season-gallery {
+  padding: 2rem;
+}
+
+.season-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.season-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  border: 1px solid #eee;
+}
+
+.season-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.season-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.progress-bar-container {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.loading,
+.error {
+  margin-top: 2rem;
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+}

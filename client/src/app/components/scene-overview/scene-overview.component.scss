@@ -1,0 +1,356 @@
+.scene-overview {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+// Loading and Error States
+.loading-state,
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+
+  p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.error-state p {
+  color: #d32f2f;
+}
+
+// Header
+.header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+
+  h1 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+// Main Content Container
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  flex: 1;
+}
+
+// Scene Card
+.scene-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .scene-image {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .scene-info {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    p {
+      margin: 4px 0;
+      font-size: 16px;
+      color: #666;
+    }
+  }
+
+  .progress-circle {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sentence-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+// Sentence Gallery
+.sentence-gallery {
+  padding: 20px;
+  flex: 1;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .sentences-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .sentence-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      .sentence-content {
+        .chinese {
+          margin: 0 0 8px 0;
+          font-size: 18px;
+          font-weight: 500;
+          color: #333;
+          line-height: 1.4;
+        }
+
+        .sentence-meta {
+          display: flex;
+          gap: 16px;
+          font-size: 14px;
+          color: #666;
+
+          .percent-known {
+            font-weight: 500;
+          }
+
+          .status {
+            color: #999;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Sticky Footer (Mobile)
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+
+  .start-practice-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Desktop Layout
+@media (min-width: 1024px) {
+  .scene-overview {
+    padding-bottom: 0; // Remove bottom padding for desktop
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .header {
+    padding: 20px 0;
+
+    h1 {
+      font-size: 28px;
+    }
+  }
+
+  .scene-card {
+    margin: 0 0 40px 0;
+    padding: 30px;
+
+    .scene-image {
+      width: 120px;
+      height: 120px;
+    }
+
+    .scene-info {
+      h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+      }
+
+      p {
+        font-size: 18px;
+        margin: 6px 0;
+      }
+    }
+
+    .progress-circle {
+      svg {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .sentence-gallery {
+      padding: 0 0 40px 0;
+
+      h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .sentences-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+
+        .sentence-card {
+          padding: 20px;
+
+          .sentence-content {
+            .chinese {
+              font-size: 20px;
+              margin-bottom: 12px;
+            }
+
+            .sentence-meta {
+              font-size: 16px;
+              gap: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Desktop Footer
+  .footer {
+    position: static;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-top: 20px;
+
+    .start-practice-btn {
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+      padding: 20px 32px;
+      font-size: 20px;
+    }
+  }
+}
+
+// Responsive design for tablets
+@media (max-width: 768px) {
+  .scene-card {
+    margin: 16px;
+    padding: 16px;
+
+    .scene-image {
+      width: 60px;
+      height: 60px;
+    }
+
+    .scene-info h2 {
+      font-size: 20px;
+    }
+
+    .progress-circle {
+      svg {
+        width: 60px;
+        height: 60px;
+      }
+
+      .progress-text {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .content-container {
+    margin: 0 16px;
+    padding: 0;
+  }
+
+  .unique-characters,
+  .sentence-gallery {
+    margin: 0 0 16px 0;
+  }
+
+  // Hide desktop footer on mobile
+  .right-column .footer {
+    display: none;
+  }
+}

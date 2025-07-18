@@ -262,3 +262,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
