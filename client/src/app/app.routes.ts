@@ -12,8 +12,20 @@ import { EpisodeGalleryComponent } from './components/episode-gallery/episode-ga
 import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
 import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
+import { LoginComponent } from './components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [authGuard],
+  },
   {
     path: 'sentences',
     component: SentenceDisplayComponent,
@@ -74,11 +86,11 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/flashcards',
+    redirectTo: '/login',
     pathMatch: 'full',
   },
   {
     path: '**',
-    redirectTo: '/flashcards',
+    redirectTo: '/memory-palace',
   },
 ];

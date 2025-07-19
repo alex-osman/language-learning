@@ -49,6 +49,21 @@
     }
   }
 
+  .logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
+
   .mobile-menu-toggle {
     display: none;
     flex-direction: column;
@@ -94,6 +109,11 @@
     a {
       padding: 0.4rem 0.8rem;
       margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      padding: 0.4rem 0.8rem;
       font-size: 0.9rem;
     }
   }
@@ -150,6 +170,12 @@
           margin-bottom: 0;
         }
       }
+
+      .logout-btn {
+        margin-top: 0.75rem;
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+      }
     }
   }
 }
@@ -165,6 +191,11 @@
 
     .nav-links {
       a {
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+
+      .logout-btn {
         padding: 0.8rem;
         font-size: 1rem;
       }

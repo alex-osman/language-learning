@@ -1,4 +1,4 @@
-<nav class="main-nav">
+<nav class="main-nav" *ngIf="authService.isAuthenticated$ | async">
   <div class="nav-container">
     <div class="logo">
       <span>Language Learning</span>
@@ -23,6 +23,8 @@
       <a routerLink="/interactive" routerLinkActive="active">Chinese</a>
       <a routerLink="/media" routerLinkActive="active">Media</a>
       <a routerLink="/learning" routerLinkActive="active">Learning</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <button (click)="logout()" class="logout-btn">Logout</button>
     </div>
   </div>
 </nav>

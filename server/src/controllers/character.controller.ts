@@ -10,6 +10,8 @@ import {
   Put,
   UseInterceptors,
   UploadedFile,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
 import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
@@ -17,6 +19,7 @@ import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MovieAiService } from '../ai/services/movie.service';
 import { UserID } from 'src/decorators/user.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('api/characters')
 export class CharacterController {
@@ -29,6 +32,7 @@ export class CharacterController {
   ) {}
 
   @Get('next-for-movie')
+  @UseGuards(AuthGuard)
   async getNextCharacterForMovie(
     @UserID() userId: number,
   ): Promise<CharacterDTO> {

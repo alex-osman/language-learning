@@ -10,7 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -21,7 +21,6 @@ export class AuthController {
   }
 
   @Get('profile')
-  @UseGuards(AuthGuard)
   async getProfile(@Request() req) {
     return req.user;
   }

@@ -26,6 +26,8 @@ import { SceneController } from './controllers/scene.controller';
 import { EpisodeController } from './controllers/episode.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -64,6 +66,10 @@ import { UsersModule } from './users/users.module';
     CritiqueAiService,
     ConversationService,
     MovieAiService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class AppModule {}
