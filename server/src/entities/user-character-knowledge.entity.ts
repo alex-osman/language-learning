@@ -28,13 +28,13 @@ export class UserCharacterKnowledge {
   interval: number;
 
   @Column({ type: 'timestamp', nullable: true })
-  lastReviewDate: Date;
+  lastReviewDate?: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  nextReviewDate: Date;
+  nextReviewDate?: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  learnedDate: Date;
+  learnedDate?: Date;
 
   @Column({ type: 'text', nullable: true })
   movie: string;

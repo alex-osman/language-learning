@@ -70,7 +70,7 @@ export class DataController {
 
   @Get('characters')
   getCharacters(@UserID() userId: number): Promise<CharacterDTO[]> {
-    return this.characterService.getAllCharacterDTOs(userId);
+    return this.characterService.getAllCharacterDTOs(userId, 15);
   }
 
   @Post('actors')

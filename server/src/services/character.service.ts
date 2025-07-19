@@ -24,7 +24,10 @@ export class CharacterService {
     private userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
-  async getAllCharacterDTOs(userId: number): Promise<CharacterDTO[]> {
+  async getAllCharacterDTOs(
+    userId: number,
+    additionalCount?: number,
+  ): Promise<CharacterDTO[]> {
     const charactersWithKnowledge = await this.characterRepository
       .createQueryBuilder('character')
       .leftJoin(
@@ -35,19 +38,23 @@ export class CharacterService {
       .where('userCharacterKnowledge.userID = :userId', { userId })
       .getMany();
 
-    const latestChar = charactersWithKnowledge[0];
+    const latestChar = charactersWithKnowledge.sort((a, b) => b.id - a.id)[0];
     if (!latestChar) {
       return [];
     }
-    const additional = await this.characterRepository.find({
-      where: {
-        id: MoreThan(latestChar.id),
-      },
-      order: {
-        id: 'ASC',
-      },
-      take: 15,
-    });
+
+    let additional: Character[] = [];
+    if (additionalCount) {
+      additional = await this.characterRepository.find({
+        where: {
+          id: MoreThan(latestChar.id),
+        },
+        order: {
+          id: 'ASC',
+        },
+        take: additionalCount,
+      });
+    }
     return Promise.all(
       [...charactersWithKnowledge, ...additional].map(async (item) =>
         this.makeCharacterDTO(item, userId),
@@ -77,12 +84,9 @@ export class CharacterService {
     let userKnowledge: UserCharacterKnowledge = {
       movie: '',
       imgUrl: '',
-      learnedDate: new Date(),
       easinessFactor: 2.5,
       repetitions: 0,
       interval: 0,
-      nextReviewDate: new Date(),
-      lastReviewDate: new Date(),
       characterID: character.id,
       userID: 0,
       id: 0,
