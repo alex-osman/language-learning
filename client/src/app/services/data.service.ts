@@ -61,6 +61,7 @@ export interface CharacterDTO {
   interval?: number;
   nextReviewDate?: Date;
   lastReviewDate?: Date;
+  learnedDate?: Date;
   dueForReview?: boolean;
 }
 

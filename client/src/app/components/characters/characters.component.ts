@@ -41,8 +41,8 @@ export class CharactersComponent implements OnInit {
   generatedImageUrl: string | null = null;
 
   // Sorting and Filtering State
-  sortBy: SortOption = 'id';
-  sortDirection: 'asc' | 'desc' = 'desc';
+  sortBy: SortOption = 'difficulty';
+  sortDirection: 'asc' | 'desc' = 'asc';
   learningFilter: LearningFilter = 'all';
   filteredCharacters: CharacterDTO[] = [];
   knownCharactersCount: number = 0;

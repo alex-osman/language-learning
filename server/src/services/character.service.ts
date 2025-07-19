@@ -37,7 +37,7 @@ export class CharacterService {
       order: {
         id: 'ASC',
       },
-      take: 500,
+      take: 15,
     });
     return Promise.all(
       [...all, ...additional].map(async (character) =>
