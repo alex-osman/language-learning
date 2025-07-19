@@ -125,7 +125,9 @@ export class CharacterService {
     await this.characterRepository.delete(id);
   }
 
-  async getNextCharacterWithoutMovie(): Promise<CharacterDTO | null> {
+  async getNextCharacterWithoutMovie(
+    userID: number,
+  ): Promise<CharacterDTO | null> {
     const character = await this.characterRepository.findOne({
       where: { movie: IsNull() },
       order: { id: 'ASC' },

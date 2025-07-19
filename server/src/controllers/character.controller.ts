@@ -15,6 +15,7 @@ import { CharacterService } from '../services/character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MovieAiService } from '../ai/services/movie.service';
+import { UserID } from 'src/decorators/user.decorator';
 
 @Controller('api/characters')
 export class CharacterController {
@@ -26,10 +27,12 @@ export class CharacterController {
   ) {}
 
   @Get('next-for-movie')
-  async getNextCharacterForMovie(): Promise<CharacterDTO> {
+  async getNextCharacterForMovie(
+    @UserID() userID: number,
+  ): Promise<CharacterDTO> {
     try {
       const character =
-        await this.characterService.getNextCharacterWithoutMovie();
+        await this.characterService.getNextCharacterWithoutMovie(userID);
 
       if (!character) {
         throw new HttpException(
