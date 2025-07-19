@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CharacterService } from './character.service';
+import { UserCharacterKnowledgeService } from './user-character-knowledge.service';
 import { CharacterDTO } from '../shared/interfaces/data.interface';
 
 interface AnalyzedCharacter {
@@ -23,9 +24,15 @@ const IGNORE_CHARACTERS = ['佩', '西', '苏', '佩', '乔', '治'];
 
 @Injectable()
 export class SentenceAnalyzerService {
-  constructor(private readonly characterService: CharacterService) {}
+  constructor(
+    private readonly characterService: CharacterService,
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
+  ) {}
 
-  async analyzeSentence(text: string): Promise<SentenceAnalysis> {
+  async analyzeSentence(
+    text: string,
+    userId?: number,
+  ): Promise<SentenceAnalysis> {
     // Remove spaces, punctuation, and non-Chinese characters
     const chars = text
       .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
@@ -47,12 +54,31 @@ export class SentenceAnalyzerService {
       uniqueChars.map((char) => this.characterService.findByCharacter(char)),
     );
 
-    // Create a map of known characters (those that have been reviewed)
-    const knownCharacters = new Set(
-      characterData
-        .filter((char) => char && char.lastReviewDate !== null)
-        .map((char) => char!.character),
-    );
+    // Create a map of known characters based on user context
+    let knownCharacters: Set<string>;
+    if (userId) {
+      // Use user-specific learning data
+      const knownCharPromises = characterData
+        .filter((char) => char)
+        .map(async (char) => {
+          const hasReviewed =
+            await this.userCharacterKnowledgeService.hasUserReviewed(
+              userId,
+              char!.id,
+            );
+          return hasReviewed ? char!.character : null;
+        });
+
+      const knownCharResults = await Promise.all(knownCharPromises);
+      knownCharacters = new Set(
+        knownCharResults.filter((char) => char !== null),
+      );
+    } else {
+      // Fallback to global character data (existing behavior)
+      knownCharacters = new Set(
+        characterData.filter((char) => char).map((char) => char!.character),
+      );
+    }
 
     // Analyze each unique character
     const allCharacters = await Promise.all(
@@ -63,7 +89,7 @@ export class SentenceAnalyzerService {
           char,
           known: isKnown,
           charData: charData
-            ? await this.characterService.makeCharacterDTO(charData)
+            ? await this.characterService.makeCharacterDTO(charData, userId)
             : undefined,
           count: charCounts.get(char) || 0,
         };

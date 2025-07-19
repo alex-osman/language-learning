@@ -18,31 +18,31 @@ export class UserCharacterKnowledge {
   @Column({ type: 'int' })
   characterID: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'float', default: 2.5 })
   easinessFactor: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   repetitions: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   interval: number;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   lastReviewDate: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   nextReviewDate: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   learnedDate: Date;
 
   @Column({ type: 'text', nullable: true })
   movie: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'varchar', length: 200, nullable: true })
   imgUrl: string;
 
   @ManyToOne(() => Character)
-  @JoinColumn({ name: 'character_id' })
-  character: Character;
+  @JoinColumn({ name: 'characterID' })
+  character?: Character;
 }

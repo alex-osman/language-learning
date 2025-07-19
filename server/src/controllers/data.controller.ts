@@ -13,6 +13,8 @@ import {
   SetDTO,
   Tone,
 } from '../shared/interfaces/data.interface';
+import { UserID } from 'src/decorators/user.decorator';
+import { UserCharacterKnowledgeService } from 'src/services/user-character-knowledge.service';
 
 @Controller('api/data')
 export class DataController {
@@ -21,6 +23,7 @@ export class DataController {
     private readonly radicalPropService: RadicalPropService,
     private readonly actorService: ActorService,
     private readonly setService: SetService,
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
   @Get('sets')
@@ -66,8 +69,8 @@ export class DataController {
   }
 
   @Get('characters')
-  getCharacters(): Promise<CharacterDTO[]> {
-    return this.characterService.getAllCharacterDTOs();
+  getCharacters(@UserID() userId: number): Promise<CharacterDTO[]> {
+    return this.characterService.getAllCharacterDTOs(userId);
   }
 
   @Post('actors')

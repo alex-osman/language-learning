@@ -21,15 +21,19 @@ export class TemplatePreviewService {
    */
   async buildPreviewSegments(
     mode: 'next' | 'random' = 'next',
+    userId?: number,
   ): Promise<AudioSegment[]> {
     const character =
       mode === 'random'
         ? (
             await this.nextCharacterQueryService.getRandomCharactersForPreview(
               1,
+              userId,
             )
           )[0]
-        : await this.nextCharacterQueryService.getNextCharacterForPreview();
+        : await this.nextCharacterQueryService.getNextCharacterForPreview(
+            userId!,
+          );
 
     if (!character) {
       console.log(
@@ -68,10 +72,13 @@ export class TemplatePreviewService {
     count: number = 5,
     mode: 'next' | 'random' | 'weighted' = 'next',
     latestCharacterId?: number,
+    userId?: number,
   ): Promise<AudioSegment[]> {
     if (!latestCharacterId && mode === 'weighted') {
       const lastCharacter =
-        await this.nextCharacterQueryService.getNextCharacterForPreview();
+        await this.nextCharacterQueryService.getNextCharacterForPreview(
+          userId!,
+        );
       latestCharacterId = lastCharacter?.id;
     }
 

@@ -26,7 +26,7 @@ async function bootstrap() {
     }
 
     console.log('🎙️ Generating AI DJ radio segments with movie context...');
-    const segments = await templateService.buildHardSegments();
+    const segments = await templateService.buildHardSegments(1); // Default to user 1 for standalone script
 
     console.log(
       `🎵 Processing ${segments.length} segments with AI-generated DJ content...`,

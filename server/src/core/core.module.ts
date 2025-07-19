@@ -20,6 +20,7 @@ import { Scene } from 'src/entities/scene.entity';
 import { Episode } from 'src/entities/episode.entity';
 import { EpisodeService } from 'src/services/episode.service';
 import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
+import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.en
     SentenceFlashcardService,
     SceneService,
     EpisodeService,
+    UserCharacterKnowledgeService,
   ],
   exports: [
     CharacterService,
@@ -60,6 +62,7 @@ import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.en
     SentenceFlashcardService,
     SceneService,
     EpisodeService,
+    UserCharacterKnowledgeService,
   ],
 })
 export class CoreModule {}

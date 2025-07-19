@@ -20,10 +20,12 @@ export class RadioBuilderService {
    * 2. Transition Pause - 2 seconds
    * 3. Preview Segment - Next character to learn (if available)
    *
+   * @param userId The user ID for getting user-specific data
    * @param latestCharacterId The ID of the most recently learned character (for weighted random selection)
    * @returns Combined audio segments for complete radio show
    */
   async buildCompleteRadioShow(
+    userId: number,
     latestCharacterId?: number,
   ): Promise<AudioSegment[]> {
     const segments: AudioSegment[] = [];
@@ -32,7 +34,8 @@ export class RadioBuilderService {
 
     // 1. Hard Words Segment
     console.log('📚 Adding hard words segment...');
-    const hardSegments = await this.templateHardService.buildHardSegments();
+    const hardSegments =
+      await this.templateHardService.buildHardSegments(userId);
     segments.push(...hardSegments);
 
     // 2. Preview Segment (if available)
@@ -42,6 +45,7 @@ export class RadioBuilderService {
         3,
         'weighted',
         latestCharacterId,
+        userId,
       );
 
     if (previewSegments.length > 0) {
@@ -60,20 +64,25 @@ export class RadioBuilderService {
   /**
    * Builds only the hard words segment.
    *
+   * @param userId The user ID for getting user-specific data
    * @returns Hard words audio segments
    */
-  async buildHardWordsOnly(): Promise<AudioSegment[]> {
+  async buildHardWordsOnly(userId: number): Promise<AudioSegment[]> {
     console.log('📚 Building hard words segment only...');
-    return await this.templateHardService.buildHardSegments();
+    return await this.templateHardService.buildHardSegments(userId);
   }
 
   /**
    * Builds only the preview segment.
    *
+   * @param userId The user ID for getting user-specific data
    * @returns Preview audio segments, or empty array if no character available
    */
-  async buildPreviewOnly(): Promise<AudioSegment[]> {
+  async buildPreviewOnly(userId: number): Promise<AudioSegment[]> {
     console.log('🔮 Building preview segment only...');
-    return await this.templatePreviewService.buildPreviewSegments();
+    return await this.templatePreviewService.buildPreviewSegments(
+      'next',
+      userId,
+    );
   }
 }

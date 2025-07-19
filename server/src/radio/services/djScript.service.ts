@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { BaseAiService } from '../../ai/services/base-ai.service';
 import { Character } from '../../entities/character.entity';
+import { UserCharacterKnowledgeService } from '../../services/user-character-knowledge.service';
+import { BaseAiService } from '../../ai/services/base-ai.service';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
@@ -13,7 +14,9 @@ export class DjScriptService extends BaseAiService {
     'scripts',
   );
 
-  constructor() {
+  constructor(
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
+  ) {
     super();
     if (!fs.existsSync(this.cacheDir)) {
       fs.mkdirSync(this.cacheDir, { recursive: true });
@@ -56,15 +59,24 @@ export class DjScriptService extends BaseAiService {
     return `${randomPhrase} ${spelledPinyin}, tone ${toneNumber}`;
   }
 
-  async generateMovieContext(character: Character): Promise<string> {
-    const cacheKey = `context_${character.id}`;
+  async generateMovieContext(
+    character: Character,
+    userId: number,
+  ): Promise<string> {
+    const cacheKey = `context_${character.id}_${userId}`;
     const file = path.join(this.cacheDir, `${cacheKey}.txt`);
 
     if (fs.existsSync(file)) {
       return fs.readFileSync(file, 'utf8');
     }
 
-    const movieSnippet = character.movie;
+    // Get user-specific movie data
+    const userKnowledge =
+      await this.userCharacterKnowledgeService.findByUserAndCharacter(
+        userId,
+        character.id,
+      );
+    const movieSnippet = userKnowledge?.movie || '';
 
     const prompt = `You're a witty radio DJ explaining how a Chinese character connects to a memorable movie scene. Help students remember the character through the story.
 

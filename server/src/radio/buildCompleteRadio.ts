@@ -23,7 +23,7 @@ async function bootstrap() {
     }
 
     console.log('📻 Generating complete radio show (Hard Words + Preview)...');
-    const segments = await radioBuilderService.buildCompleteRadioShow();
+    const segments = await radioBuilderService.buildCompleteRadioShow(1); // Default to user 1 for standalone script
 
     console.log(`🎵 Processing ${segments.length} total segments...`);
     const audioFiles: string[] = [];

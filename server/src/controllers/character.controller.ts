@@ -12,6 +12,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
+import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MovieAiService } from '../ai/services/movie.service';
@@ -23,16 +24,17 @@ export class CharacterController {
 
   constructor(
     private readonly characterService: CharacterService,
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
     private readonly movieService: MovieAiService,
   ) {}
 
   @Get('next-for-movie')
   async getNextCharacterForMovie(
-    @UserID() userID: number,
+    @UserID() userId: number,
   ): Promise<CharacterDTO> {
     try {
       const character =
-        await this.characterService.getNextCharacterWithoutMovie(userID);
+        await this.characterService.getNextCharacterWithoutMovie(userId);
 
       if (!character) {
         throw new HttpException(
@@ -65,6 +67,7 @@ export class CharacterController {
   async saveCharacterMovie(
     @Param('id') id: string,
     @Body() movieData: { movie: string; imageUrl?: string },
+    @UserID() userId: number,
   ): Promise<CharacterDTO> {
     try {
       const characterId = parseInt(id, 10);
@@ -78,8 +81,10 @@ export class CharacterController {
         );
       }
 
-      const character =
-        await this.characterService.getOneCharacterDTO(characterId);
+      const character = await this.characterService.getOneCharacterDTO(
+        characterId,
+        userId,
+      );
       if (!character) {
         throw new HttpException(
           {
@@ -90,23 +95,16 @@ export class CharacterController {
         );
       }
 
-      const updatedCharacter = await this.characterService.update(characterId, {
-        movie: movieData.movie,
-        imgUrl: movieData.imageUrl,
-        learnedDate: new Date(),
-      });
-
-      if (!updatedCharacter) {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'Failed to update character',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+      // Save movie to user-specific data
+      const updatedCharacter =
+        await this.userCharacterKnowledgeService.saveMovieForUser(
+          userId,
+          characterId,
+          movieData.movie,
+          movieData.imageUrl,
         );
-      }
 
-      return this.characterService.makeCharacterDTO(updatedCharacter);
+      return this.characterService.makeCharacterDTO(updatedCharacter, userId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -127,6 +125,7 @@ export class CharacterController {
   async updateCharacterRadicals(
     @Param('id') id: string,
     @Body() radicalData: { radicals: string },
+    @UserID() userId: number,
   ): Promise<CharacterDTO> {
     try {
       const characterId = parseInt(id, 10);
@@ -140,8 +139,10 @@ export class CharacterController {
         );
       }
 
-      const character =
-        await this.characterService.getOneCharacterDTO(characterId);
+      const character = await this.characterService.getOneCharacterDTO(
+        characterId,
+        userId,
+      );
       if (!character) {
         throw new HttpException(
           {
@@ -166,7 +167,7 @@ export class CharacterController {
         );
       }
 
-      return this.characterService.makeCharacterDTO(updatedCharacter);
+      return this.characterService.makeCharacterDTO(updatedCharacter, userId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -188,6 +189,7 @@ export class CharacterController {
   async uploadCharacterImage(
     @UploadedFile() file: any,
     @Body('characterId') characterId: string,
+    @UserID() userId: number,
   ): Promise<{ imageUrl: string }> {
     try {
       if (!file) {
@@ -221,7 +223,10 @@ export class CharacterController {
         );
       }
 
-      const character = await this.characterService.getOneCharacterDTO(id);
+      const character = await this.characterService.getOneCharacterDTO(
+        id,
+        userId,
+      );
       if (!character) {
         throw new HttpException(
           {
@@ -238,10 +243,13 @@ export class CharacterController {
         `${character.id}.${file.originalname.split('.').pop()}`,
       );
 
-      // Update character with new image URL
-      await this.characterService.update(character.id, {
-        imgUrl: imageUrl,
-      });
+      // Update user-specific image URL
+      await this.userCharacterKnowledgeService.saveMovieForUser(
+        userId,
+        character.id,
+        character.movie || '',
+        imageUrl,
+      );
 
       return { imageUrl };
     } catch (error) {

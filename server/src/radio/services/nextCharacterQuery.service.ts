@@ -1,53 +1,85 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, MoreThanOrEqual, Not, In } from 'typeorm';
-import { CharacterService } from '../../services/character.service';
+import { In, IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { Character } from '../../entities/character.entity';
+import { UserCharacterKnowledge } from '../../entities/user-character-knowledge.entity';
 
 @Injectable()
 export class NextCharacterQueryService {
   constructor(
-    private characterService: CharacterService,
     @InjectRepository(Character)
     private characterRepository: Repository<Character>,
+    @InjectRepository(UserCharacterKnowledge)
+    private userCharacterKnowledgeRepository: Repository<UserCharacterKnowledge>,
   ) {}
 
-  async getNextCharacterForPreview(): Promise<Character | null> {
-    // Reuse existing logic to get next character without movie
-    const characterDTO =
-      await this.characterService.getNextCharacterWithoutMovie();
+  async getNextCharacterForPreview(userId: number): Promise<Character | null> {
+    try {
+      // Get the first character without a user-specific movie
+      const characters = await this.characterRepository.find({
+        order: { id: 'ASC' },
+      });
 
-    if (!characterDTO) {
+      for (const character of characters) {
+        const userKnowledge =
+          await this.userCharacterKnowledgeRepository.findOne({
+            where: { userID: userId, characterID: character.id },
+          });
+
+        if (!userKnowledge || !userKnowledge.movie) {
+          return character;
+        }
+      }
+
       return null;
+    } catch (error) {
+      console.error('❌ Error in getNextCharacterForPreview:', error);
+      throw error;
     }
-
-    // Convert DTO back to entity for our radio services
-    // We need the raw entity for our radio generation
-    return this.convertToEntity(characterDTO);
   }
 
-  async getNextCharactersForPreview(count: number = 5): Promise<Character[]> {
+  async getNextCharactersForPreview(
+    count: number = 5,
+    userId: number,
+  ): Promise<Character[]> {
     try {
-      // Get the first character without movie as starting point
-      const firstCharacterDTO =
-        await this.characterService.getNextCharacterWithoutMovie();
+      console.log(`🔍 Getting next ${count} characters for preview`);
+
+      // Get the first character without a user-specific movie
+      const firstCharacterDTO = await this.getNextCharacterForPreview(userId);
 
       if (!firstCharacterDTO) {
         return [];
       }
 
       // Get up to 'count' characters starting from the first one without movie
-      const characterDTOs = await this.characterRepository.find({
+      const characters = await this.characterRepository.find({
         where: {
-          movie: IsNull(),
           id: MoreThanOrEqual(firstCharacterDTO.id),
         },
         order: { id: 'ASC' },
-        take: count,
+        take: count * 2, // Get more to filter out ones with movies
       });
 
-      console.log(`🔍 Found ${characterDTOs.length} characters for preview`);
-      return characterDTOs.map((char) => this.convertToEntity(char));
+      // Filter out characters that already have user-specific movies
+      const filteredCharacters: Character[] = [];
+      for (const character of characters) {
+        if (filteredCharacters.length >= count) break;
+
+        const userKnowledge =
+          await this.userCharacterKnowledgeRepository.findOne({
+            where: { userID: userId, characterID: character.id },
+          });
+
+        if (!userKnowledge || !userKnowledge.movie) {
+          filteredCharacters.push(character);
+        }
+      }
+
+      console.log(
+        `🔍 Found ${filteredCharacters.length} characters for preview`,
+      );
+      return filteredCharacters;
     } catch (error) {
       console.error('❌ Error in getNextCharactersForPreview:', error);
       throw error;
@@ -58,46 +90,75 @@ export class NextCharacterQueryService {
     count: number = 5,
     mode: 'next' | 'random' | 'weighted' = 'next',
     latestCharacterId?: number,
+    userId?: number,
   ): Promise<Character[]> {
     if (mode === 'random') {
-      return this.getRandomCharactersForPreview(count);
+      return this.getRandomCharactersForPreview(count, userId);
     } else if (mode === 'weighted') {
       if (!latestCharacterId) {
         console.warn(
           '⚠️ Weighted mode requires latestCharacterId, falling back to random',
         );
-        return this.getRandomCharactersForPreview(count);
+        return this.getRandomCharactersForPreview(count, userId);
       }
       return this.getWeightedRandomCharactersForPreview(
         count,
         latestCharacterId,
+        userId,
       );
     } else {
-      return this.getNextCharactersForPreview(count);
+      if (!userId) {
+        throw new Error('User ID is required for next mode');
+      }
+      return this.getNextCharactersForPreview(count, userId);
     }
   }
 
-  async getRandomCharactersForPreview(count: number = 5): Promise<Character[]> {
+  async getRandomCharactersForPreview(
+    count: number = 5,
+    userId?: number,
+  ): Promise<Character[]> {
     try {
-      // Get all characters without movies that have definitions
-      const characterDTOs = await this.characterRepository.find({
+      // Get all characters that have definitions
+      const characters = await this.characterRepository.find({
         where: {
-          movie: IsNull(),
           definition: Not(IsNull()),
           pinyin: Not(IsNull()),
         },
       });
 
-      if (characterDTOs.length === 0) {
+      if (characters.length === 0) {
+        return [];
+      }
+
+      // Filter out characters that already have user-specific movies if userId is provided
+      let availableCharacters = characters;
+      if (userId) {
+        const userKnowledge = await this.userCharacterKnowledgeRepository.find({
+          where: { userID: userId },
+        });
+
+        const charactersWithMovies = new Set(
+          userKnowledge
+            .filter((uck) => uck.movie)
+            .map((uck) => uck.characterID),
+        );
+
+        availableCharacters = characters.filter(
+          (char) => !charactersWithMovies.has(char.id),
+        );
+      }
+
+      if (availableCharacters.length === 0) {
         return [];
       }
 
       // Shuffle and take the requested count
-      const shuffled = characterDTOs.sort(() => Math.random() - 0.5);
+      const shuffled = availableCharacters.sort(() => Math.random() - 0.5);
       const selected = shuffled.slice(0, Math.min(count, shuffled.length));
 
       console.log(`🔍 Found ${selected.length} random characters for preview`);
-      return selected.map((char) => this.convertToEntity(char));
+      return selected;
     } catch (error) {
       console.error('❌ Error in getRandomCharactersForPreview:', error);
       throw error;
@@ -110,12 +171,14 @@ export class NextCharacterQueryService {
    *
    * @param count Number of characters to preview
    * @param latestCharacterId The ID of the most recently learned character
+   * @param userId The user ID to filter out characters with movies
    * @param options Configuration options for the distribution
    * @returns Array of characters for preview
    */
   async getWeightedRandomCharactersForPreview(
     count: number = 5,
     latestCharacterId: number,
+    userId?: number,
     options: {
       stdDev?: number; // Controls spread of distribution (default: 10)
       minDistance?: number; // Minimum distance from latest character (default: 1)
@@ -136,7 +199,7 @@ export class NextCharacterQueryService {
         console.warn(
           `⚠️ Latest character with ID ${latestCharacterId} not found`,
         );
-        return this.getRandomCharactersForPreview(count);
+        return this.getRandomCharactersForPreview(count, userId);
       }
 
       // Configuration with defaults
@@ -185,18 +248,34 @@ export class NextCharacterQueryService {
       const characters = await this.characterRepository.find({
         where: {
           id: In(uniqueTargetIds.slice(0, count)),
-          movie: IsNull(),
           definition: Not(IsNull()),
           pinyin: Not(IsNull()),
         },
       });
 
+      // Filter out characters that already have user-specific movies if userId is provided
+      let availableCharacters = characters;
+      if (userId) {
+        const userKnowledge = await this.userCharacterKnowledgeRepository.find({
+          where: { userID: userId },
+        });
+
+        const charactersWithMovies = new Set(
+          userKnowledge
+            .filter((uck) => uck.movie)
+            .map((uck) => uck.characterID),
+        );
+
+        availableCharacters = characters.filter(
+          (char) => !charactersWithMovies.has(char.id),
+        );
+      }
+
       console.log(
-        `✅ Found ${characters.length} characters for the generated IDs`,
+        `✅ Found ${availableCharacters.length} characters for the generated IDs`,
       );
 
-      // Convert to entities
-      return characters.map((char) => this.convertToEntity(char));
+      return availableCharacters;
     } catch (error) {
       console.error(
         '❌ Error in getWeightedRandomCharactersForPreview:',

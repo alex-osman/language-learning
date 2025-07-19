@@ -270,7 +270,7 @@ export class CharactersComponent implements OnInit {
           break;
 
         case 'character':
-          comparison = a.character.localeCompare(b.character);
+          comparison = a.id - b.id;
           break;
 
         case 'pinyin':

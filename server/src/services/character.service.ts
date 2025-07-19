@@ -9,6 +9,9 @@ import { ActorService } from './actor.service';
 import { RadicalPropService } from './radical-prop.service';
 import { SentenceService } from './sentence.service';
 import { SentenceDTO } from '@shared/interfaces/sentence.interface';
+import { UserCharacterKnowledgeService } from './user-character-knowledge.service';
+import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
+
 @Injectable()
 export class CharacterService {
   constructor(
@@ -18,18 +21,24 @@ export class CharacterService {
     private setService: SetService,
     private radicalPropService: RadicalPropService,
     private sentenceService: SentenceService,
+    private userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
-  async getAllCharacterDTOs(): Promise<CharacterDTO[]> {
-    const all = await this.characterRepository.find({
-      where: {
-        movie: Not(IsNull()),
-      },
-      order: {
-        id: 'DESC',
-      },
-    });
-    const latestChar = all[0];
+  async getAllCharacterDTOs(userId: number): Promise<CharacterDTO[]> {
+    const charactersWithKnowledge = await this.characterRepository
+      .createQueryBuilder('character')
+      .leftJoin(
+        UserCharacterKnowledge,
+        'userCharacterKnowledge',
+        'userCharacterKnowledge.characterID = character.id',
+      )
+      .where('userCharacterKnowledge.userID = :userId', { userId })
+      .getMany();
+
+    const latestChar = charactersWithKnowledge[0];
+    if (!latestChar) {
+      return [];
+    }
     const additional = await this.characterRepository.find({
       where: {
         id: MoreThan(latestChar.id),
@@ -40,8 +49,8 @@ export class CharacterService {
       take: 15,
     });
     return Promise.all(
-      [...all, ...additional].map(async (character) =>
-        this.makeCharacterDTO(character),
+      [...charactersWithKnowledge, ...additional].map(async (item) =>
+        this.makeCharacterDTO(item, userId),
       ),
     );
   }
@@ -50,23 +59,66 @@ export class CharacterService {
     return this.characterRepository.findOneOrFail({ where: { id } });
   }
 
-  async getOneCharacterDTO(id: number): Promise<CharacterDTO | null> {
+  async getOneCharacterDTO(
+    id: number,
+    userId?: number,
+  ): Promise<CharacterDTO | null> {
     const character = await this.findOne(id);
     if (!character) return null;
-    return this.makeCharacterDTO(character);
+    return this.makeCharacterDTO(character, userId);
   }
 
   async makeCharacterDTO(
     character: Character,
-    sentences?: SentenceDTO[],
+    userId?: number,
   ): Promise<CharacterDTO> {
+    // Get user-specific data if userId is provided
+    let mergedCharacter = character as any;
+    let userKnowledge: UserCharacterKnowledge = {
+      movie: '',
+      imgUrl: '',
+      learnedDate: new Date(),
+      easinessFactor: 2.5,
+      repetitions: 0,
+      interval: 0,
+      nextReviewDate: new Date(),
+      lastReviewDate: new Date(),
+      characterID: character.id,
+      userID: 0,
+      id: 0,
+    };
+    if (userId) {
+      const existingUserKnowledge =
+        await this.userCharacterKnowledgeService.findByUserAndCharacter(
+          userId,
+          character.id,
+        );
+      if (existingUserKnowledge) {
+        userKnowledge = existingUserKnowledge;
+      }
+      if (userKnowledge) {
+        // Merge character metadata with user-specific data
+        mergedCharacter = {
+          ...character,
+          movie: userKnowledge.movie || null,
+          imgUrl: userKnowledge.imgUrl || null,
+          learnedDate: userKnowledge.learnedDate || null,
+          easinessFactor: userKnowledge.easinessFactor ?? 2.5,
+          repetitions: userKnowledge.repetitions ?? 0,
+          interval: userKnowledge.interval ?? 0,
+          nextReviewDate: userKnowledge.nextReviewDate || null,
+          lastReviewDate: userKnowledge.lastReviewDate || null,
+        };
+      }
+    }
+
     const { final, initial } = this.parsePinyin(
-      this.removeToneMarks(character.pinyin),
+      this.removeToneMarks(mergedCharacter.pinyin),
     );
     const initialActor = await this.actorService.findByInitial(initial);
     const finalSet = await this.setService.findByFinal(final);
     const radicals = await Promise.all(
-      (character.radicals?.split(',') ?? []).map(async (radical) => {
+      (mergedCharacter.radicals?.split(',') ?? []).map(async (radical) => {
         const radicalProp =
           await this.radicalPropService.findByRadical(radical);
         return radicalProp;
@@ -75,32 +127,31 @@ export class CharacterService {
 
     // Calculate if the character is due for review
     const now = new Date();
-    const dueForReview = character.nextReviewDate
-      ? character.nextReviewDate <= now
+    const dueForReview = mergedCharacter.nextReviewDate
+      ? mergedCharacter.nextReviewDate <= now
       : false;
 
     return {
-      id: character.id,
-      character: character.character,
-      pinyin: character.pinyin,
-      definition: character.definition,
+      id: mergedCharacter.id,
+      character: mergedCharacter.character,
+      pinyin: mergedCharacter.pinyin,
+      definition: mergedCharacter.definition,
       initial,
       final,
-      toneNumber: this.getToneNumber(character.pinyin),
+      toneNumber: this.getToneNumber(mergedCharacter.pinyin),
       radicals: radicals.filter((radical) => radical !== null) as PropDTO[],
       finalSet: finalSet ?? undefined,
       initialActor: initialActor ?? undefined,
-      movie: character.movie,
-      imgUrl: character.imgUrl,
-      freq: character.freq,
+      movie: mergedCharacter.movie,
+      imgUrl: mergedCharacter.imgUrl,
+      freq: mergedCharacter.freq,
       // Add spaced repetition fields
-      easinessFactor: character.easinessFactor,
-      repetitions: character.repetitions,
-      interval: character.interval,
-      nextReviewDate: character.nextReviewDate,
-      lastReviewDate: character.lastReviewDate,
+      easinessFactor: mergedCharacter.easinessFactor,
+      repetitions: mergedCharacter.repetitions,
+      interval: mergedCharacter.interval,
+      nextReviewDate: mergedCharacter.nextReviewDate,
+      lastReviewDate: mergedCharacter.lastReviewDate,
       dueForReview,
-      sentences,
     };
   }
 
@@ -126,18 +177,15 @@ export class CharacterService {
   }
 
   async getNextCharacterWithoutMovie(
-    userID: number,
+    userId: number,
   ): Promise<CharacterDTO | null> {
-    const character = await this.characterRepository.findOne({
-      where: { movie: IsNull() },
-      order: { id: 'ASC' },
-    });
+    const character =
+      await this.userCharacterKnowledgeService.getNextCharacterWithoutMovie(
+        userId,
+      );
     if (!character) return null;
-    const sentences = await this.sentenceService.getSentencesForCharacter(
-      character.character,
-    );
 
-    return this.makeCharacterDTO(character, sentences);
+    return this.makeCharacterDTO(character, userId);
   }
 
   removeToneMarks(pinyin: string): string {

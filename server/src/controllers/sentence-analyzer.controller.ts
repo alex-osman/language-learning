@@ -10,6 +10,7 @@ import {
   SentenceAnalyzerService,
   SentenceAnalysis,
 } from '../services/sentence-analyzer.service';
+import { UserID } from 'src/decorators/user.decorator';
 
 interface AnalyzeSentenceRequest {
   text: string;
@@ -26,6 +27,7 @@ export class SentenceAnalyzerController {
   @Post('analyze')
   async analyzeSentence(
     @Body() request: AnalyzeSentenceRequest,
+    @UserID() userId: number,
   ): Promise<SentenceAnalysis> {
     try {
       if (!request.text) {
@@ -38,7 +40,10 @@ export class SentenceAnalyzerController {
         );
       }
 
-      return await this.sentenceAnalyzerService.analyzeSentence(request.text);
+      return await this.sentenceAnalyzerService.analyzeSentence(
+        request.text,
+        userId,
+      );
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

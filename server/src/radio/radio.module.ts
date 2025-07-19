@@ -16,10 +16,18 @@ import { Set } from '../entities/set.entity';
 import { RadicalProp } from '../entities/radical-prop.entity';
 import { Sentence } from '../entities/sentence.entity';
 import { CoreModule } from '../core/core.module';
+import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Character, Actor, Set, RadicalProp, Sentence]),
+    TypeOrmModule.forFeature([
+      Character,
+      Actor,
+      Set,
+      RadicalProp,
+      Sentence,
+      UserCharacterKnowledge,
+    ]),
     CoreModule,
   ],
   providers: [

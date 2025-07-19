@@ -47,10 +47,11 @@ export class TemplateHardService {
    * 5. AI DJ Movie Context - Connects definition to movie scene
    * 6. Extra long pause between characters
    *
+   * @param userId The user ID for getting user-specific data
    * @returns A list of audio segments with AI-generated DJ content.
    */
-  async buildHardSegments(): Promise<AudioSegment[]> {
-    const words = await this.hardWordsQueryService.getHardest(3); // Test with 1 character first
+  async buildHardSegments(userId: number): Promise<AudioSegment[]> {
+    const words = await this.hardWordsQueryService.getHardest(3, userId); // Test with 1 character first
     const segments: AudioSegment[] = [];
 
     for (let i = 0; i < words.length; i++) {
@@ -78,8 +79,10 @@ export class TemplateHardService {
       segments.push({ type: 'pause', duration: '300ms' });
 
       // 2. AI DJ Movie Context - connects definition to movie scene
-      const movieContext =
-        await this.djScriptService.generateMovieContext(character);
+      const movieContext = await this.djScriptService.generateMovieContext(
+        character,
+        userId,
+      );
       segments.push({ type: 'text', content: movieContext, lang: 'en' });
 
       // 3. Extra long pause between characters (shorter for last character)

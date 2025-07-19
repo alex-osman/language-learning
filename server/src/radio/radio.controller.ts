@@ -4,6 +4,7 @@ import { RadioTtsService } from './services/tts.service';
 import { SilenceService } from './services/silence.service';
 import { ConcatService } from './services/concat.service';
 import { RadioBuilderService } from './services/radioBuilder.service';
+import { UserID } from 'src/decorators/user.decorator';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -55,7 +56,7 @@ export class RadioController {
     'Content-Disposition',
     'attachment; filename="chinese-learning-podcast.mp3"',
   )
-  async getLatestPodcast(): Promise<StreamableFile> {
+  async getLatestPodcast(@UserID() userId: number): Promise<StreamableFile> {
     const todayPath = this.getTodayPodcastPath();
     const dateString = this.getTodayDateString();
 
@@ -69,7 +70,8 @@ export class RadioController {
     console.log(`🎙️ Generating new podcast for ${dateString}...`);
 
     // Build complete radio show
-    const segments = await this.radioBuilderService.buildCompleteRadioShow();
+    const segments =
+      await this.radioBuilderService.buildCompleteRadioShow(userId);
     const audioFiles: string[] = [];
 
     // Process each segment individually
@@ -114,8 +116,8 @@ export class RadioController {
 
   @Post('hard-segment')
   @Header('Content-Type', 'audio/mpeg')
-  async generateHardSegment(): Promise<StreamableFile> {
-    const segments = await this.templateService.buildHardSegments();
+  async generateHardSegment(@UserID() userId: number): Promise<StreamableFile> {
+    const segments = await this.templateService.buildHardSegments(userId);
     const audioFiles: string[] = [];
 
     // Process each segment individually

@@ -10,6 +10,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { CharacterService } from '../services/character.service';
+import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDto } from './dto/chat-response.dto';
 import { CritiqueRequestDto } from './dto/critique-request.dto';
@@ -21,6 +22,7 @@ import { FrenchChatAiService } from './services/french-chat-ai.service';
 import { TtsAiService } from './services/tts-ai.service';
 import { MovieAiService } from './services/movie.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
+import { UserID } from 'src/decorators/user.decorator';
 
 enum Language {
   CHINESE = 'Chinese',
@@ -39,6 +41,7 @@ export class AiController {
     private readonly frenchChatService: FrenchChatAiService,
     private readonly critiqueService: CritiqueAiService,
     private readonly characterService: CharacterService,
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
     private readonly movieService: MovieAiService,
   ) {}
 
@@ -108,9 +111,11 @@ export class AiController {
   async generateMovie(
     @Param('characterId') characterId: string,
     @Body() requestBody: { userInput?: string },
+    @UserID() userId: number,
   ) {
     const character = await this.characterService.getOneCharacterDTO(
       parseInt(characterId),
+      userId,
     );
 
     if (!character) {
@@ -128,10 +133,12 @@ export class AiController {
       requestBody.userInput,
     );
 
-    await this.characterService.update(character.id, {
-      movie: result.text,
-      imgUrl: result.imageUrl,
-    });
+    await this.userCharacterKnowledgeService.saveMovieForUser(
+      userId,
+      character.id,
+      result.text,
+      result.imageUrl,
+    );
 
     return {
       movie: result.text,
@@ -142,10 +149,12 @@ export class AiController {
   @Post('generate-image')
   async generateImage(
     @Body() requestBody: { characterId: number; prompt: string },
+    @UserID() userId: number,
   ) {
     try {
       const character = await this.characterService.getOneCharacterDTO(
         requestBody.characterId,
+        userId,
       );
 
       if (!character) {
@@ -163,9 +172,13 @@ export class AiController {
         character,
       );
       console.log('result', result);
-      await this.characterService.update(character.id, {
-        imgUrl: result,
-      });
+
+      await this.userCharacterKnowledgeService.saveMovieForUser(
+        userId,
+        character.id,
+        character.movie || '',
+        result,
+      );
 
       return { imageUrl: result || '' };
     } catch (error: any) {
