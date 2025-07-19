@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DataService, CharacterDTO, MovieScene, Tone } from '../../services/data.service';
-import { MovieService, MovieGenerationRequest } from '../../services/movie.service';
 import { RadicalProp } from 'src/app/interfaces/mandarin-blueprint.interface';
-import { PinyinService } from '../../services/pinyin.service';
-import { FlashcardService } from '../../services/flashcard.service';
+import { CharacterDTO, DataService, MovieScene, Tone } from '../../services/data.service';
 import { EasinessColorService } from '../../services/easiness-color.service';
+import { FlashcardService } from '../../services/flashcard.service';
+import { MovieService } from '../../services/movie.service';
+import { PinyinService } from '../../services/pinyin.service';
 
 // Supporting Types for Sorting and Filtering
 type SortOption =
