@@ -1,0 +1,18 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <h2>User Profile</h2>
+
+    <div class="profile-info" *ngIf="user">
+      <div class="info-item">
+        <label>User ID:</label>
+        <span>{{ user.userId }}</span>
+      </div>
+      <div class="info-item">
+        <label>Email:</label>
+        <span>{{ user.email }}</span>
+      </div>
+    </div>
+
+    <button (click)="logout()" class="logout-button">Logout</button>
+  </div>
+</div>

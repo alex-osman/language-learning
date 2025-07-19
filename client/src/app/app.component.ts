@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ export class AppComponent {
   title = 'chinois';
   mobileMenuOpen = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public authService: AuthService) {
     // Close mobile menu on route change
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.mobileMenuOpen = false;
@@ -23,6 +24,11 @@ export class AppComponent {
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   // Close the mobile menu when clicking outside
