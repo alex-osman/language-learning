@@ -11,6 +11,12 @@ export type ProgressTheme =
   | 'purple'
   | 'orange';
 
+export interface ProgressSegment {
+  value: number; // 0-100
+  color: string; // CSS color value
+  label?: string; // Optional label for this segment
+}
+
 @Component({
   selector: 'app-progress-indicator',
   standalone: true,
@@ -19,13 +25,36 @@ export type ProgressTheme =
     <!-- Linear Progress Bar -->
     <div *ngIf="type === 'linear'" class="progress-container" [class]="'theme-' + theme">
       <div class="progress-bar" [style.height.px]="height">
+        <!-- Multi-segment progress -->
+        <div *ngIf="segments && segments.length > 0" class="progress-segments">
+          <div
+            *ngFor="let segment of segments; let i = index"
+            class="progress-segment"
+            [style.width.%]="segment.value"
+            [style.background-color]="segment.color"
+            [style.left.%]="getSegmentLeftPosition(i)"
+            [style.transition]="animated ? 'width 0.3s ease' : 'none'"
+          ></div>
+        </div>
+        <!-- Single value progress (backward compatibility) -->
         <div
+          *ngIf="!segments || segments.length === 0"
           class="progress-fill"
           [style.width.%]="value"
           [style.transition]="animated ? 'width 0.3s ease' : 'none'"
         ></div>
       </div>
-      <div *ngIf="showLabel" class="progress-label">{{ value }}% {{ labelText }}</div>
+      <div *ngIf="showLabel" class="progress-label">
+        <ng-container *ngIf="segments && segments.length > 0">
+          <span *ngFor="let segment of segments; let last = last">
+            {{ segment.value }}% {{ segment.label || labelText }}
+            <span *ngIf="!last"> | </span>
+          </span>
+        </ng-container>
+        <ng-container *ngIf="!segments || segments.length === 0">
+          {{ value }}% {{ labelText }}
+        </ng-container>
+      </div>
     </div>
 
     <!-- Circular Progress -->
@@ -55,7 +84,7 @@ export type ProgressTheme =
           [style.transition]="animated ? 'stroke-dashoffset 0.3s ease' : 'none'"
         />
       </svg>
-      <div *ngIf="showLabel" class="circular-progress-text">{{ value }}%</div>
+      <div *ngIf="showLabel" class="circular-progress-text">{{ totalValue }}%</div>
     </div>
   `,
   styles: [
@@ -71,6 +100,28 @@ export type ProgressTheme =
         border-radius: 5px;
         overflow: hidden;
         margin-bottom: 0.3rem;
+        position: relative;
+      }
+
+      .progress-segments {
+        position: relative;
+        height: 100%;
+        width: 100%;
+      }
+
+      .progress-segment {
+        position: absolute;
+        height: 100%;
+        border-radius: 0;
+        transition: width 0.3s ease;
+      }
+
+      .progress-segment:first-child {
+        border-radius: 5px 0 0 5px;
+      }
+
+      .progress-segment:last-child {
+        border-radius: 0 5px 5px 0;
       }
 
       .progress-fill {
@@ -135,7 +186,8 @@ export type ProgressTheme =
 })
 export class ProgressIndicatorComponent {
   @Input() type: ProgressType = 'linear';
-  @Input() value: number = 0; // 0-100
+  @Input() value: number = 0; // 0-100 (for backward compatibility)
+  @Input() segments?: ProgressSegment[]; // New: array of progress segments
   @Input() theme: ProgressTheme = 'primary';
   @Input() showLabel: boolean = true;
   @Input() labelText: string = 'known';
@@ -148,6 +200,13 @@ export class ProgressIndicatorComponent {
   @Input() size: number = 80;
   @Input() strokeWidth: number = 8;
 
+  get totalValue(): number {
+    if (this.segments && this.segments.length > 0) {
+      return this.segments.reduce((sum, segment) => sum + segment.value, 0);
+    }
+    return this.value;
+  }
+
   get radius(): number {
     return (this.size - this.strokeWidth) / 2;
   }
@@ -157,7 +216,7 @@ export class ProgressIndicatorComponent {
   }
 
   get strokeDashoffset(): number {
-    return this.circumference * (1 - this.value / 100);
+    return this.circumference * (1 - this.totalValue / 100);
   }
 
   get strokeColor(): string {
@@ -179,5 +238,17 @@ export class ProgressIndicatorComponent {
       default:
         return '#2196f3';
     }
+  }
+
+  getSegmentLeftPosition(index: number): number {
+    if (!this.segments || index === 0) {
+      return 0;
+    }
+
+    let leftPosition = 0;
+    for (let i = 0; i < index; i++) {
+      leftPosition += this.segments[i].value;
+    }
+    return leftPosition;
   }
 }

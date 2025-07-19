@@ -7,6 +7,10 @@ import { EasinessColorService } from '../../services/easiness-color.service';
 import { FlashcardService } from '../../services/flashcard.service';
 import { MovieService } from '../../services/movie.service';
 import { PinyinService } from '../../services/pinyin.service';
+import {
+  ProgressIndicatorComponent,
+  ProgressSegment,
+} from '../progress-indicator/progress-indicator.component';
 
 // Supporting Types for Sorting and Filtering
 type SortOption =
@@ -22,7 +26,7 @@ type LearningFilter = 'all' | 'learned' | 'notLearned';
 @Component({
   selector: 'app-characters',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ProgressIndicatorComponent],
   templateUrl: './characters.component.html',
   styleUrls: ['./characters.component.scss'],
 })
@@ -39,6 +43,7 @@ export class CharactersComponent implements OnInit {
   radicalProps: RadicalProp[] = [];
   userStoryInput: string = '';
   generatedImageUrl: string | null = null;
+  charactersProgress: ProgressSegment[] = [];
 
   // Sorting and Filtering State
   sortBy: SortOption = 'difficulty';
@@ -102,6 +107,44 @@ export class CharactersComponent implements OnInit {
     this.selectedCharacter = null;
     this.movieScene = null;
     this.generatedImageUrl = null;
+  }
+
+  get easinessFactor(): ProgressSegment[] {
+    const GREEN_THRESHOLD = 2.5;
+    const YELLOW_THRESHOLD = 2.1;
+
+    const knownChars = this.characters.filter(c => !!c.lastReviewDate);
+
+    const greenScore = knownChars.filter(
+      c => c.easinessFactor && c.easinessFactor > GREEN_THRESHOLD
+    ).length;
+    const yellowScore = knownChars.filter(
+      c =>
+        c.easinessFactor &&
+        c.easinessFactor > YELLOW_THRESHOLD &&
+        c.easinessFactor <= GREEN_THRESHOLD
+    ).length;
+    const redScore = knownChars.filter(
+      c => c.easinessFactor && c.easinessFactor <= YELLOW_THRESHOLD
+    ).length;
+
+    return [
+      {
+        value: Math.round((greenScore / knownChars.length) * 100),
+        color: '#00ff00',
+        label: 'Easy',
+      },
+      {
+        value: Math.round((yellowScore / knownChars.length) * 100),
+        color: '#ffa500',
+        label: 'Medium',
+      },
+      {
+        value: Math.round((redScore / knownChars.length) * 100),
+        color: '#ff0000',
+        label: 'Hard',
+      },
+    ];
   }
 
   generateMovie(): void {

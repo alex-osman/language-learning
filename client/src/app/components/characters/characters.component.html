@@ -65,6 +65,22 @@
     </div>
   </div>
 
+  <div class="progress-stats">
+    <div class="progress-stats-item">
+      <div class="progress-stats-item-label">Difficulty</div>
+    </div>
+
+    <!-- Show progress bar of easiness factor -->
+    <div class="progress-stats-item">
+      <app-progress-indicator
+        [segments]="easinessFactor"
+        [theme]="'primary'"
+        [type]="'linear'"
+        [showLabel]="true"
+      ></app-progress-indicator>
+    </div>
+  </div>
+
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <p>Loading characters...</p>
