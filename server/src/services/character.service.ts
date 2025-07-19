@@ -38,16 +38,14 @@ export class CharacterService {
       .where('userCharacterKnowledge.userID = :userId', { userId })
       .getMany();
 
-    const latestChar = charactersWithKnowledge.sort((a, b) => b.id - a.id)[0];
-    if (!latestChar) {
-      return [];
-    }
+    const latestChar =
+      charactersWithKnowledge.sort((a, b) => b.id - a.id)[0] ?? null;
 
     let additional: Character[] = [];
     if (additionalCount) {
       additional = await this.characterRepository.find({
         where: {
-          id: MoreThan(latestChar.id),
+          id: MoreThan(latestChar?.id ?? 0),
         },
         order: {
           id: 'ASC',
