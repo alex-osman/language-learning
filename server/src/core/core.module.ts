@@ -19,6 +19,7 @@ import { SceneService } from 'src/services/scene.service';
 import { Scene } from 'src/entities/scene.entity';
 import { Episode } from 'src/entities/episode.entity';
 import { EpisodeService } from 'src/services/episode.service';
+import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { EpisodeService } from 'src/services/episode.service';
       Word,
       Scene,
       Episode,
+      UserCharacterKnowledge,
     ]),
   ],
   providers: [
