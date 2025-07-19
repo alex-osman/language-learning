@@ -24,6 +24,8 @@ import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
 import { SceneController } from './controllers/scene.controller';
 import { EpisodeController } from './controllers/episode.controller';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { EpisodeController } from './controllers/episode.controller';
     TypeOrmModule.forRoot(databaseConfig),
     CoreModule,
     RadioModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [
     DataController,
