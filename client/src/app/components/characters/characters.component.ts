@@ -75,9 +75,8 @@ export class CharactersComponent implements OnInit {
     this.dataService.getCharacters().subscribe(characters => {
       this.characters = characters;
       this.knownCharactersCount = characters.filter(char => !!char.lastReviewDate).length;
-      this.lastIdKnown = characters
-        .filter(char => !!char.lastReviewDate)
-        .sort((a, b) => b.id - a.id)[0].id;
+      this.lastIdKnown =
+        characters.filter(char => !!char.lastReviewDate).sort((a, b) => b.id - a.id)?.[0]?.id ?? 0;
       this.updateFilteredCharacters();
       this.isLoading = false;
     });
