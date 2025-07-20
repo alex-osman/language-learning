@@ -52,7 +52,6 @@ export class EpisodeGalleryComponent implements OnInit {
       this.seasonId,
       'episodes',
       episode.id,
-      'scenes',
     ]);
   }
 }

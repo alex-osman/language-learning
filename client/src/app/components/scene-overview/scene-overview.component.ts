@@ -232,7 +232,7 @@ export class SceneOverviewComponent implements OnInit {
   // ===== USER ACTIONS =====
 
   goBack() {
-    this.router.navigate(['../'], { relativeTo: this.route });
+    this.router.navigate(['../../'], { relativeTo: this.route });
   }
 
   startPractice() {

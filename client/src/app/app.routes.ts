@@ -9,6 +9,7 @@ import { LearningComponent } from './components/learning/learning.component';
 import { MediaGalleryComponent } from './components/media-gallery/media-gallery.component';
 import { SeasonGalleryComponent } from './components/season-gallery/season-gallery.component';
 import { EpisodeGalleryComponent } from './components/episode-gallery/episode-gallery.component';
+import { EpisodeOverviewComponent } from './components/episode-overview/episode-overview.component';
 import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
 import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
@@ -71,6 +72,10 @@ export const routes: Routes = [
   {
     path: 'media/:mediaId/seasons/:seasonId/episodes',
     component: EpisodeGalleryComponent,
+  },
+  {
+    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId',
+    component: EpisodeOverviewComponent,
   },
   {
     path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes',

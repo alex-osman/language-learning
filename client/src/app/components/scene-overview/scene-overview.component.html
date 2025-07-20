@@ -1,6 +1,9 @@
 <div class="scene-overview">
   <!-- Header -->
   <div class="header">
+    <button class="view-toggle-btn" (click)="goBack()" aria-label="Back to episodes">
+      ← Back to Episodes
+    </button>
     <h1>Scene Overview</h1>
     <button class="view-toggle-btn" (click)="toggleView()">
       {{ isScriptView ? 'Sentence View' : 'Script View' }}

@@ -46,7 +46,7 @@ export class EpisodeService {
   async getScenesForEpisode(episodeId: number): Promise<EpisodeDTO> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['scenes'],
+      relations: ['scenes', 'scenes.sentences'],
     });
     if (!episode) {
       throw new NotFoundException('Episode not found');
