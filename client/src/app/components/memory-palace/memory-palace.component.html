@@ -1,0 +1,150 @@
+<div class="memory-palace">
+  <div class="section-container podcast-section">
+    <div class="section-header">
+      <h2>🎙️ Chinese Learning Podcast</h2>
+    </div>
+    <div class="section-content">
+      <div class="podcast-controls">
+        <p class="podcast-description">
+          Generate a personalized Chinese learning podcast with your hard words review and character
+          previews.
+          <br />
+          <small
+            ><strong>Note:</strong> Generation takes about 30-40 seconds. Please be patient!</small
+          >
+        </p>
+
+        <div *ngIf="todayDate" class="podcast-status">
+          <p class="status-text" [class.cached]="todayPodcastExists">
+            <span *ngIf="todayPodcastExists">✅</span>
+            <span *ngIf="!todayPodcastExists">📅</span>
+            {{ todayPodcastExists ? 'Todays podcast is ready' : 'No podcast for today yet' }}
+            <span class="date-info">({{ todayDate }})</span>
+          </p>
+        </div>
+
+        <button
+          class="podcast-btn"
+          [class.generating]="isGeneratingPodcast"
+          [disabled]="isGeneratingPodcast"
+          (click)="generatePodcast()"
+          [title]="
+            todayPodcastExists
+              ? 'Download todays cached podcast'
+              : 'Generate and download todays podcast'
+          "
+        >
+          <span *ngIf="!isGeneratingPodcast">
+            <span *ngIf="todayPodcastExists">📥</span>
+            <span *ngIf="!todayPodcastExists">🎙️</span>
+            {{ todayPodcastExists ? 'Download Podcast' : 'Generate Podcast' }}
+          </span>
+          <span *ngIf="isGeneratingPodcast">
+            <span class="spinner"></span>
+            Generating... ({{ generationTimeElapsed }}s)
+          </span>
+        </button>
+        <div *ngIf="isGeneratingPodcast" class="progress-info">
+          <app-progress-indicator
+            type="linear"
+            [value]="generationProgress"
+            theme="orange"
+            [height]="8"
+            [showLabel]="false"
+            [animated]="true"
+          ></app-progress-indicator>
+          <p class="progress-text">Building your personalized Chinese learning content...</p>
+        </div>
+        <div
+          *ngIf="lastGenerationResult"
+          class="result-message"
+          [class.success]="lastGenerationResult.success"
+          [class.error]="!lastGenerationResult.success"
+        >
+          <span *ngIf="lastGenerationResult.success">
+            <span *ngIf="lastGenerationResult.cached">✅</span>
+            <span *ngIf="!lastGenerationResult.cached">🎙️</span>
+            {{
+              lastGenerationResult.cached
+                ? 'Cached podcast downloaded successfully!'
+                : 'New podcast generated and downloaded!'
+            }}
+            Check your downloads.
+          </span>
+          <span *ngIf="!lastGenerationResult.success"
+            >❌ Failed to generate podcast. Please try again.</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Sentence Analyzer</h2>
+    </div>
+    <div class="section-content">
+      <app-sentence-analyzer></app-sentence-analyzer>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('addRadicalProp')">
+      <h2>Add Radical Props</h2>
+      <span class="toggle-icon">{{ visibleSections.addRadicalProp ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.addRadicalProp">
+      <app-add-radical-prop></app-add-radical-prop>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('characters')">
+      <h2>Characters</h2>
+      <span class="toggle-icon">{{ visibleSections.characters ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.characters">
+      <app-characters></app-characters>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('words')">
+      <h2>Words</h2>
+      <span class="toggle-icon">{{ visibleSections.words ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.words">
+      <app-words></app-words>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('radicals')">
+      <h2>Radicals</h2>
+      <span class="toggle-icon">{{ visibleSections.radicals ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.radicals">
+      <app-radicals></app-radicals>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('actors')">
+      <h2>Actors</h2>
+      <span class="toggle-icon">{{ visibleSections.actors ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.actors">
+      <app-actors></app-actors>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header" (click)="toggleSection('sets')">
+      <h2>Sets</h2>
+      <span class="toggle-icon">{{ visibleSections.sets ? '▼' : '►' }}</span>
+    </div>
+    <div class="section-content" [class.hidden]="!visibleSections.sets">
+      <app-sets></app-sets>
+    </div>
+  </div>
+</div>
