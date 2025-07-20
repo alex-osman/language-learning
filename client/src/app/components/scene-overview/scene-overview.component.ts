@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, SceneDTO } from '../../services/media.service';
 import {
-  SentenceAnalysisService,
   SentenceAnalysisResult,
+  SentenceAnalysisService,
 } from '../../services/sentence-analysis.service';
 import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
@@ -45,7 +45,7 @@ export class SceneOverviewComponent implements OnInit {
   // UI state
   displayedCharacters: string[] = [];
   hasMoreCharacters = false;
-  isScriptView = false; // Toggle between sentence view and script view
+  isScriptView = true;
 
   // Template helpers
   Math = Math;
@@ -277,5 +277,75 @@ export class SceneOverviewComponent implements OnInit {
 
   toggleView() {
     this.isScriptView = !this.isScriptView;
+  }
+
+  getWordUnderlineStyle(sentenceId: string, char: string): { [key: string]: string } {
+    const analysis = this.sentenceAnalysisData[sentenceId];
+    if (!analysis) {
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    const charData = analysis.all_characters.find(c => c.char === char);
+    if (!charData) {
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    if (!charData.known) {
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    // Get color based on easiness factor if available
+    if (charData.charData?.easinessFactor) {
+      const color = this.getUnderlineColor(charData.charData.easinessFactor);
+      return { 'border-bottom': `3px solid ${color}` };
+    }
+
+    // Fallback to green for known characters without easiness data
+    return { 'border-bottom': '3px solid #2e7d32' }; // Darker green
+  }
+
+  getWordUnderlineColor(sentenceId: string, char: string): string {
+    const analysis = this.sentenceAnalysisData[sentenceId];
+    if (!analysis) {
+      return '#999999'; // Darker grey for unknown
+    }
+
+    const charData = analysis.all_characters.find(c => c.char === char);
+    if (!charData) {
+      return '#999999'; // Darker grey for unknown
+    }
+
+    if (!charData.known) {
+      return '#999999'; // Darker grey for unknown
+    }
+
+    // Get color based on easiness factor if available
+    if (charData.charData?.easinessFactor) {
+      return this.getUnderlineColor(charData.charData.easinessFactor);
+    }
+
+    // Fallback to green for known characters without easiness data
+    return '#2e7d32'; // Darker green
+  }
+
+  // Specific method for underline colors with higher saturation and lower lightness
+  private getUnderlineColor(easinessFactor: number): string {
+    const minEasiness = 1.3;
+    const maxEasiness = 2.5;
+
+    // Normalize easiness factor
+    const normalizedEasiness = Math.max(
+      0,
+      Math.min(1, (easinessFactor - minEasiness) / (maxEasiness - minEasiness))
+    );
+
+    // Calculate hue (red to green)
+    const hue = 0 + normalizedEasiness * 120; // 0 = red, 120 = green
+
+    // Use higher saturation and lower lightness for more vivid underlines
+    const saturation = 80; // Higher saturation
+    const lightness = 50; // Lower lightness for more vivid colors
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 }

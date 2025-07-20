@@ -54,7 +54,15 @@
           (click)="goToTimestamp(sentence.startMs)"
         >
           <div class="sentence-content">
-            <p class="chinese">{{ sentence.chinese }}</p>
+            <p class="chinese">
+              <span
+                *ngFor="let char of sentence.chinese.split('')"
+                class="character"
+                [ngStyle]="getWordUnderlineStyle(sentence.id, char)"
+              >
+                {{ char }}
+              </span>
+            </p>
             <div class="sentence-meta">
               <app-progress-indicator
                 type="linear"
@@ -76,7 +84,15 @@
           class="script-line"
           (click)="goToTimestamp(sentence.startMs)"
         >
-          <span class="chinese-text">{{ sentence.chinese }}</span>
+          <span class="chinese-text">
+            <span
+              *ngFor="let char of sentence.chinese.split('')"
+              class="character"
+              [ngStyle]="getWordUnderlineStyle(sentence.id, char)"
+            >
+              {{ char }}
+            </span>
+          </span>
           <div class="progress-indicator">
             <app-progress-indicator
               type="linear"

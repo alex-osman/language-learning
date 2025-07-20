@@ -160,6 +160,18 @@
     flex-direction: column;
     gap: 12px;
 
+    // Character styling for underlines
+    .character {
+      display: inline-block;
+      padding-bottom: 4px; // Increased to accommodate thicker underline
+      margin-right: 1px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+
     // Sentence View (Current detailed view)
     &.sentence-view {
       .sentence-card {
@@ -186,6 +198,7 @@
             font-weight: 500;
             color: #333;
             line-height: 1.4;
+            word-spacing: 2px;
           }
 
           .sentence-meta {
@@ -236,6 +249,7 @@
           font-weight: 500;
           color: #333;
           line-height: 1.3;
+          word-spacing: 1px;
         }
 
         .progress-indicator {
@@ -348,6 +362,12 @@
               .chinese {
                 font-size: 20px;
                 margin-bottom: 12px;
+                word-spacing: 3px;
+
+                .character {
+                  padding-bottom: 5px; // Increased to accommodate thicker underline
+                  margin-right: 2px;
+                }
               }
 
               .sentence-meta {
@@ -367,6 +387,12 @@
 
             .chinese-text {
               font-size: 18px;
+              word-spacing: 2px;
+
+              .character {
+                padding-bottom: 2px;
+                margin-right: 1px;
+              }
             }
 
             .progress-indicator {
@@ -446,10 +472,31 @@
 
           .chinese-text {
             font-size: 14px;
+            word-spacing: 1px;
+
+            .character {
+              padding-bottom: 1px;
+              margin-right: 0.5px;
+            }
           }
 
           .progress-indicator {
             width: 50px;
+          }
+        }
+      }
+
+      &.sentence-view {
+        .sentence-card {
+          .sentence-content {
+            .chinese {
+              word-spacing: 1px;
+
+              .character {
+                padding-bottom: 2px;
+                margin-right: 1px;
+              }
+            }
           }
         }
       }

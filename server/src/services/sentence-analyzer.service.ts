@@ -20,7 +20,7 @@ export interface SentenceAnalysis {
   all_characters: AnalyzedCharacter[];
 }
 
-const IGNORE_CHARACTERS = ['佩', '西', '苏', '佩', '乔', '治'];
+const IGNORE_CHARACTERS = [];
 
 @Injectable()
 export class SentenceAnalyzerService {
