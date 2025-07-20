@@ -28,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { SeasonsController } from './seasons/seasons.controller';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { AuthGuard } from './auth/auth.guard';
     CharacterController,
     SentenceAnalyzerController,
     SentenceFlashcardController,
+    SeasonsController,
   ],
   providers: [
     AppService,

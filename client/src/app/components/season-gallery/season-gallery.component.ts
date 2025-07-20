@@ -30,7 +30,7 @@ export class SeasonGalleryComponent implements OnInit {
       this.isLoading = false;
       return;
     }
-    this.mediaService.getSeasonsForMedia(this.mediaId).subscribe({
+    this.mediaService.getSeasonsForMedia(parseInt(this.mediaId)).subscribe({
       next: seasons => {
         this.seasons = seasons;
         this.isLoading = false;

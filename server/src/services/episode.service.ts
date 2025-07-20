@@ -10,8 +10,6 @@ export class EpisodeService {
   constructor(
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
-    @InjectRepository(Scene)
-    private sceneRepository: Repository<Scene>,
   ) {}
 
   async create(createEpisodeDto: CreateEpisodeDTO): Promise<Episode> {
@@ -40,7 +38,8 @@ export class EpisodeService {
   }
 
   async getEpisodesForSeason(seasonId: number): Promise<Episode[]> {
-    return this.episodeRepository.find({ where: { season: { id: seasonId } } });
+    console.log('getiting episodes for season', seasonId);
+    return this.episodeRepository.find({ where: { season_id: seasonId } });
   }
 
   async getScenesForEpisode(episodeId: number): Promise<EpisodeDTO> {

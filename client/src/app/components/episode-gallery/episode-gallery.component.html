@@ -29,7 +29,7 @@
   <div class="episode-list" *ngIf="!isLoading && !error">
     <div class="episode-card" *ngFor="let episode of episodes" (click)="onEpisodeClick(episode)">
       <div class="episode-info">
-        <h3>{{ episode.title }}</h3>
+        <h3>Episode {{ episode.id }} - {{ episode.title }}</h3>
         <div class="progress-bar-container" *ngIf="episode.progress">
           <app-progress-indicator
             type="linear"

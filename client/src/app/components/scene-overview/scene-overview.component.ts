@@ -15,7 +15,7 @@ interface SceneOverviewData {
   newSentencesCount: number;
   uniqueCharacters: string[];
   sentences: Array<{
-    id: string;
+    id: number;
     chinese: string;
     percentKnown: number;
     startMs: number;
@@ -34,7 +34,7 @@ export class SceneOverviewComponent implements OnInit {
   mediaId: string = '';
   seasonId: string = '';
   episodeId: string = '';
-  sceneId: string = '';
+  sceneId: number = 0;
 
   // Component state
   scene: SceneDTO | null = null;
@@ -147,14 +147,14 @@ export class SceneOverviewComponent implements OnInit {
     });
   }
 
-  private analyzeSentence(sentenceId: string, chinese: string) {
+  private analyzeSentence(sentenceId: number, chinese: string) {
     this.sentenceAnalysisService.analyzeSentence(chinese).subscribe({
       next: result => this.handleAnalysisResult(sentenceId, result),
       error: err => this.handleAnalysisError(chinese, err),
     });
   }
 
-  private handleAnalysisResult(sentenceId: string, result: SentenceAnalysisResult) {
+  private handleAnalysisResult(sentenceId: number, result: SentenceAnalysisResult) {
     this.sentenceAnalysisData[sentenceId] = result;
     this.updateDisplayedCharacters();
   }
@@ -279,7 +279,7 @@ export class SceneOverviewComponent implements OnInit {
     this.isScriptView = !this.isScriptView;
   }
 
-  getWordUnderlineStyle(sentenceId: string, char: string): { [key: string]: string } {
+  getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {
     const analysis = this.sentenceAnalysisData[sentenceId];
     if (!analysis) {
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown

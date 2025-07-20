@@ -15,7 +15,7 @@ interface EpisodeOverviewData {
   totalSentencesCount: number;
   uniqueCharacters: string[];
   scenes: Array<{
-    id: string;
+    id: number;
     title: string;
     percentKnown: number;
     sentenceCount: number;
@@ -34,7 +34,7 @@ export class EpisodeOverviewComponent implements OnInit {
   // Route parameters
   mediaId: string = '';
   seasonId: string = '';
-  episodeId: string = '';
+  episodeId: number = 0;
 
   // Component state
   episode: Episode | null = null;
@@ -163,14 +163,14 @@ export class EpisodeOverviewComponent implements OnInit {
     });
   }
 
-  private analyzeSentence(sentenceId: string, chinese: string) {
+  private analyzeSentence(sentenceId: number, chinese: string) {
     this.sentenceAnalysisService.analyzeSentence(chinese).subscribe({
       next: result => this.handleAnalysisResult(sentenceId, result),
       error: err => this.handleAnalysisError(chinese, err),
     });
   }
 
-  private handleAnalysisResult(sentenceId: string, result: SentenceAnalysisResult) {
+  private handleAnalysisResult(sentenceId: number, result: SentenceAnalysisResult) {
     this.sentenceAnalysisData[sentenceId] = result;
     this.updateDisplayedCharacters();
   }

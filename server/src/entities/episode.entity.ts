@@ -15,6 +15,9 @@ export class Episode {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int' })
+  season_id: number;
+
   @ManyToOne(() => Season, (season: Season) => season.episodes)
   @JoinColumn({ name: 'season_id' })
   season: Season;

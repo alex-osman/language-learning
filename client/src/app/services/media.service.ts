@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 export interface EpisodeDTO {
-  id: string;
+  id: number;
   title: string;
   assetUrl: string;
   scenes: Scene[];
@@ -16,7 +16,7 @@ export interface ProgressInfo {
 }
 
 export interface Sentence {
-  id: string;
+  id: number;
   sentence: string;
   translation: string;
   pinyin?: string;
@@ -25,7 +25,7 @@ export interface Sentence {
 }
 
 export interface Scene {
-  id: string;
+  id: number;
   title: string;
   assetUrl: string;
   sentences: Sentence[];
@@ -42,7 +42,7 @@ export interface SceneDTO {
 }
 
 export interface Episode {
-  id: string;
+  id: number;
   title: string;
   number: number;
   scenes: Scene[];
@@ -50,7 +50,7 @@ export interface Episode {
 }
 
 export interface Season {
-  id: string;
+  id: number;
   title: string;
   number: number;
   episodes: Episode[];
@@ -58,7 +58,7 @@ export interface Season {
 }
 
 export interface Media {
-  id: string;
+  id: number;
   title: string;
   type: 'tv' | 'movie';
   imageUrl?: string;
@@ -69,7 +69,7 @@ export interface Media {
 
 export const SCENE_1_SENTENCES: Sentence[] = [
   {
-    id: '1',
+    id: 1,
     sentence: '最好的朋友',
     translation: 'Best friends',
     pinyin: 'Zuì hǎo de péngyǒu',
@@ -77,7 +77,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 12936,
   },
   {
-    id: '2',
+    id: 2,
     sentence: '佩奇在等他最好的朋友小羊苏西。',
     translation: 'Peppa is waiting for her best friend, Little Sheep Suzy.',
     pinyin: 'Pèi qí zài děng tā zuì hǎo de péngyǒu Xiǎo Yáng Sū xī.',
@@ -85,7 +85,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 20420,
   },
   {
-    id: '3',
+    id: 3,
     sentence: '你好，苏西。你好，佩奇。',
     translation: 'Hello, Suzy. Hello, Peppa.',
     pinyin: 'Nǐ hǎo, Sū xī. Nǐ hǎo, Pèi qí.',
@@ -93,7 +93,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 27765,
   },
   {
-    id: '4',
+    id: 4,
     sentence: '小羊苏西来找佩奇玩了。',
     translation: 'Little Sheep Suzy has come to play with Peppa.',
     pinyin: 'Xiǎo yáng Sū xī lái zhǎo Pèi qí wán le.',
@@ -101,7 +101,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 29326,
   },
   {
-    id: '5',
+    id: 5,
     sentence: '佩奇喜欢苏西，苏西也喜欢佩奇。',
     translation: 'Peppa likes Suzy, and Suzy also likes Peppa.',
     pinyin: 'Pèi qí xǐ huān Sū xī, Sū xī yě xǐ huān Pèi qí.',
@@ -109,7 +109,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 37025,
   },
   {
-    id: '6',
+    id: 6,
     sentence: '他们是最好的朋友。',
     translation: 'They are best friends.',
     pinyin: 'Tā men shì zuì hǎo de péng yǒu.',
@@ -117,7 +117,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 41186,
   },
   {
-    id: '8a',
+    id: 7,
     sentence: '佩奇，你为什么不和苏西去你的卧室玩好',
     translation: "Peppa, why don't you and Suzy go play in your bedroom?",
     pinyin: 'Pèi qí, nǐ wèishéme bù hé Sū xī qù nǐ de wò shì wán ne?',
@@ -125,7 +125,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 48000,
   },
   {
-    id: '8b',
+    id: 8,
     sentence: '好的妈妈',
     translation: 'Okay, Mom.',
     pinyin: 'Hǎo de, mā ma',
@@ -133,7 +133,7 @@ export const SCENE_1_SENTENCES: Sentence[] = [
     endMs: 52015,
   },
   {
-    id: '9',
+    id: 9,
     sentence: '乔治也想一起玩。',
     translation: 'George wants to play too.',
     pinyin: 'Qiáo zhì yě xiǎng yì qǐ wán.',
@@ -152,7 +152,7 @@ export class MediaService {
     // TODO: Replace with real API call
     return of([
       {
-        id: 'peppa',
+        id: 1,
         title: 'Peppa Pig',
         type: 'tv',
         imageUrl:
@@ -160,7 +160,7 @@ export class MediaService {
         progress: { percentKnown: 40, knownCharacters: 200, totalCharacters: 500 },
       },
       {
-        id: 'shrek',
+        id: 2,
         title: 'Shrek',
         type: 'movie',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/39/Shrek.jpg',
@@ -169,11 +169,11 @@ export class MediaService {
     ]);
   }
 
-  getSeasonsForMedia(mediaId: string): Observable<Season[]> {
+  getSeasonsForMedia(mediaId: number): Observable<Season[]> {
     // TODO: Replace with real API call
     return of([
       {
-        id: 's1',
+        id: 1,
         title: 'Season 1',
         number: 1,
         episodes: [],
@@ -182,15 +182,15 @@ export class MediaService {
     ]);
   }
 
-  getEpisodesForSeason(mediaId: string, seasonId: string): Observable<Episode[]> {
+  getEpisodesForSeason(seasonId: number): Observable<Episode[]> {
     return this.http.get<Episode[]>(`/api/seasons/${seasonId}/episodes`);
   }
 
-  getScenesForEpisode(episodeId: string): Observable<EpisodeDTO> {
+  getScenesForEpisode(episodeId: number): Observable<EpisodeDTO> {
     return this.http.get<EpisodeDTO>(`/api/episodes/${episodeId}/scenes`);
   }
 
-  getScene(sceneId: string): Observable<SceneDTO> {
+  getScene(sceneId: number): Observable<SceneDTO> {
     return this.http.get<SceneDTO>(`/api/scenes/${sceneId}`);
   }
 

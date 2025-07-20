@@ -34,7 +34,7 @@ export class SceneGalleryComponent implements OnInit {
       this.isLoading = false;
       return;
     }
-    this.mediaService.getScenesForEpisode(this.episodeId).subscribe({
+    this.mediaService.getScenesForEpisode(parseInt(this.episodeId)).subscribe({
       next: episode => {
         console.log('populating scenes', episode, this.scenes);
         this.scenes = episode.scenes;
