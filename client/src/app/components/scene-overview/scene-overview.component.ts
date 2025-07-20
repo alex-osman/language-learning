@@ -45,6 +45,7 @@ export class SceneOverviewComponent implements OnInit {
   // UI state
   displayedCharacters: string[] = [];
   hasMoreCharacters = false;
+  isScriptView = false; // Toggle between sentence view and script view
 
   // Template helpers
   Math = Math;
@@ -272,5 +273,9 @@ export class SceneOverviewComponent implements OnInit {
     } else {
       console.warn('Video element not found');
     }
+  }
+
+  toggleView() {
+    this.isScriptView = !this.isScriptView;
   }
 }

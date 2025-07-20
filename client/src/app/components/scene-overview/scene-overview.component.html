@@ -2,6 +2,9 @@
   <!-- Header -->
   <div class="header">
     <h1>Scene Overview</h1>
+    <button class="view-toggle-btn" (click)="toggleView()">
+      {{ isScriptView ? 'Sentence View' : 'Script View' }}
+    </button>
   </div>
 
   <!-- Loading State -->
@@ -41,8 +44,10 @@
 
     <!-- Sentence Gallery -->
     <div class="sentence-gallery">
-      <h3>Sentence gallery</h3>
-      <div class="sentences-list">
+      <h3>{{ isScriptView ? 'Script' : 'Sentence gallery' }}</h3>
+
+      <!-- Sentence View (Current detailed view) -->
+      <div *ngIf="!isScriptView" class="sentences-list sentence-view">
         <div
           *ngFor="let sentence of sceneData.sentences"
           class="sentence-card"
@@ -60,6 +65,26 @@
                 labelText="known"
               ></app-progress-indicator>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Script View (Concise view) -->
+      <div *ngIf="isScriptView" class="sentences-list script-view">
+        <div
+          *ngFor="let sentence of sceneData.sentences"
+          class="script-line"
+          (click)="goToTimestamp(sentence.startMs)"
+        >
+          <span class="chinese-text">{{ sentence.chinese }}</span>
+          <div class="progress-indicator">
+            <app-progress-indicator
+              type="linear"
+              [value]="sentence.percentKnown"
+              theme="success"
+              [height]="4"
+              [showLabel]="false"
+            ></app-progress-indicator>
           </div>
         </div>
       </div>
