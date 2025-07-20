@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MediaService, Scene } from '../../services/media.service';
+import { MediaService, SceneDTO } from '../../services/media.service';
 import {
   SentenceAnalysisService,
   SentenceAnalysisResult,
@@ -37,7 +37,7 @@ export class SceneOverviewComponent implements OnInit {
   sceneId: string = '';
 
   // Component state
-  scene: Scene | null = null;
+  scene: SceneDTO | null = null;
   isLoading = true;
   error: string | null = null;
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
@@ -117,15 +117,13 @@ export class SceneOverviewComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.mediaService
-      .getScene(this.mediaId, this.seasonId, this.episodeId, this.sceneId)
-      .subscribe({
-        next: scene => this.handleSceneLoaded(scene),
-        error: err => this.handleSceneLoadError(err),
-      });
+    this.mediaService.getScene(this.sceneId).subscribe({
+      next: scene => this.handleSceneLoaded(scene),
+      error: err => this.handleSceneLoadError(err),
+    });
   }
 
-  private handleSceneLoaded(scene: Scene) {
+  private handleSceneLoaded(scene: SceneDTO) {
     this.scene = scene;
     this.isLoading = false;
     this.updateDisplayedCharacters();

@@ -8,6 +8,7 @@ export class SceneDTO {
   id: number;
   episodeId: number;
   title: string;
+  assetUrl: string;
   number: number;
   sentences?: any[];
 }

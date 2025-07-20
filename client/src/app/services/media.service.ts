@@ -32,6 +32,15 @@ export interface Scene {
   knownCache: number;
 }
 
+export interface SceneDTO {
+  id: number;
+  episodeId: number;
+  title: string;
+  assetUrl: string;
+  number: number;
+  sentences: Sentence[];
+}
+
 export interface Episode {
   id: string;
   title: string;
@@ -210,21 +219,8 @@ export class MediaService {
     return this.http.get<EpisodeDTO>(`/api/episodes/${episodeId}/scenes`);
   }
 
-  getScene(
-    mediaId: string,
-    seasonId: string,
-    episodeId: string,
-    sceneId: string
-  ): Observable<Scene> {
-    // TODO: Replace with real API call
-    // return of({
-    //   id: sceneId,
-    //   title: 'Intro',
-    //   assetUrl: 'assets/videos/scene1.mp4',
-    //   sentences: SCENE_1_SENTENCES,
-    //   progress: { percentKnown: 11, knownCharacters: 15, totalCharacters: 18 },
-    // });
-    return this.http.get<Scene>(`/api/scenes/${sceneId}`);
+  getScene(sceneId: string): Observable<SceneDTO> {
+    return this.http.get<SceneDTO>(`/api/scenes/${sceneId}`);
   }
 
   getSentencesForScene(

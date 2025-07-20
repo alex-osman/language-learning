@@ -44,7 +44,7 @@ export class SentenceFlashcardController {
     // Convert to DTOs
     return {
       title: scene.title,
-      assetUrl: scene.assetUrl,
+      assetUrl: scene.episode.assetUrl,
       sentences: sentences.map((s) => ({
         id: s.id,
         sentence: s.sentence,

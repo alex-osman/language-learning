@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './sentence-flashcard.component.html',
   styleUrls: ['./sentence-flashcard.component.scss'],
 })
-export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SentenceFlashcardComponent implements OnInit, OnDestroy {
   // Video element reference is provided lazily when it first appears in the DOM (inside an *ngIf)
   private videoInitialised = false;
 
@@ -98,11 +98,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     this.extractRouteParameters();
   }
 
-  ngAfterViewInit() {
-    // View initialised; actual video player setup happens once the element is available via the setter above.
-    console.log('ngAfterViewInit');
-  }
-
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.removeVideoEventListeners();
@@ -111,22 +106,16 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
   // ===== VIDEO INITIALIZATION =====
 
   private initializeVideoPlayer() {
-    console.log('initializeVideoPlayer');
     if (!this.videoElement) {
-      console.log('no video element');
       return;
     }
-    console.log('videoElement', this.videoElement);
 
     const video = this.videoElement.nativeElement;
-    console.log('video', video);
 
     // Wait for video to load
     video.addEventListener('loadedmetadata', () => {
-      console.log('Video loaded metadata');
       this.isVideoReady = true;
       video.pause(); // Start paused
-      console.log('Video loaded and ready');
     });
 
     video.addEventListener('ended', () => {
@@ -135,7 +124,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
       if (this.currentSentence && !this.canRevealAnswer) {
         this.pauseVideoAtSentenceEnd();
       }
-      console.log('Video ended');
     });
 
     video.addEventListener('error', e => {
@@ -182,8 +170,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy, AfterViewI
     this.sentencePlaybackCompleted = true;
     this.isWaitingForUserInput = true;
     this.canRevealAnswer = true;
-
-    console.log('Video paused at sentence end');
   }
 
   private playVideoForCurrentSentence() {

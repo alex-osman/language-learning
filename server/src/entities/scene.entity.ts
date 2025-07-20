@@ -21,8 +21,8 @@ export class Scene {
   @Column({ type: 'varchar', length: 200 })
   title: string;
 
-  @Column({ type: 'varchar', length: 200 })
-  assetUrl: string;
+  @Column({ type: 'int' })
+  number: number;
 
   @Column({ type: 'int' })
   knownCache: number;
