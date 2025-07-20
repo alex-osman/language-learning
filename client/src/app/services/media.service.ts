@@ -155,7 +155,8 @@ export class MediaService {
         id: 'peppa',
         title: 'Peppa Pig',
         type: 'tv',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/en/e/e6/Peppa_Pig_characters.png',
+        imageUrl:
+          'https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png',
         progress: { percentKnown: 40, knownCharacters: 200, totalCharacters: 500 },
       },
       {
@@ -178,41 +179,11 @@ export class MediaService {
         episodes: [],
         progress: { percentKnown: 50, knownCharacters: 100, totalCharacters: 200 },
       },
-      {
-        id: 's2',
-        title: 'Season 2',
-        number: 2,
-        episodes: [],
-        progress: { percentKnown: 30, knownCharacters: 60, totalCharacters: 200 },
-      },
     ]);
   }
 
   getEpisodesForSeason(mediaId: string, seasonId: string): Observable<Episode[]> {
-    // TODO: Replace with real API call
-    return of([
-      {
-        id: '1',
-        title: 'Episode 1 - Something',
-        number: 1,
-        scenes: [],
-        progress: { percentKnown: 60, knownCharacters: 60, totalCharacters: 100 },
-      },
-      {
-        id: '2',
-        title: 'Episode 2 - Something Else',
-        number: 2,
-        scenes: [],
-        progress: { percentKnown: 20, knownCharacters: 20, totalCharacters: 100 },
-      },
-      {
-        id: '3',
-        title: 'Episode 3 - Best Friends',
-        number: 3,
-        scenes: [],
-        progress: { percentKnown: 20, knownCharacters: 20, totalCharacters: 100 },
-      },
-    ]);
+    return this.http.get<Episode[]>(`/api/seasons/${seasonId}/episodes`);
   }
 
   getScenesForEpisode(episodeId: string): Observable<EpisodeDTO> {
