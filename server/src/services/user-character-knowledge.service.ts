@@ -255,22 +255,27 @@ export class UserCharacterKnowledgeService {
   async getNextCharacterWithoutMovie(
     userId: number,
   ): Promise<Character | null> {
-    // Get all characters that don't have user-specific movies
-    const charactersWithoutMovies = await this.characterRepository.find({
-      order: { id: 'ASC' },
-    });
+    // Use a single query with LEFT JOIN to find the first character without a movie
+    const result = await this.characterRepository
+      .createQueryBuilder('character')
+      .leftJoin(
+        'user_character_knowledge',
+        'uck',
+        'uck.characterID = character.id AND uck.userID = :userId',
+        { userId },
+      )
+      .where('uck.movie IS NULL OR uck.id IS NULL')
+      .orderBy('character.id', 'ASC')
+      .limit(1)
+      .getOne();
 
-    for (const character of charactersWithoutMovies) {
-      const userKnowledge = await this.findByUserAndCharacter(
-        userId,
-        character.id,
-      );
-      if (!userKnowledge || !userKnowledge.movie) {
-        return this.mergeCharacterWithUserData(character, userKnowledge);
-      }
+    if (!result) {
+      return null;
     }
 
-    return null;
+    // Get the user knowledge for this character (if it exists)
+    const userKnowledge = await this.findByUserAndCharacter(userId, result.id);
+    return this.mergeCharacterWithUserData(result, userKnowledge);
   }
 
   async getAllCharacterDTOs(userId: number): Promise<Character[]> {
