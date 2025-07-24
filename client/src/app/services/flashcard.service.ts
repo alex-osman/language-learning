@@ -52,4 +52,16 @@ export class FlashcardService {
   resetLearning(characterId: number): Observable<CharacterDTO> {
     return this.http.post<CharacterDTO>(`${this.apiUrl}/${characterId}/reset`, {});
   }
+
+  /**
+   * Mark a character as seen without starting learning
+   * @param characterId The ID of the character to mark as seen
+   * @param context Optional context (movie, imgUrl) for where the character was seen
+   */
+  markCharacterAsSeen(
+    characterId: number,
+    context?: { movie?: string; imgUrl?: string }
+  ): Observable<CharacterDTO> {
+    return this.http.post<CharacterDTO>(`${this.apiUrl}/${characterId}/seen`, context || {});
+  }
 }

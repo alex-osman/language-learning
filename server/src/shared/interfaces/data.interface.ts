@@ -65,6 +65,8 @@ export interface CharacterDTO {
   interval?: number;
   nextReviewDate?: Date;
   lastReviewDate?: Date;
+  learnedDate?: Date;
+  firstSeenDate?: Date; // NEW: Track when character was first encountered
   dueForReview?: boolean;
 
   sentences?: SentenceDTO[];

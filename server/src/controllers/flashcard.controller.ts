@@ -4,9 +4,15 @@ import { CharacterService } from '../services/character.service';
 import { Character } from '../entities/character.entity';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { UserID } from 'src/decorators/user.decorator';
+import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
 
 interface ReviewRequest {
   quality: number; // 0-5 quality rating
+}
+
+interface MarkSeenRequest {
+  movie?: string;
+  imgUrl?: string;
 }
 
 @Controller('api/flashcards')
@@ -14,6 +20,7 @@ export class FlashcardController {
   constructor(
     private readonly flashcardService: FlashcardService,
     private readonly characterService: CharacterService,
+    private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
   /**
@@ -102,6 +109,31 @@ export class FlashcardController {
     @UserID() userId: number,
   ): Promise<CharacterDTO> {
     const character = await this.flashcardService.resetLearning(id, userId);
+    return this.characterService.makeCharacterDTO(character, userId);
+  }
+
+  /**
+   * Mark a character as seen without starting learning
+   */
+  @Post(':id/seen')
+  async markCharacterAsSeen(
+    @Param('id') id: number,
+    @Body() request: MarkSeenRequest,
+    @UserID() userId: number,
+  ): Promise<CharacterDTO> {
+    const userKnowledge =
+      await this.userCharacterKnowledgeService.markCharacterAsSeen(
+        userId,
+        id,
+        request,
+      );
+
+    // Get the character and merge with user data
+    const character = await this.characterService.findOne(id);
+    if (!character) {
+      throw new Error(`Character ${id} not found`);
+    }
+
     return this.characterService.makeCharacterDTO(character, userId);
   }
 }

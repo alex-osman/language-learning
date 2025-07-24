@@ -17,7 +17,15 @@ type SortOption =
   | 'character'
   | 'pinyin';
 
-type LearningFilter = 'all' | 'learned' | 'notLearned';
+type LearningFilter = 'all' | 'learned' | 'notLearned' | 'seen';
+
+// NEW: Character knowledge status enum
+enum CharacterKnowledgeStatus {
+  UNKNOWN = 'unknown',
+  SEEN = 'seen',
+  LEARNING = 'learning',
+  LEARNED = 'learned',
+}
 
 @Component({
   selector: 'app-character-explorer',
@@ -55,6 +63,7 @@ export class CharacterExplorerComponent implements OnInit {
   isGeneratingMovie = false;
   isPlayingAudio = false;
   isStartingLearning = false;
+  isMarkingAsSeen = false; // NEW: Loading state for marking as seen
   userStoryInput: string = '';
   generatedImageUrl: string | null = null;
 
@@ -79,12 +88,27 @@ export class CharacterExplorerComponent implements OnInit {
   }
 
   // Computed properties
-  get knownCharactersCount(): number {
-    return this.characters.filter(char => !!char.lastReviewDate).length;
+  get learnedCharactersCount(): number {
+    return this.characters.filter(
+      char => this.getCharacterKnowledgeStatus(char) === CharacterKnowledgeStatus.LEARNED
+    ).length;
+  }
+
+  get seenCharactersCount(): number {
+    return this.characters.filter(
+      char => this.getCharacterKnowledgeStatus(char) === CharacterKnowledgeStatus.SEEN
+    ).length;
   }
 
   get unknownCharactersCount(): number {
-    return this.characters.filter(char => !char.lastReviewDate).length;
+    return this.characters.filter(
+      char => this.getCharacterKnowledgeStatus(char) === CharacterKnowledgeStatus.UNKNOWN
+    ).length;
+  }
+
+  // Updated: Legacy method for backward compatibility
+  get knownCharactersCount(): number {
+    return this.characters.filter(char => !!char.lastReviewDate).length;
   }
 
   // Character interaction methods (reused from CharactersComponent)
@@ -193,6 +217,58 @@ export class CharacterExplorerComponent implements OnInit {
     });
   }
 
+  // NEW: Mark character as seen
+  markCharacterAsSeen(): void {
+    if (!this.selectedCharacter) return;
+
+    this.isMarkingAsSeen = true;
+
+    // Pass episode context if available (could be enhanced to pass actual episode info)
+    const context = this.mode === 'episode' ? { movie: 'Episode Context' } : undefined;
+
+    this.flashcardService.markCharacterAsSeen(this.selectedCharacter.id, context).subscribe({
+      next: response => {
+        console.log('Character marked as seen:', response);
+        // Update the character's seen status in the local array
+        const charIndex = this.characters.findIndex(c => c.id === this.selectedCharacter?.id);
+        if (charIndex !== -1) {
+          this.characters[charIndex] = response;
+          this.selectedCharacter = response;
+        }
+        // Update filtered characters since seen status changed
+        this.updateFilteredCharacters();
+        this.isMarkingAsSeen = false;
+      },
+      error: error => {
+        console.error('Error marking character as seen:', error);
+        this.isMarkingAsSeen = false;
+        this.error = 'Failed to mark character as seen. Please try again.';
+      },
+    });
+  }
+
+  // NEW: Get character knowledge status
+  getCharacterKnowledgeStatus(char: CharacterDTO): CharacterKnowledgeStatus {
+    if (char.lastReviewDate) {
+      // Has been reviewed = learning or learned
+      const isLearned = (char.repetitions || 0) >= 3 && (char.easinessFactor || 2.5) >= 2.0;
+      return isLearned ? CharacterKnowledgeStatus.LEARNED : CharacterKnowledgeStatus.LEARNING;
+    }
+
+    if (char.firstSeenDate) {
+      return CharacterKnowledgeStatus.SEEN;
+    }
+
+    return CharacterKnowledgeStatus.UNKNOWN;
+  }
+
+  // NEW: Check if character can be marked as seen (unknown characters only)
+  canMarkAsSeen(char: CharacterDTO): boolean {
+    const status = this.getCharacterKnowledgeStatus(char);
+    console.log(status, char);
+    return status === CharacterKnowledgeStatus.UNKNOWN;
+  }
+
   // Sorting and filtering methods (reused from CharactersComponent)
   private applySorting(characters: CharacterDTO[]): CharacterDTO[] {
     return characters.sort((a, b) => {
@@ -249,11 +325,15 @@ export class CharacterExplorerComponent implements OnInit {
 
   private applyFilters(characters: CharacterDTO[]): CharacterDTO[] {
     return characters.filter(char => {
+      const status = this.getCharacterKnowledgeStatus(char);
+
       switch (this.learningFilter) {
         case 'learned':
-          return !!char.lastReviewDate;
+          return status === CharacterKnowledgeStatus.LEARNED;
+        case 'seen':
+          return status === CharacterKnowledgeStatus.SEEN;
         case 'notLearned':
-          return !char.lastReviewDate;
+          return status === CharacterKnowledgeStatus.UNKNOWN;
         case 'all':
         default:
           return true;

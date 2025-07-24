@@ -322,6 +322,7 @@ export class UserCharacterKnowledgeService {
       movie: userKnowledge.movie || null,
       imgUrl: userKnowledge.imgUrl || null,
       learnedDate: userKnowledge.learnedDate || null,
+      firstSeenDate: userKnowledge.firstSeenDate || null,
       easinessFactor: userKnowledge.easinessFactor ?? 2.5,
       repetitions: userKnowledge.repetitions ?? 0,
       interval: userKnowledge.interval ?? 0,

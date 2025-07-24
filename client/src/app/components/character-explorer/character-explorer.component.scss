@@ -131,6 +131,33 @@
   }
 }
 
+// Enhanced stats section
+.stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+
+  .learned-count {
+    color: #28a745;
+    font-weight: 500;
+  }
+
+  .seen-count {
+    color: #17a2b8;
+    font-weight: 500;
+  }
+
+  .unknown-count {
+    color: #dc3545;
+    font-weight: 500;
+  }
+
+  .known-count {
+    color: #28a745;
+    font-weight: 500;
+  }
+}
+
 .character-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -155,12 +182,30 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
   }
 
-  &.known {
+  // Enhanced character states
+  &.learned {
     border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%);
+  }
+
+  &.learning {
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(135deg, #ffffff 0%, #fffdf0 100%);
+  }
+
+  &.seen {
+    border-left: 4px solid #17a2b8;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdff 100%);
   }
 
   &.unknown {
     border-left: 4px solid #dc3545;
+    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+  }
+
+  // Legacy support
+  &.known {
+    border-left: 4px solid #28a745;
   }
 }
 
@@ -211,6 +256,22 @@
   .learned-badge {
     background: #d4edda;
     color: #155724;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+  }
+
+  .learning-badge {
+    background: #fff3cd;
+    color: #856404;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+  }
+
+  .seen-badge {
+    background: #d1ecf1;
+    color: #0c5460;
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     font-size: 0.7rem;
@@ -323,7 +384,7 @@
   }
 }
 
-// Character Detail Modal
+// Character Detail Modal enhancements
 .character-detail-modal {
   position: fixed;
   top: 0;
@@ -475,6 +536,58 @@
         &:disabled {
           background: #6c757d;
           cursor: not-allowed;
+        }
+      }
+    }
+
+    .knowledge-status {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+
+      strong {
+        text-transform: capitalize;
+        color: #495057;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      .mark-seen-btn {
+        background: #17a2b8;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #138496;
+          transform: translateY(-1px);
+        }
+      }
+
+      .start-learning-btn {
+        background: #28a745;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #218838;
+          transform: translateY(-1px);
         }
       }
     }

@@ -62,6 +62,7 @@ export interface CharacterDTO {
   nextReviewDate?: Date;
   lastReviewDate?: Date;
   learnedDate?: Date;
+  firstSeenDate?: Date; // NEW: Track when character was first encountered
   dueForReview?: boolean;
 }
 

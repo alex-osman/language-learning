@@ -136,6 +136,7 @@ export class CharacterService {
           movie: knowledge.movie || null,
           imgUrl: knowledge.imgUrl || null,
           learnedDate: knowledge.learnedDate || null,
+          firstSeenDate: knowledge.firstSeenDate || null,
           easinessFactor: knowledge.easinessFactor ?? 2.5,
           repetitions: knowledge.repetitions ?? 0,
           interval: knowledge.interval ?? 0,
@@ -185,6 +186,7 @@ export class CharacterService {
       nextReviewDate: mergedCharacter.nextReviewDate,
       lastReviewDate: mergedCharacter.lastReviewDate,
       dueForReview,
+      firstSeenDate: mergedCharacter.firstSeenDate,
     };
   }
 

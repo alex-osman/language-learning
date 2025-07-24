@@ -7,10 +7,11 @@
   <div class="header" *ngIf="mode !== 'analysis'">
     <h3>{{ title }} ({{ characters.length }})</h3>
 
-    <!-- Stats -->
+    <!-- Enhanced Stats -->
     <div *ngIf="showStats" class="stats">
-      <span class="known-count">{{ knownCharactersCount }} known</span>
-      <span class="unknown-count">{{ unknownCharactersCount }} new</span>
+      <span class="learned-count">{{ learnedCharactersCount }} learned</span>
+      <span class="seen-count">{{ seenCharactersCount }} seen</span>
+      <span class="unknown-count">{{ unknownCharactersCount }} unknown</span>
     </div>
   </div>
 
@@ -21,8 +22,12 @@
       <span class="stat-label">Total Characters</span>
     </div>
     <div class="stat-item">
-      <span class="stat-number">{{ knownCharactersCount }}</span>
-      <span class="stat-label">Known Characters</span>
+      <span class="stat-number">{{ learnedCharactersCount }}</span>
+      <span class="stat-label">Learned Characters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{ seenCharactersCount }}</span>
+      <span class="stat-label">Seen Characters</span>
     </div>
     <div class="stat-item">
       <span class="stat-number">{{ unknownCharactersCount }}</span>
@@ -56,7 +61,7 @@
       </button>
     </div>
 
-    <!-- Filtering -->
+    <!-- Enhanced Filtering -->
     <div *ngIf="showFilters" class="filtering-controls">
       <label for="learningFilter">Show:</label>
       <select
@@ -66,7 +71,8 @@
       >
         <option value="all">All Characters</option>
         <option value="learned">Learned Only</option>
-        <option value="notLearned">New Only</option>
+        <option value="seen">Seen Only</option>
+        <option value="notLearned">Unknown Only</option>
       </select>
 
       <button (click)="onResetFilters()" class="reset-btn">Reset</button>
@@ -89,8 +95,10 @@
       *ngFor="let char of filteredCharacters"
       class="character-card"
       [class.selected]="selectedCharacter?.id === char.id"
-      [class.known]="!!char.lastReviewDate"
-      [class.unknown]="!char.lastReviewDate"
+      [class.learned]="getCharacterKnowledgeStatus(char) === 'learned'"
+      [class.seen]="getCharacterKnowledgeStatus(char) === 'seen'"
+      [class.learning]="getCharacterKnowledgeStatus(char) === 'learning'"
+      [class.unknown]="getCharacterKnowledgeStatus(char) === 'unknown'"
       [ngStyle]="getEasinessGradientStyle(char)"
       (click)="onCharacterClick(char)"
     >
@@ -105,6 +113,13 @@
 
       <div class="character-status" *ngIf="mode !== 'analysis'">
         <span *ngIf="char.dueForReview" class="due-badge">Due</span>
+        <span *ngIf="getCharacterKnowledgeStatus(char) === 'learned'" class="learned-badge"
+          >Learned</span
+        >
+        <span *ngIf="getCharacterKnowledgeStatus(char) === 'seen'" class="seen-badge">Seen</span>
+        <span *ngIf="getCharacterKnowledgeStatus(char) === 'learning'" class="learning-badge"
+          >Learning</span
+        >
       </div>
 
       <div class="character-actions" *ngIf="showActions && showMovie">
@@ -125,6 +140,7 @@
     <div class="no-results-content">
       <h3>No characters found</h3>
       <p *ngIf="learningFilter === 'learned'">No characters have been learned yet.</p>
+      <p *ngIf="learningFilter === 'seen'">No characters have been seen yet.</p>
       <p *ngIf="learningFilter === 'notLearned'">All characters have been learned!</p>
       <button class="reset-btn" (click)="onResetFilters()">Show All Characters</button>
     </div>
@@ -208,7 +224,11 @@
           </ng-container>
         </div>
         <div class="info-section">
-          <h4>Spaced Repetition</h4>
+          <h4>Learning Status</h4>
+          <p class="knowledge-status">
+            Status:
+            <strong>{{ getCharacterKnowledgeStatus(selectedCharacter) | titlecase }}</strong>
+          </p>
           <ng-container *ngIf="selectedCharacter.dueForReview">
             <p>This character is due for review!</p>
             <p>
@@ -217,17 +237,33 @@
               Easiness: {{ selectedCharacter.easinessFactor?.toFixed(2) }}
             </p>
           </ng-container>
-          <button
-            class="start-learning-btn"
-            (click)="startLearning()"
-            [disabled]="isStartingLearning"
-          >
-            <ng-container *ngIf="!isStartingLearning">
-              <span *ngIf="!selectedCharacter.nextReviewDate">Start Learning</span>
-              <span *ngIf="selectedCharacter.nextReviewDate">Update Learning</span>
-            </ng-container>
-            <ng-container *ngIf="isStartingLearning">Processing...</ng-container>
-          </button>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <!-- Mark as Seen Button (only for unknown characters) -->
+            <button
+              *ngIf="canMarkAsSeen(selectedCharacter)"
+              class="mark-seen-btn"
+              (click)="markCharacterAsSeen()"
+              [disabled]="isMarkingAsSeen"
+            >
+              <ng-container *ngIf="!isMarkingAsSeen">Mark as Seen</ng-container>
+              <ng-container *ngIf="isMarkingAsSeen">Marking...</ng-container>
+            </button>
+
+            <!-- Start Learning Button -->
+            <button
+              class="start-learning-btn"
+              (click)="startLearning()"
+              [disabled]="isStartingLearning"
+            >
+              <ng-container *ngIf="!isStartingLearning">
+                <span *ngIf="!selectedCharacter.nextReviewDate">Start Learning</span>
+                <span *ngIf="selectedCharacter.nextReviewDate">Update Learning</span>
+              </ng-container>
+              <ng-container *ngIf="isStartingLearning">Processing...</ng-container>
+            </button>
+          </div>
         </div>
       </div>
     </div>
