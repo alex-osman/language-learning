@@ -31,9 +31,11 @@ export interface EnhancedSentenceAnalysisResult {
   learned_characters: string[];
   seen_characters: string[];
   unknown_characters: string[];
+  learning_characters: string[];
   learned_count: number;
   seen_count: number;
   unknown_count: number;
+  learning_count: number;
   total_characters: number;
   learned_percent: number;
   seen_percent: number;

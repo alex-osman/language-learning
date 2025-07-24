@@ -57,7 +57,9 @@
               *ngFor="let char of sentence.chinese.split('')"
               class="character"
               [ngStyle]="
-                ['。', '？', '！'].includes(char) ? {} : getWordUnderlineStyle(sentence.id, char)
+                ['。', '？', '！', '，'].includes(char)
+                  ? {}
+                  : getWordUnderlineStyle(sentence.id, char)
               "
             >
               {{ char }}

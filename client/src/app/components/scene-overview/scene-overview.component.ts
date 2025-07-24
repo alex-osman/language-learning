@@ -88,7 +88,8 @@ export class SceneOverviewComponent implements OnInit {
 
   sentenceKnownCache(sentenceId: number): number {
     return Math.round(
-      (this.enhancedAnalysisData[sentenceId]?.learned_count /
+      ((this.enhancedAnalysisData[sentenceId]?.learned_count +
+        this.enhancedAnalysisData[sentenceId]?.learning_count) /
         this.enhancedAnalysisData[sentenceId]?.total_characters) *
         100
     );
@@ -296,7 +297,7 @@ export class SceneOverviewComponent implements OnInit {
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
     }
 
-    if (charData.status !== 'learned') {
+    if (charData.status !== 'learned' && charData.status !== 'learning') {
       if (charData.status === 'seen') {
         return { 'border-bottom': '3px solid #53b1ff' };
       }

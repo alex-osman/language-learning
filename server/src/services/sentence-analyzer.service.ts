@@ -36,9 +36,11 @@ export interface EnhancedSentenceAnalysis {
   learned_characters: string[];
   seen_characters: string[];
   unknown_characters: string[];
+  learning_characters: string[];
   learned_count: number;
   seen_count: number;
   unknown_count: number;
+  learning_count: number;
   total_characters: number;
   learned_percent: number;
   seen_percent: number;
@@ -205,12 +207,16 @@ export class SentenceAnalyzerService {
     const unknownChars = allCharacters
       .filter((c) => c.status === CharacterKnowledgeStatus.UNKNOWN)
       .map((c) => c.char);
+    const learningChars = allCharacters
+      .filter((c) => c.status === CharacterKnowledgeStatus.LEARNING)
+      .map((c) => c.char);
 
     // Calculate statistics
     const totalUniqueChars = uniqueChars.length;
     const learnedCount = learnedChars.length;
     const seenCount = seenChars.length;
     const unknownCount = unknownChars.length;
+    const learningCount = learningChars.length;
 
     const learnedPercent =
       totalUniqueChars > 0 ? (learnedCount / totalUniqueChars) * 100 : 0;
@@ -223,9 +229,11 @@ export class SentenceAnalyzerService {
       learned_characters: learnedChars,
       seen_characters: seenChars,
       unknown_characters: unknownChars,
+      learning_characters: learningChars,
       learned_count: learnedCount,
       seen_count: seenCount,
       unknown_count: unknownCount,
+      learning_count: learningCount,
       total_characters: chars.length,
       learned_percent: Math.round(learnedPercent),
       seen_percent: Math.round(seenPercent),
