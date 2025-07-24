@@ -12,8 +12,18 @@ export class SceneService {
   ) {}
 
   async create(createSceneDto: CreateSceneDTO): Promise<Scene> {
-    const scene = this.sceneRepository.create(createSceneDto);
-    return this.sceneRepository.save(scene);
+    // Handle episodeId by mapping it to episode relation
+    const sceneData: any = { ...createSceneDto };
+    if (createSceneDto.episodeId) {
+      sceneData.episode = { id: createSceneDto.episodeId };
+      delete sceneData.episodeId; // Remove episodeId since we're using episode relation
+    }
+
+    const scene = this.sceneRepository.create(sceneData);
+    const savedScene = await this.sceneRepository.save(scene);
+
+    // If it's an array (shouldn't happen with single entity), return the first item
+    return Array.isArray(savedScene) ? savedScene[0] : savedScene;
   }
 
   async findAll(): Promise<Scene[]> {
@@ -40,6 +50,9 @@ export class SceneService {
   }
 
   async getScenesForEpisode(episodeId: number): Promise<Scene[]> {
-    return this.sceneRepository.find({ where: { episode: { id: episodeId } } });
+    return this.sceneRepository.find({
+      where: { episode: { id: episodeId } },
+      relations: ['episode'],
+    });
   }
 }

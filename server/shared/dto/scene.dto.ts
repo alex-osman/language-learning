@@ -2,6 +2,7 @@ export class CreateSceneDTO {
   episodeId: number;
   title: string;
   number: number;
+  knownCache?: number;
 }
 
 export class SceneDTO {

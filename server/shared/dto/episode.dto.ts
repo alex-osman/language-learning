@@ -1,8 +1,9 @@
 export class CreateEpisodeDTO {
-  seasonId: number;
+  season_id: number;
   mediaId?: number;
   title: string;
-  number: number;
+  assetUrl?: string;
+  knownCache?: number;
 }
 
 export class EpisodeDTO {

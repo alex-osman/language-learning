@@ -20,6 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "scene-import": "npm run build && node dist/src/import-srt-cli.js",
+    "youtube-import": "npm run build && node dist/src/youtube-import-cli.js",
     "radio:generate": "npm run build && node dist/radio/buildHardBlock.js",
     "radio:preview": "npm run build && node dist/radio/buildPreviewOnly.js",
     "radio:preview:1": "npm run build && node dist/radio/buildPreviewOnly.js --count=1",
@@ -45,12 +46,14 @@
     "dotenv": "^16.4.7",
     "morgan": "^1.10.0",
     "mysql2": "^3.14.0",
+    "node-fetch": "^3.3.2",
     "openai": "^5.1.1",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^5.0.10",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.21",
     "uuid": "^11.1.0",
+    "yt-dlp-wrap": "^2.3.12",
     "zod": "^3.24.2"
   },
   "devDependencies": {
