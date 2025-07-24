@@ -46,17 +46,7 @@
     </div>
 
     <!-- Character Overview -->
-    <div class="character-overview" *ngIf="episodeData.uniqueCharacters.length > 0">
-      <h3>Characters in this Episode</h3>
-      <div class="characters-display">
-        <span *ngFor="let char of displayedCharacters" class="character-badge">
-          {{ char }}
-        </span>
-        <span *ngIf="hasMoreCharacters" class="more-characters">
-          +{{ episodeData.uniqueCharacters.length - displayedCharacters.length }} more
-        </span>
-      </div>
-    </div>
+    <app-episode-characters *ngIf="episodeId" [episodeId]="episodeId"> </app-episode-characters>
 
     <!-- Scene Gallery -->
     <div class="scene-gallery">

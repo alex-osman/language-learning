@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { CharacterDTO } from './data.service';
 
 export interface EpisodeDTO {
   id: number;
@@ -200,5 +201,9 @@ export class MediaService {
   ): Observable<Sentence[]> {
     // TODO: Replace with real API call
     return of(SCENE_1_SENTENCES);
+  }
+
+  getCharactersForEpisode(episodeId: number): Observable<CharacterDTO[]> {
+    return this.http.get<CharacterDTO[]>(`/api/episodes/${episodeId}/characters`);
   }
 }

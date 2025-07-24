@@ -7,13 +7,13 @@ import {
   SentenceAnalysisService,
 } from '../../services/sentence-analysis.service';
 import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
+import { EpisodeCharactersComponent } from '../episode-characters/episode-characters.component';
 
 interface EpisodeOverviewData {
   title: string;
   assetUrl: string;
   percentUnderstood: number;
   totalSentencesCount: number;
-  uniqueCharacters: string[];
   scenes: Array<{
     id: number;
     title: string;
@@ -26,7 +26,7 @@ interface EpisodeOverviewData {
 @Component({
   selector: 'app-episode-overview',
   standalone: true,
-  imports: [CommonModule, ProgressIndicatorComponent],
+  imports: [CommonModule, ProgressIndicatorComponent, EpisodeCharactersComponent],
   templateUrl: './episode-overview.component.html',
   styleUrl: './episode-overview.component.scss',
 })
@@ -44,8 +44,6 @@ export class EpisodeOverviewComponent implements OnInit {
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
 
   // UI state
-  displayedCharacters: string[] = [];
-  hasMoreCharacters = false;
   isScriptView = true;
 
   // Template helpers
@@ -77,7 +75,6 @@ export class EpisodeOverviewComponent implements OnInit {
       assetUrl: this.episodeAssetUrl,
       percentUnderstood: actualProgress.percentKnown,
       totalSentencesCount: this.getTotalSentenceCount(),
-      uniqueCharacters: this.extractUniqueCharacters(),
       scenes: this.episode.scenes.map(scene => ({
         id: scene.id,
         title: scene.title,
@@ -139,7 +136,6 @@ export class EpisodeOverviewComponent implements OnInit {
     };
 
     this.isLoading = false;
-    this.updateDisplayedCharacters();
     this.startSentenceAnalysis();
   }
 
@@ -172,7 +168,6 @@ export class EpisodeOverviewComponent implements OnInit {
 
   private handleAnalysisResult(sentenceId: number, result: SentenceAnalysisResult) {
     this.sentenceAnalysisData[sentenceId] = result;
-    this.updateDisplayedCharacters();
   }
 
   private handleAnalysisError(chinese: string, err: any) {
@@ -253,29 +248,7 @@ export class EpisodeOverviewComponent implements OnInit {
     return totalCharacters > 0 ? Math.round((totalKnown / totalCharacters) * 100) : 0;
   }
 
-  private extractUniqueCharacters(): string[] {
-    if (!this.episode) return [];
-
-    const allText = this.episode.scenes
-      .map(scene => scene.sentences?.map(s => s.sentence).join('') || '')
-      .join('');
-
-    const uniqueChars = [...new Set(allText.split(''))].filter(char =>
-      /[\u4e00-\u9fff]/.test(char)
-    );
-
-    return uniqueChars;
-  }
-
   // ===== UI UPDATES =====
-
-  private updateDisplayedCharacters() {
-    if (!this.episodeData) return;
-
-    const maxDisplayed = 5;
-    this.displayedCharacters = this.episodeData.uniqueCharacters.slice(0, maxDisplayed);
-    this.hasMoreCharacters = this.episodeData.uniqueCharacters.length > maxDisplayed;
-  }
 
   // ===== USER ACTIONS =====
 

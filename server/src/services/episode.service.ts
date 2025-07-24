@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
 import { CreateEpisodeDTO, EpisodeDTO } from '../../shared/dto/episode.dto';
 import { Scene } from 'src/entities/scene.entity';
+import { CharacterService } from './character.service';
+import { CharacterDTO } from '@shared/interfaces/data.interface';
 
 @Injectable()
 export class EpisodeService {
   constructor(
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
+    private characterService: CharacterService,
   ) {}
 
   async create(createEpisodeDto: CreateEpisodeDTO): Promise<Episode> {
@@ -56,5 +59,47 @@ export class EpisodeService {
       assetUrl: episode.assetUrl,
       scenes: episode.scenes,
     };
+  }
+
+  async getCharactersForEpisode(
+    episodeId: number,
+    userId: number,
+  ): Promise<CharacterDTO[]> {
+    // 1. Get episode with all sentences
+    const episode = await this.episodeRepository.findOne({
+      where: { id: episodeId },
+      relations: ['scenes', 'scenes.sentences'],
+    });
+
+    if (!episode) {
+      throw new NotFoundException('Episode not found');
+    }
+
+    // 2. Extract all Chinese characters from episode sentences
+    const allText = episode.scenes
+      .map((scene) => scene.sentences?.map((s) => s.sentence).join('') || '')
+      .join('');
+
+    // Extract unique Chinese characters using regex
+    const uniqueChars = [...new Set(allText.split(''))].filter((char) =>
+      /[\u4e00-\u9fff]/.test(char),
+    );
+
+    console.log(
+      `Found ${uniqueChars.length} unique Chinese characters in episode ${episodeId}`,
+    );
+
+    // 3. Get character data for each unique character
+    const characterData = await Promise.all(
+      uniqueChars.map((char) => this.characterService.findByCharacter(char)),
+    );
+
+    // 4. Convert to DTOs with user context
+    const validCharacters = characterData.filter((char) => char !== null);
+    return Promise.all(
+      validCharacters.map((char) =>
+        this.characterService.makeCharacterDTO(char!, userId),
+      ),
+    );
   }
 }

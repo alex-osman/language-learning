@@ -1,0 +1,238 @@
+<div
+  class="character-explorer"
+  [class.compact]="compact"
+  [class.analysis-mode]="mode === 'analysis'"
+>
+  <!-- Header -->
+  <div class="header" *ngIf="mode !== 'analysis'">
+    <h3>{{ title }} ({{ characters.length }})</h3>
+
+    <!-- Stats -->
+    <div *ngIf="showStats" class="stats">
+      <span class="known-count">{{ knownCharactersCount }} known</span>
+      <span class="unknown-count">{{ unknownCharactersCount }} new</span>
+    </div>
+  </div>
+
+  <!-- Analysis Mode Stats -->
+  <div *ngIf="mode === 'analysis' && showStats" class="analysis-stats">
+    <div class="stat-item">
+      <span class="stat-number">{{ characters.length }}</span>
+      <span class="stat-label">Total Characters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{ knownCharactersCount }}</span>
+      <span class="stat-label">Known Characters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{ unknownCharactersCount }}</span>
+      <span class="stat-label">Unknown Characters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number"
+        >{{ Math.round((knownCharactersCount / characters.length) * 100) }}%</span
+      >
+      <span class="stat-label">Known Percentage</span>
+    </div>
+  </div>
+
+  <!-- Sorting and Filtering Controls -->
+  <div *ngIf="(showSorting || showFilters) && mode !== 'analysis'" class="controls">
+    <!-- Sorting -->
+    <div *ngIf="showSorting" class="sorting-controls">
+      <label for="sortBy">Sort by:</label>
+      <select id="sortBy" [value]="sortBy" (change)="onSortByChange($event)">
+        <option value="id">Creation Order</option>
+        <option value="frequency">Frequency</option>
+        <option value="difficulty">Difficulty</option>
+        <option value="learnedDate">Learned Date</option>
+        <option value="dueStatus">Due Status</option>
+        <option value="character">Character (A-Z)</option>
+        <option value="pinyin">Pinyin (A-Z)</option>
+      </select>
+
+      <button (click)="onSortDirectionToggle()" class="sort-direction-btn">
+        {{ getSortDirectionLabel() }}
+      </button>
+    </div>
+
+    <!-- Filtering -->
+    <div *ngIf="showFilters" class="filtering-controls">
+      <label for="learningFilter">Show:</label>
+      <select
+        id="learningFilter"
+        [value]="learningFilter"
+        (change)="onLearningFilterChange($event)"
+      >
+        <option value="all">All Characters</option>
+        <option value="learned">Learned Only</option>
+        <option value="notLearned">New Only</option>
+      </select>
+
+      <button (click)="onResetFilters()" class="reset-btn">Reset</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading characters...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Character Grid -->
+  <div *ngIf="!isLoading && !error" class="character-grid">
+    <div
+      *ngFor="let char of filteredCharacters"
+      class="character-card"
+      [class.selected]="selectedCharacter?.id === char.id"
+      [class.known]="!!char.lastReviewDate"
+      [class.unknown]="!char.lastReviewDate"
+      [ngStyle]="mode !== 'analysis' ? getEasinessGradientStyle(char) : {}"
+      (click)="onCharacterClick(char)"
+    >
+      <div class="character-main">
+        <span class="character">{{ char.character }}</span>
+        <span class="pinyin">{{ char.pinyin }}</span>
+        <span class="definition">{{ char.definition }}</span>
+        <span *ngIf="mode === 'analysis' && char.freq" class="frequency"
+          >Freq: {{ char.freq }}</span
+        >
+        <span *ngIf="mode === 'analysis' && !char.lastReviewDate && char.id" class="char-id"
+          >ID: {{ char.id }}</span
+        >
+      </div>
+
+      <div class="character-status" *ngIf="mode !== 'analysis'">
+        <span *ngIf="char.dueForReview" class="due-badge">Due</span>
+      </div>
+
+      <div class="character-actions" *ngIf="showActions && showMovie">
+        <button
+          *ngIf="char.pinyin"
+          class="audio-btn"
+          (click)="playCharacterAudio(char); $event.stopPropagation()"
+          [disabled]="isPlayingAudio"
+        >
+          🔊
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!isLoading && !error && filteredCharacters.length === 0" class="no-results">
+    <div class="no-results-content">
+      <h3>No characters found</h3>
+      <p *ngIf="learningFilter === 'learned'">No characters have been learned yet.</p>
+      <p *ngIf="learningFilter === 'notLearned'">All characters have been learned!</p>
+      <button class="reset-btn" (click)="onResetFilters()">Show All Characters</button>
+    </div>
+  </div>
+
+  <!-- Character Detail Modal -->
+  <div *ngIf="selectedCharacter && showMovieGeneration" class="character-detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-top">
+          <h3>
+            {{ selectedCharacter.character }} - {{ selectedCharacter.pinyin }} -
+            {{ selectedCharacter.definition }}
+          </h3>
+          <button class="close-btn" (click)="clearSelection()">×</button>
+        </div>
+        <div class="modal-sub-header">
+          <h4>
+            Initial: {{ selectedCharacter.initial }} -
+            {{ selectedCharacter.initialActor?.name }}
+          </h4>
+          <h4>
+            Final: {{ selectedCharacter.final || 'ø' }} - {{ selectedCharacter.finalSet?.name }}
+          </h4>
+          <h4>
+            Tone: {{ selectedCharacter.toneNumber }} -
+            {{ getToneLocation(selectedCharacter) }}
+          </h4>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedCharacter.imgUrl" class="info-section image-section">
+          <img
+            [src]="selectedCharacter.imgUrl"
+            [alt]="selectedCharacter.character"
+            class="character-image"
+          />
+        </div>
+        <div class="info-section">
+          <h4>Props</h4>
+          <p>
+            <ng-container *ngFor="let prop of selectedCharacter.radicals">
+              <div *ngIf="prop">
+                <span class="prop-item">{{ prop.radical }}</span> &nbsp;&nbsp;&nbsp;&nbsp; (
+                <span class="prop-item">{{ prop.prop }}</span
+                >)
+              </div>
+            </ng-container>
+          </p>
+        </div>
+        <div class="info-section">
+          <h4>Movie</h4>
+          <ng-container *ngIf="selectedCharacter.movie">
+            <p class="movie-text">{{ selectedCharacter.movie }}</p>
+
+            <!-- Generated Image Display -->
+            <div *ngIf="generatedImageUrl" class="generated-image-container">
+              <h5>Generated Image</h5>
+              <img [src]="generatedImageUrl" alt="AI generated scene" class="generated-image" />
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!selectedCharacter.movie">
+            <div class="movie-input-container">
+              <label for="userStoryInput">Story Instructions (Optional):</label>
+              <textarea
+                id="userStoryInput"
+                [(ngModel)]="userStoryInput"
+                placeholder="Enter details you'd like to include in the story (optional)"
+                class="user-story-input"
+              >
+              </textarea>
+            </div>
+            <button
+              class="generate-movie-btn"
+              (click)="generateMovie()"
+              [disabled]="isGeneratingMovie"
+            >
+              <ng-container *ngIf="!isGeneratingMovie">Generate Movie</ng-container>
+              <ng-container *ngIf="isGeneratingMovie">Generating...</ng-container>
+            </button>
+          </ng-container>
+        </div>
+        <div class="info-section">
+          <h4>Spaced Repetition</h4>
+          <ng-container *ngIf="selectedCharacter.dueForReview">
+            <p>This character is due for review!</p>
+            <p>
+              Last reviewed: {{ selectedCharacter.lastReviewDate | date : 'medium' }}<br />
+              Repetitions: {{ selectedCharacter.repetitions }}<br />
+              Easiness: {{ selectedCharacter.easinessFactor?.toFixed(2) }}
+            </p>
+          </ng-container>
+          <button
+            class="start-learning-btn"
+            (click)="startLearning()"
+            [disabled]="isStartingLearning"
+          >
+            <ng-container *ngIf="!isStartingLearning">
+              <span *ngIf="!selectedCharacter.nextReviewDate">Start Learning</span>
+              <span *ngIf="selectedCharacter.nextReviewDate">Update Learning</span>
+            </ng-container>
+            <ng-container *ngIf="isStartingLearning">Processing...</ng-container>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
