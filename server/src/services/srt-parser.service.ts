@@ -87,6 +87,7 @@ export class SRTParserService {
     const entries: MultiFormatSRTEntry[] = [];
     let currentEntry: Partial<MultiFormatSRTEntry> = {};
     let textLines: string[] = [];
+    let allFirstLines: string[] = []; // Collect first lines from multiple entries
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -94,8 +95,12 @@ export class SRTParserService {
       if (!line) {
         // Empty line indicates end of entry
         if (currentEntry.index !== undefined && textLines.length >= 4) {
-          // Determine the format by checking the first text line
-          const isSimplifiedFirst = this.isSimplifiedChinese(textLines[0]);
+          // Collect the first line of this entry for format detection
+          allFirstLines.push(textLines[0]);
+
+          // Determine the format by checking multiple first lines
+          const isSimplifiedFirst =
+            this.isSimplifiedChineseFromMultipleLines(allFirstLines);
 
           if (isSimplifiedFirst) {
             // Format: Simplified, Traditional, Pinyin, English
@@ -148,7 +153,9 @@ export class SRTParserService {
 
     // Add the last entry if it exists
     if (currentEntry.index !== undefined && textLines.length >= 4) {
-      const isSimplifiedFirst = this.isSimplifiedChinese(textLines[0]);
+      allFirstLines.push(textLines[0]);
+      const isSimplifiedFirst =
+        this.isSimplifiedChineseFromMultipleLines(allFirstLines);
 
       if (isSimplifiedFirst) {
         // Format: Simplified, Traditional, Pinyin, English
@@ -180,6 +187,62 @@ export class SRTParserService {
       /[備們個來時間問題現實際際應該專業業務務項發現實]/;
 
     return simplifiedPattern.test(text) && !traditionalPattern.test(text);
+  }
+
+  /**
+   * Check if Simplified Chinese comes first by analyzing multiple first lines
+   * This provides more reliable detection than checking just one line
+   */
+  private isSimplifiedChineseFromMultipleLines(firstLines: string[]): boolean {
+    // Concatenate all first lines to get a larger sample
+    const combinedText = firstLines.join('');
+
+    // Look for Simplified Chinese characters (simpler forms)
+    const simplifiedPattern =
+      /[备们个来时间问题现实际际应该专业业务务项发现实]/;
+    // Look for Traditional Chinese characters (more complex forms)
+    const traditionalPattern =
+      /[備們個來時間問題現實際際應該專業業務務項發現實]/;
+
+    const hasSimplified = simplifiedPattern.test(combinedText);
+    const hasTraditional = traditionalPattern.test(combinedText);
+
+    // If we have both, prefer Simplified (more common in modern content)
+    if (hasSimplified && hasTraditional) {
+      return true;
+    }
+
+    // If we only have Simplified, it's definitely Simplified-first
+    if (hasSimplified && !hasTraditional) {
+      return true;
+    }
+
+    // If we only have Traditional, it's Traditional-first
+    if (!hasSimplified && hasTraditional) {
+      return false;
+    }
+
+    // If we have neither specific pattern, check for any Chinese characters
+    // and use a broader heuristic
+    const anyChinesePattern = /[\u4e00-\u9fff]/;
+    if (anyChinesePattern.test(combinedText)) {
+      // For broader detection, look for common Simplified vs Traditional differences
+      const commonSimplified = /[这那说见现发]/;
+      const commonTraditional = /[這那說見現發]/;
+
+      const hasCommonSimplified = commonSimplified.test(combinedText);
+      const hasCommonTraditional = commonTraditional.test(combinedText);
+
+      if (hasCommonSimplified && !hasCommonTraditional) {
+        return true;
+      }
+      if (!hasCommonSimplified && hasCommonTraditional) {
+        return false;
+      }
+    }
+
+    // Default to Simplified-first (more common in modern content)
+    return true;
   }
 
   /**
