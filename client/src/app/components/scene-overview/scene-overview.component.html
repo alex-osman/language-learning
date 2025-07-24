@@ -56,7 +56,9 @@
             <span
               *ngFor="let char of sentence.chinese.split('')"
               class="character"
-              [ngStyle]="getWordUnderlineStyle(sentence.id, char)"
+              [ngStyle]="
+                ['。', '？', '！'].includes(char) ? {} : getWordUnderlineStyle(sentence.id, char)
+              "
             >
               {{ char }}
             </span>
@@ -64,7 +66,7 @@
           <div class="progress-indicator">
             <app-progress-indicator
               type="linear"
-              [value]="sentence.percentKnown"
+              [value]="sentenceKnownCache(sentence.id)"
               theme="success"
               [height]="4"
               [showLabel]="false"

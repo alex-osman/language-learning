@@ -21,7 +21,7 @@ interface EpisodeOverviewData {
   scenes: Array<{
     id: number;
     title: string;
-    percentKnown: number;
+    knownCache: number;
     sentenceCount: number;
     startMs: number;
   }>;
@@ -89,7 +89,7 @@ export class EpisodeOverviewComponent implements OnInit {
       scenes: this.episode.scenes.map(scene => ({
         id: scene.id,
         title: scene.title,
-        percentKnown: this.calculateSceneProgress(scene),
+        knownCache: scene.knownCache,
         sentenceCount: scene.sentences?.length || 0,
         startMs: 0, // Scene interface doesn't have startMs, we'll use 0 for now
       })),
@@ -176,18 +176,11 @@ export class EpisodeOverviewComponent implements OnInit {
 
     if (allSentences.length === 0) return;
 
-    console.log(`Starting enhanced analysis for ${allSentences.length} sentences`);
-
     // Use enhanced analysis for better progress tracking
     allSentences.forEach(sentence => {
       this.sentenceAnalysisService.analyzeTextWithKnowledgeStatus(sentence.sentence).subscribe({
         next: (analysis: EnhancedSentenceAnalysisResult) => {
           this.enhancedAnalysisData[sentence.id] = analysis;
-          console.log(`Enhanced analysis completed for sentence ${sentence.id}:`, {
-            learned: analysis.learned_count,
-            seen: analysis.seen_count,
-            unknown: analysis.unknown_count,
-          });
         },
         error: err => {
           console.error(`Enhanced analysis failed for sentence ${sentence.id}:`, err);
@@ -302,23 +295,6 @@ export class EpisodeOverviewComponent implements OnInit {
     return this.episode.scenes.reduce((total, scene) => {
       return total + (scene.sentences?.length || 0);
     }, 0);
-  }
-
-  private calculateSceneProgress(scene: Scene): number {
-    if (!scene.sentences || scene.sentences.length === 0) return 0;
-
-    let totalKnown = 0;
-    let totalCharacters = 0;
-
-    scene.sentences.forEach(sentence => {
-      const analysis = this.sentenceAnalysisData[sentence.id];
-      if (analysis) {
-        totalKnown += analysis.known_count;
-        totalCharacters += analysis.total_characters;
-      }
-    });
-
-    return totalCharacters > 0 ? Math.round((totalKnown / totalCharacters) * 100) : 0;
   }
 
   private calculateProgressSegments(): ProgressSegment[] {

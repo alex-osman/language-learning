@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, SceneDTO } from '../../services/media.service';
 import {
+  EnhancedSentenceAnalysisResult,
   SentenceAnalysisResult,
   SentenceAnalysisService,
 } from '../../services/sentence-analysis.service';
@@ -17,7 +18,7 @@ interface SceneOverviewData {
   sentences: Array<{
     id: number;
     chinese: string;
-    percentKnown: number;
+    knownCache: number;
     startMs: number;
   }>;
 }
@@ -40,7 +41,7 @@ export class SceneOverviewComponent implements OnInit {
   scene: SceneDTO | null = null;
   isLoading = true;
   error: string | null = null;
-  sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
+  enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
   // UI state
   displayedCharacters: string[] = [];
@@ -79,10 +80,18 @@ export class SceneOverviewComponent implements OnInit {
       sentences: this.scene.sentences.map(sentence => ({
         id: sentence.id,
         chinese: sentence.sentence,
-        percentKnown: this.sentenceAnalysisData[sentence.id]?.known_percent || 0,
+        knownCache: this.sentenceKnownCache(sentence.id),
         startMs: sentence.startMs,
       })),
     };
+  }
+
+  sentenceKnownCache(sentenceId: number): number {
+    return Math.round(
+      (this.enhancedAnalysisData[sentenceId]?.learned_count /
+        this.enhancedAnalysisData[sentenceId]?.total_characters) *
+        100
+    );
   }
 
   // ===== INITIALIZATION =====
@@ -147,14 +156,14 @@ export class SceneOverviewComponent implements OnInit {
   }
 
   private analyzeSentence(sentenceId: number, chinese: string) {
-    this.sentenceAnalysisService.analyzeSentence(chinese).subscribe({
+    this.sentenceAnalysisService.analyzeTextWithKnowledgeStatus(chinese).subscribe({
       next: result => this.handleAnalysisResult(sentenceId, result),
       error: err => this.handleAnalysisError(chinese, err),
     });
   }
 
-  private handleAnalysisResult(sentenceId: number, result: SentenceAnalysisResult) {
-    this.sentenceAnalysisData[sentenceId] = result;
+  private handleAnalysisResult(sentenceId: number, result: EnhancedSentenceAnalysisResult) {
+    this.enhancedAnalysisData[sentenceId] = result;
     this.updateDisplayedCharacters();
   }
 
@@ -189,7 +198,7 @@ export class SceneOverviewComponent implements OnInit {
   }
 
   private hasAnalysisData(): boolean {
-    return Object.keys(this.sentenceAnalysisData).length > 0;
+    return Object.keys(this.enhancedAnalysisData).length > 0;
   }
 
   private aggregateAnalysisData(): { totalKnownCharacters: number; totalCharacters: number } {
@@ -197,10 +206,12 @@ export class SceneOverviewComponent implements OnInit {
     let totalCharacters = 0;
 
     this.scene!.sentences.forEach(sentence => {
-      const analysis = this.sentenceAnalysisData[sentence.id];
+      const analysis = this.enhancedAnalysisData[sentence.id];
       if (analysis) {
-        totalKnownCharacters += analysis.known_count;
+        totalKnownCharacters += analysis.learned_count;
         totalCharacters += analysis.total_characters;
+      } else {
+        totalCharacters += sentence.sentence.length;
       }
     });
 
@@ -275,7 +286,7 @@ export class SceneOverviewComponent implements OnInit {
   }
 
   getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {
-    const analysis = this.sentenceAnalysisData[sentenceId];
+    const analysis = this.enhancedAnalysisData[sentenceId];
     if (!analysis) {
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
     }
@@ -285,7 +296,11 @@ export class SceneOverviewComponent implements OnInit {
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
     }
 
-    if (!charData.known) {
+    if (charData.status !== 'learned') {
+      if (charData.status === 'seen') {
+        return { 'border-bottom': '3px solid #53b1ff' };
+      }
+
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
     }
 
@@ -297,30 +312,6 @@ export class SceneOverviewComponent implements OnInit {
 
     // Fallback to green for known characters without easiness data
     return { 'border-bottom': '3px solid #2e7d32' }; // Darker green
-  }
-
-  getWordUnderlineColor(sentenceId: string, char: string): string {
-    const analysis = this.sentenceAnalysisData[sentenceId];
-    if (!analysis) {
-      return '#999999'; // Darker grey for unknown
-    }
-
-    const charData = analysis.all_characters.find(c => c.char === char);
-    if (!charData) {
-      return '#999999'; // Darker grey for unknown
-    }
-
-    if (!charData.known) {
-      return '#999999'; // Darker grey for unknown
-    }
-
-    // Get color based on easiness factor if available
-    if (charData.charData?.easinessFactor) {
-      return this.getUnderlineColor(charData.charData.easinessFactor);
-    }
-
-    // Fallback to green for known characters without easiness data
-    return '#2e7d32'; // Darker green
   }
 
   // Specific method for underline colors with higher saturation and lower lightness
