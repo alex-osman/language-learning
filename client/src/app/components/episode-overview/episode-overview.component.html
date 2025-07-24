@@ -46,7 +46,15 @@
     </div>
 
     <!-- Character Overview -->
-    <app-episode-characters *ngIf="episodeId" [episodeId]="episodeId"> </app-episode-characters>
+    <button class="toggle-characters-btn" (click)="toggleCharacters()">
+      {{ isCharactersCollapsed ? 'Show Characters' : 'Hide Characters' }}
+    </button>
+    <app-episode-characters
+      [collapsed]="isCharactersCollapsed"
+      *ngIf="episodeId"
+      [episodeId]="episodeId"
+    >
+    </app-episode-characters>
 
     <!-- Scene Gallery -->
     <div class="scene-gallery">

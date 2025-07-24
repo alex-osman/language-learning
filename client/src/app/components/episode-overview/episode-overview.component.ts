@@ -45,7 +45,7 @@ export class EpisodeOverviewComponent implements OnInit {
 
   // UI state
   isScriptView = true;
-
+  isCharactersCollapsed = false;
   // Template helpers
   Math = Math;
 
@@ -86,6 +86,9 @@ export class EpisodeOverviewComponent implements OnInit {
   }
 
   // ===== INITIALIZATION =====
+  toggleCharacters() {
+    this.isCharactersCollapsed = !this.isCharactersCollapsed;
+  }
 
   private extractRouteParameters() {
     this.route.params.subscribe(params => {

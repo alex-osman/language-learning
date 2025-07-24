@@ -18,10 +18,11 @@ import { CharacterExplorerComponent } from '../character-explorer/character-expl
       [showSorting]="true"
       [showFilters]="true"
       [compact]="true"
-      mode="episode"
+      mode="explorer"
       [showActions]="true"
       [showLearningButtons]="true"
       [showMovieGeneration]="true"
+      [collapsed]="collapsed"
     >
     </app-character-explorer>
   `,
@@ -29,6 +30,7 @@ import { CharacterExplorerComponent } from '../character-explorer/character-expl
 })
 export class EpisodeCharactersComponent implements OnInit {
   @Input() episodeId!: number;
+  @Input() collapsed = false;
 
   characters: CharacterDTO[] = [];
   isLoading = true;

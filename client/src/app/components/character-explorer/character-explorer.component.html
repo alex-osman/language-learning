@@ -84,26 +84,23 @@
   </div>
 
   <!-- Character Grid -->
-  <div *ngIf="!isLoading && !error" class="character-grid">
+  <div *ngIf="!collapsed && !isLoading && !error" class="character-grid">
     <div
       *ngFor="let char of filteredCharacters"
       class="character-card"
       [class.selected]="selectedCharacter?.id === char.id"
       [class.known]="!!char.lastReviewDate"
       [class.unknown]="!char.lastReviewDate"
-      [ngStyle]="mode !== 'analysis' ? getEasinessGradientStyle(char) : {}"
+      [ngStyle]="getEasinessGradientStyle(char)"
       (click)="onCharacterClick(char)"
     >
       <div class="character-main">
         <span class="character">{{ char.character }}</span>
         <span class="pinyin">{{ char.pinyin }}</span>
         <span class="definition">{{ char.definition }}</span>
-        <span *ngIf="mode === 'analysis' && char.freq" class="frequency"
-          >Freq: {{ char.freq }}</span
-        >
-        <span *ngIf="mode === 'analysis' && !char.lastReviewDate && char.id" class="char-id"
-          >ID: {{ char.id }}</span
-        >
+        <span *ngIf="char.freq" class="frequency">Freq: {{ char.freq }}</span
+        ><br />
+        <span *ngIf="!char.lastReviewDate && char.id" class="char-id">ID: {{ char.id }}</span>
       </div>
 
       <div class="character-status" *ngIf="mode !== 'analysis'">

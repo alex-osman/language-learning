@@ -40,6 +40,7 @@ export class CharacterExplorerComponent implements OnInit {
   @Input() showLearningButtons = true;
   @Input() showMovieGeneration = true;
   @Input() showMovie = false;
+  @Input() collapsed = false;
 
   // Internal state
   selectedCharacter: CharacterDTO | null = null;
