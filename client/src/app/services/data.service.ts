@@ -110,8 +110,8 @@ export class DataService {
     return this.http.get<RadicalProp[]>(`${this.apiUrl}/radicalProps`);
   }
 
-  getCharacters(): Observable<CharacterDTO[]> {
-    return this.http.get<CharacterDTO[]>(`${this.apiUrl}/characters`);
+  getCharacters(extraChars: number = 0): Observable<CharacterDTO[]> {
+    return this.http.get<CharacterDTO[]>(`${this.apiUrl}/characters?extraChars=${extraChars}`);
   }
 
   getWords(): Observable<WordDTO[]> {

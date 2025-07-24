@@ -1,27 +1,4 @@
 <div class="episode-gallery">
-  <!-- Episode Card Header (Mock Style) -->
-  <div class="episode-header-card">
-    <div class="episode-header-info">
-      <div class="episode-title">Season 2, Episode 2</div>
-      <div class="episode-subtitle">The School Bus</div>
-      <div class="episode-progress-bar-container">
-        <div class="episode-progress-bar">
-          <div class="episode-progress-bar-fill" style="width: 40%"></div>
-        </div>
-      </div>
-    </div>
-    <div class="scene-thumbnails-row">
-      <div class="scene-thumbnail" *ngFor="let n of [1, 2, 3, 4, 5, 6, 7, 9]">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png"
-          alt="Scene {{ n }}"
-        />
-        <span class="scene-number">{{ n }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="completion-stats">Sentences completed: 16 out of 374</div>
-
   <h2>Episodes</h2>
   <div *ngIf="isLoading" class="loading">Loading episodes...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
@@ -30,10 +7,10 @@
     <div class="episode-card" *ngFor="let episode of episodes" (click)="onEpisodeClick(episode)">
       <div class="episode-info">
         <h3>Episode {{ episode.id }} - {{ episode.title }}</h3>
-        <div class="progress-bar-container" *ngIf="episode.progress">
+        <div class="progress-bar-container" *ngIf="episode.knownCache">
           <app-progress-indicator
             type="linear"
-            [value]="episode.progress.percentKnown"
+            [value]="episode.knownCache"
             theme="warning"
             [height]="10"
             [showLabel]="true"

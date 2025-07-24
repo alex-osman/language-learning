@@ -12,7 +12,6 @@ import { MemoryPalaceComponent } from './components/memory-palace/memory-palace.
 import { ProfileComponent } from './components/profile/profile.component';
 import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
 import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
-import { SeasonGalleryComponent } from './components/season-gallery/season-gallery.component';
 import { SentenceDisplayComponent } from './components/sentence-display/sentence-display.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
@@ -69,10 +68,6 @@ export const routes: Routes = [
   {
     path: 'media',
     component: MediaGalleryComponent,
-  },
-  {
-    path: 'media/:mediaId/seasons',
-    component: SeasonGalleryComponent,
   },
   {
     path: 'media/:mediaId/seasons/:seasonId/episodes',

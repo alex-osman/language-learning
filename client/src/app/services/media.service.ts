@@ -10,9 +10,7 @@ export interface EpisodeDTO {
 }
 
 export interface ProgressInfo {
-  percentKnown: number; // 0-100
-  knownCharacters: number;
-  totalCharacters: number;
+  knownCache: number;
 }
 
 export interface Sentence {
@@ -46,7 +44,7 @@ export interface Episode {
   title: string;
   number: number;
   scenes: Scene[];
-  progress: ProgressInfo;
+  knownCache: number;
 }
 
 export interface Season {
@@ -157,14 +155,14 @@ export class MediaService {
         type: 'tv',
         imageUrl:
           'https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png',
-        progress: { percentKnown: 40, knownCharacters: 200, totalCharacters: 500 },
+        progress: { knownCache: 40 },
       },
       {
         id: 2,
         title: 'Shrek',
         type: 'movie',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/39/Shrek.jpg',
-        progress: { percentKnown: 80, knownCharacters: 400, totalCharacters: 500 },
+        progress: { knownCache: 80 },
       },
     ]);
   }
@@ -177,7 +175,7 @@ export class MediaService {
         title: 'Season 1',
         number: 1,
         episodes: [],
-        progress: { percentKnown: 50, knownCharacters: 100, totalCharacters: 200 },
+        progress: { knownCache: 50 },
       },
     ]);
   }

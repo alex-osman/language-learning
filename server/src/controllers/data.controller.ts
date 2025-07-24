@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ActorService } from '../services/actor.service';
 import { CharacterService } from '../services/character.service';
 import { RadicalPropService } from '../services/radical-prop.service';
@@ -69,8 +69,14 @@ export class DataController {
   }
 
   @Get('characters')
-  getCharacters(@UserID() userId: number): Promise<CharacterDTO[]> {
-    return this.characterService.getAllCharacterDTOs(userId, 600);
+  getCharacters(
+    @UserID() userId: number,
+    @Query('extraChars') extraChars: string = '0',
+  ): Promise<CharacterDTO[]> {
+    return this.characterService.getAllCharacterDTOs(
+      userId,
+      parseInt(extraChars),
+    );
   }
 
   @Post('actors')

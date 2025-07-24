@@ -135,7 +135,7 @@ export class EpisodeOverviewComponent implements OnInit {
       title: episodeData.title,
       number: 0, // We'll need to get this from the episode list
       scenes: episodeData.scenes || [],
-      progress: { percentKnown: 0, knownCharacters: 0, totalCharacters: 0 },
+      knownCache: 0,
     };
 
     this.isLoading = false;

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { UserCharacterKnowledge } from './user-character-knowledge.entity';
 
 @Entity('characters')
 export class Character {
@@ -19,4 +20,10 @@ export class Character {
 
   @Column({ type: 'int', default: 0 })
   freq: number;
+
+  @OneToMany(
+    () => UserCharacterKnowledge,
+    (userCharacterKnowledge) => userCharacterKnowledge.character,
+  )
+  userCharacterKnowledge: UserCharacterKnowledge[];
 }

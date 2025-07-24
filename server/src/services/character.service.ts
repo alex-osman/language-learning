@@ -28,6 +28,7 @@ export class CharacterService {
     userId: number,
     additionalCount?: number,
   ): Promise<CharacterDTO[]> {
+    console.log('get all characters', userId, additionalCount);
     const charactersWithKnowledge = await this.characterRepository
       .createQueryBuilder('character')
       .leftJoin(
@@ -38,11 +39,14 @@ export class CharacterService {
       .where('userCharacterKnowledge.userID = :userId', { userId })
       .getMany();
 
+    console.log('characters with knowledge', charactersWithKnowledge.length);
+
     const latestChar =
       charactersWithKnowledge.sort((a, b) => b.id - a.id)[0] ?? null;
 
     let additional: Character[] = [];
     if (additionalCount) {
+      console.log('getting additional characters', additionalCount);
       additional = await this.characterRepository.find({
         where: {
           id: MoreThan(latestChar?.id ?? 0),
@@ -79,37 +83,40 @@ export class CharacterService {
   ): Promise<CharacterDTO> {
     // Get user-specific data if userId is provided
     let mergedCharacter = character as any;
-    let userKnowledge: UserCharacterKnowledge = {
-      movie: '',
-      imgUrl: '',
-      easinessFactor: 2.5,
-      repetitions: 0,
-      interval: 0,
-      characterID: character.id,
-      userID: 0,
-      id: 0,
-    };
     if (userId) {
-      const existingUserKnowledge =
-        await this.userCharacterKnowledgeService.findByUserAndCharacter(
-          userId,
-          character.id,
-        );
-      if (existingUserKnowledge) {
-        userKnowledge = existingUserKnowledge;
+      let knowledge = character.userCharacterKnowledge?.[0];
+      if (!knowledge) {
+        knowledge = {
+          movie: '',
+          imgUrl: '',
+          easinessFactor: 2.5,
+          repetitions: 0,
+          interval: 0,
+          characterID: character.id,
+          userID: 0,
+          id: 0,
+        };
+        const existingUserKnowledge =
+          await this.userCharacterKnowledgeService.findByUserAndCharacter(
+            userId,
+            character.id,
+          );
+        if (existingUserKnowledge) {
+          knowledge = existingUserKnowledge;
+        }
       }
-      if (userKnowledge) {
+      if (knowledge) {
         // Merge character metadata with user-specific data
         mergedCharacter = {
           ...character,
-          movie: userKnowledge.movie || null,
-          imgUrl: userKnowledge.imgUrl || null,
-          learnedDate: userKnowledge.learnedDate || null,
-          easinessFactor: userKnowledge.easinessFactor ?? 2.5,
-          repetitions: userKnowledge.repetitions ?? 0,
-          interval: userKnowledge.interval ?? 0,
-          nextReviewDate: userKnowledge.nextReviewDate || null,
-          lastReviewDate: userKnowledge.lastReviewDate || null,
+          movie: knowledge.movie || null,
+          imgUrl: knowledge.imgUrl || null,
+          learnedDate: knowledge.learnedDate || null,
+          easinessFactor: knowledge.easinessFactor ?? 2.5,
+          repetitions: knowledge.repetitions ?? 0,
+          interval: knowledge.interval ?? 0,
+          nextReviewDate: knowledge.nextReviewDate || null,
+          lastReviewDate: knowledge.lastReviewDate || null,
         };
       }
     }

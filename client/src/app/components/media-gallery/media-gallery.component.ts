@@ -33,7 +33,7 @@ export class MediaGalleryComponent implements OnInit {
 
   onMediaClick(media: Media): void {
     if (media.type === 'tv') {
-      this.router.navigate(['/media', media.id, 'seasons']);
+      this.router.navigate(['/media', media.id, 'seasons', 1, 'episodes']);
     } else if (media.type === 'movie') {
       // For movies, treat as a single season/episode for now
       this.router.navigate(['/media', media.id, 'seasons', 'default', 'episodes']);

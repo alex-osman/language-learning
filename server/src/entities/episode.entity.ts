@@ -1,14 +1,13 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Season } from './season.entity';
-import { Media } from './media.entity';
 import { Scene } from './scene.entity';
+import { Season } from './season.entity';
 
 @Entity('episodes')
 export class Episode {

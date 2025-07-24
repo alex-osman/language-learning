@@ -48,7 +48,7 @@ export class CharactersComponent implements OnInit {
   // Sorting and Filtering State
   sortBy: SortOption = 'difficulty';
   sortDirection: 'asc' | 'desc' = 'asc';
-  learningFilter: LearningFilter = 'all';
+  learningFilter: LearningFilter = 'learned';
   filteredCharacters: CharacterDTO[] = [];
   knownCharactersCount: number = 0;
   lastIdKnown: number = 0;
