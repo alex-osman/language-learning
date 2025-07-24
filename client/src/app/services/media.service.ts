@@ -62,7 +62,7 @@ export interface Media {
   imageUrl?: string;
   seasons?: Season[]; // for TV
   episodes?: Episode[]; // for movies (optional)
-  progress: ProgressInfo;
+  knownCache: number;
 }
 
 export const SCENE_1_SENTENCES: Sentence[] = [
@@ -155,14 +155,14 @@ export class MediaService {
         type: 'tv',
         imageUrl:
           'https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png',
-        progress: { knownCache: 40 },
+        knownCache: 40,
       },
       {
         id: 2,
         title: 'Shrek',
         type: 'movie',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/39/Shrek.jpg',
-        progress: { knownCache: 80 },
+        knownCache: 80,
       },
     ]);
   }

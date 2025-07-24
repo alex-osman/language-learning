@@ -9,10 +9,10 @@
       <img *ngIf="media.imageUrl" [src]="media.imageUrl" [alt]="media.title" class="media-image" />
       <div class="media-info">
         <h3>{{ media.title }}</h3>
-        <div class="progress-bar-container" *ngIf="media.progress">
+        <div class="progress-bar-container" *ngIf="media.knownCache">
           <app-progress-indicator
             type="linear"
-            [value]="media.progress.percentKnown"
+            [value]="media.knownCache"
             theme="success"
             [height]="10"
             [showLabel]="true"
