@@ -45,7 +45,6 @@ export class SceneOverviewComponent implements OnInit {
   // UI state
   displayedCharacters: string[] = [];
   hasMoreCharacters = false;
-  isScriptView = true;
 
   // Template helpers
   Math = Math;
@@ -273,10 +272,6 @@ export class SceneOverviewComponent implements OnInit {
     } else {
       console.warn('Video element not found');
     }
-  }
-
-  toggleView() {
-    this.isScriptView = !this.isScriptView;
   }
 
   getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {

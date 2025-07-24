@@ -5,6 +5,14 @@ import { Character } from '../entities/character.entity';
 import { UserCharacterKnowledge } from '../entities/user-character-knowledge.entity';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 
+// NEW: Enum for character knowledge status
+export enum CharacterKnowledgeStatus {
+  UNKNOWN = 'unknown', // No record exists
+  SEEN = 'seen', // Has firstSeenDate but no learning progress
+  LEARNING = 'learning', // Has learning progress but not mastered
+  LEARNED = 'learned', // Has good learning progress (high EF or many repetitions)
+}
+
 @Injectable()
 export class UserCharacterKnowledgeService {
   constructor(
@@ -41,6 +49,7 @@ export class UserCharacterKnowledgeService {
     const userKnowledge = this.userCharacterKnowledgeRepository.create({
       userID: userId,
       characterID: characterId,
+      firstSeenDate: new Date(), // Automatically mark as seen when starting to learn
       easinessFactor: 2.5,
       repetitions: 0,
       interval: 0,
@@ -348,5 +357,107 @@ export class UserCharacterKnowledgeService {
     }
 
     return { newEF, newInterval, newRepetitions };
+  }
+
+  // NEW: Mark a character as seen without starting learning
+  async markCharacterAsSeen(
+    userId: number,
+    characterId: number,
+    context?: { movie?: string; imgUrl?: string },
+  ): Promise<UserCharacterKnowledge> {
+    let userKnowledge = await this.findByUserAndCharacter(userId, characterId);
+
+    if (!userKnowledge) {
+      // Create new record with just firstSeenDate
+      userKnowledge = this.userCharacterKnowledgeRepository.create({
+        userID: userId,
+        characterID: characterId,
+        firstSeenDate: new Date(),
+        easinessFactor: 2.5,
+        repetitions: 0,
+        interval: 0,
+        movie: context?.movie,
+        imgUrl: context?.imgUrl,
+      });
+      return this.userCharacterKnowledgeRepository.save(userKnowledge);
+    } else if (!userKnowledge.firstSeenDate) {
+      // Update existing record to mark as seen
+      await this.updateForUser(userId, characterId, {
+        firstSeenDate: new Date(),
+        ...context,
+      });
+      const updatedKnowledge = await this.findByUserAndCharacter(
+        userId,
+        characterId,
+      );
+      if (!updatedKnowledge) {
+        throw new Error(
+          `Failed to update character knowledge for user ${userId}, character ${characterId}`,
+        );
+      }
+      return updatedKnowledge;
+    }
+
+    return userKnowledge;
+  }
+
+  // NEW: Get the knowledge status of a character for a user
+  async getCharacterKnowledgeStatus(
+    userId: number,
+    characterId: number,
+  ): Promise<CharacterKnowledgeStatus> {
+    const userKnowledge = await this.findByUserAndCharacter(
+      userId,
+      characterId,
+    );
+
+    if (!userKnowledge) {
+      return CharacterKnowledgeStatus.UNKNOWN;
+    }
+
+    // Has been reviewed = learning or learned
+    if (userKnowledge.lastReviewDate) {
+      // Determine if "learned" based on progress thresholds
+      const isLearned =
+        userKnowledge.repetitions >= 3 && userKnowledge.easinessFactor >= 2.0;
+      return isLearned
+        ? CharacterKnowledgeStatus.LEARNED
+        : CharacterKnowledgeStatus.LEARNING;
+    }
+
+    // Has been seen but not reviewed
+    if (userKnowledge.firstSeenDate) {
+      return CharacterKnowledgeStatus.SEEN;
+    }
+
+    // Record exists but no dates (shouldn't happen with new schema)
+    return CharacterKnowledgeStatus.UNKNOWN;
+  }
+
+  // NEW: Batch mark characters as seen from text analysis
+  async markCharactersAsSeenFromText(
+    userId: number,
+    text: string,
+    context?: { movie?: string; imgUrl?: string },
+  ): Promise<void> {
+    // Extract unique Chinese characters
+    const chars = text
+      .replace(/[\s\p{P}\p{S}]/gu, '')
+      .replace(/[^\u4e00-\u9fff]/g, '')
+      .split('');
+
+    const uniqueChars = [...new Set(chars)];
+
+    // Mark each character as seen
+    await Promise.all(
+      uniqueChars.map(async (char) => {
+        const character = await this.characterRepository.findOne({
+          where: { character: char },
+        });
+        if (character) {
+          await this.markCharacterAsSeen(userId, character.id, context);
+        }
+      }),
+    );
   }
 }

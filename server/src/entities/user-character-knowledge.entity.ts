@@ -36,6 +36,10 @@ export class UserCharacterKnowledge {
   @Column({ type: 'timestamp', nullable: true })
   learnedDate?: Date;
 
+  // NEW: Track when character was first encountered/seen
+  @Column({ type: 'timestamp', nullable: true })
+  firstSeenDate?: Date;
+
   @Column({ type: 'text', nullable: true })
   movie: string;
 

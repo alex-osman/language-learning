@@ -1,11 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CharacterService } from './character.service';
-import { UserCharacterKnowledgeService } from './user-character-knowledge.service';
+import {
+  UserCharacterKnowledgeService,
+  CharacterKnowledgeStatus,
+} from './user-character-knowledge.service';
 import { CharacterDTO } from '../shared/interfaces/data.interface';
 
 interface AnalyzedCharacter {
   char: string;
   known: boolean;
+  charData?: CharacterDTO;
+  count: number;
+}
+
+// NEW: Enhanced interface for three-state analysis
+interface AnalyzedCharacterEnhanced {
+  char: string;
+  status: CharacterKnowledgeStatus;
   charData?: CharacterDTO;
   count: number;
 }
@@ -18,6 +29,21 @@ export interface SentenceAnalysis {
   total_characters: number;
   known_percent: number;
   all_characters: AnalyzedCharacter[];
+}
+
+// NEW: Enhanced analysis with three states
+export interface EnhancedSentenceAnalysis {
+  learned_characters: string[];
+  seen_characters: string[];
+  unknown_characters: string[];
+  learned_count: number;
+  seen_count: number;
+  unknown_count: number;
+  total_characters: number;
+  learned_percent: number;
+  seen_percent: number;
+  unknown_percent: number;
+  all_characters: AnalyzedCharacterEnhanced[];
 }
 
 const IGNORE_CHARACTERS = [];
@@ -114,6 +140,96 @@ export class SentenceAnalyzerService {
       unknown_count: unknownCount,
       total_characters: totalChars,
       known_percent: Math.round(knownPercent),
+      all_characters: allCharacters,
+    };
+  }
+
+  // NEW: Enhanced analysis with learned/seen/unknown categorization
+  async analyzeTextWithKnowledgeStatus(
+    text: string,
+    userId: number,
+  ): Promise<EnhancedSentenceAnalysis> {
+    // Remove spaces, punctuation, and non-Chinese characters
+    const chars = text
+      .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
+      .replace(/[^\u4e00-\u9fff]/g, '') // Keep only Chinese characters
+      .replace(new RegExp(`[${IGNORE_CHARACTERS.join('')}]`, 'g'), '') // Remove ignored characters
+      .split('');
+
+    // Count occurrences of each character
+    const charCounts = new Map<string, number>();
+    chars.forEach((char) => {
+      charCounts.set(char, (charCounts.get(char) || 0) + 1);
+    });
+
+    // Get all unique characters
+    const uniqueChars = Array.from(charCounts.keys());
+
+    // Get character data for all unique characters
+    const characterData = await Promise.all(
+      uniqueChars.map((char) => this.characterService.findByCharacter(char)),
+    );
+
+    // Analyze each unique character with knowledge status
+    const allCharacters = await Promise.all(
+      uniqueChars.map(async (char, index) => {
+        const charData = characterData[index];
+        let status = CharacterKnowledgeStatus.UNKNOWN;
+
+        if (charData) {
+          status =
+            await this.userCharacterKnowledgeService.getCharacterKnowledgeStatus(
+              userId,
+              charData.id,
+            );
+        }
+
+        return {
+          char,
+          status,
+          charData: charData
+            ? await this.characterService.makeCharacterDTO(charData, userId)
+            : undefined,
+          count: charCounts.get(char) || 0,
+        };
+      }),
+    );
+
+    // Categorize characters by status
+    const learnedChars = allCharacters
+      .filter((c) => c.status === CharacterKnowledgeStatus.LEARNED)
+      .map((c) => c.char);
+    const seenChars = allCharacters
+      .filter((c) => c.status === CharacterKnowledgeStatus.SEEN)
+      .map((c) => c.char);
+    const unknownChars = allCharacters
+      .filter((c) => c.status === CharacterKnowledgeStatus.UNKNOWN)
+      .map((c) => c.char);
+
+    // Calculate statistics
+    const totalUniqueChars = uniqueChars.length;
+    const learnedCount = learnedChars.length;
+    const seenCount = seenChars.length;
+    const unknownCount = unknownChars.length;
+
+    const learnedPercent =
+      totalUniqueChars > 0 ? (learnedCount / totalUniqueChars) * 100 : 0;
+    const seenPercent =
+      totalUniqueChars > 0 ? (seenCount / totalUniqueChars) * 100 : 0;
+    const unknownPercent =
+      totalUniqueChars > 0 ? (unknownCount / totalUniqueChars) * 100 : 0;
+
+    return {
+      learned_characters: learnedChars,
+      seen_characters: seenChars,
+      unknown_characters: unknownChars,
+      learned_count: learnedCount,
+      seen_count: seenCount,
+      unknown_count: unknownCount,
+      total_characters: chars.length,
+      learned_percent: Math.round(learnedPercent),
+      seen_percent: Math.round(seenPercent),
+      unknown_percent: Math.round(unknownPercent),
       all_characters: allCharacters,
     };
   }

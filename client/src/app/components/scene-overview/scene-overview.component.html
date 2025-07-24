@@ -5,9 +5,6 @@
       ← Back to Episodes
     </button>
     <h1>Scene Overview</h1>
-    <button class="view-toggle-btn" (click)="toggleView()">
-      {{ isScriptView ? 'Sentence View' : 'Script View' }}
-    </button>
   </div>
 
   <!-- Loading State -->
@@ -47,41 +44,9 @@
 
     <!-- Sentence Gallery -->
     <div class="sentence-gallery">
-      <h3>{{ isScriptView ? 'Script' : 'Sentence gallery' }}</h3>
-
-      <!-- Sentence View (Current detailed view) -->
-      <div *ngIf="!isScriptView" class="sentences-list sentence-view">
-        <div
-          *ngFor="let sentence of sceneData.sentences"
-          class="sentence-card"
-          (click)="goToTimestamp(sentence.startMs)"
-        >
-          <div class="sentence-content">
-            <p class="chinese">
-              <span
-                *ngFor="let char of sentence.chinese.split('')"
-                class="character"
-                [ngStyle]="getWordUnderlineStyle(sentence.id, char)"
-              >
-                {{ char }}
-              </span>
-            </p>
-            <div class="sentence-meta">
-              <app-progress-indicator
-                type="linear"
-                [value]="sentence.percentKnown"
-                theme="success"
-                [height]="6"
-                [showLabel]="true"
-                labelText="known"
-              ></app-progress-indicator>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <h3>Script</h3>
       <!-- Script View (Concise view) -->
-      <div *ngIf="isScriptView" class="sentences-list script-view">
+      <div class="sentences-list script-view">
         <div
           *ngFor="let sentence of sceneData.sentences"
           class="script-line"
