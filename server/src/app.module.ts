@@ -29,6 +29,7 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { SeasonsController } from './seasons/seasons.controller';
+import { YouTubeImportController } from './controllers/youtube-import.controller';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { SeasonsController } from './seasons/seasons.controller';
     SentenceAnalyzerController,
     SentenceFlashcardController,
     SeasonsController,
+    YouTubeImportController,
   ],
   providers: [
     AppService,

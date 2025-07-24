@@ -26,13 +26,12 @@ export class EpisodeGalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.mediaId = this.route.snapshot.paramMap.get('mediaId') || '';
-    this.seasonId = this.route.snapshot.paramMap.get('seasonId') || '';
-    if (!this.mediaId || !this.seasonId) {
-      this.error = 'No media or season selected.';
+    if (!this.mediaId) {
+      this.error = 'No media selected.';
       this.isLoading = false;
       return;
     }
-    this.mediaService.getEpisodesForSeason(parseInt(this.seasonId)).subscribe({
+    this.mediaService.getEpisodesForMedia(parseInt(this.mediaId)).subscribe({
       next: episodes => {
         this.episodes = episodes;
         this.isLoading = false;
@@ -45,13 +44,6 @@ export class EpisodeGalleryComponent implements OnInit {
   }
 
   onEpisodeClick(episode: Episode): void {
-    this.router.navigate([
-      '/media',
-      this.mediaId,
-      'seasons',
-      this.seasonId,
-      'episodes',
-      episode.id,
-    ]);
+    this.router.navigate(['/media', this.mediaId, 'episodes', episode.id]);
   }
 }

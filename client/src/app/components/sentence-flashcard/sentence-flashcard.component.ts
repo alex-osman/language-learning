@@ -70,7 +70,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
   // Scene context (required)
   sceneId: string = '';
   mediaId: string = '';
-  seasonId: string = '';
   episodeId: string = '';
 
   // Review stats
@@ -214,7 +213,6 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
       // Get additional context from query parameters if provided
       this.route.queryParams.subscribe(queryParams => {
         this.mediaId = queryParams['mediaId'] || '';
-        this.seasonId = queryParams['seasonId'] || '';
         this.episodeId = queryParams['episodeId'] || '';
       });
 
@@ -370,7 +368,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
 
   goBackToScene() {
     this.router.navigate([
-      `/media/${this.mediaId}/seasons/${this.seasonId}/episodes/${this.episodeId}/scenes/${this.sceneId}`,
+      `/media/${this.mediaId}/episodes/${this.episodeId}/scenes/${this.sceneId}`,
     ]);
   }
 

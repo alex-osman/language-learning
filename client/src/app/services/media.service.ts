@@ -66,6 +66,36 @@ export interface Media {
   knownCache: number;
 }
 
+export interface YouTubeImportRequest {
+  youtubeUrl: string;
+  seasonId: number;
+  title?: string;
+  preferredLanguage?: string;
+  dryRun?: boolean;
+}
+
+export interface YouTubeImportResult {
+  episode: Episode | null;
+  scene: Scene | null;
+  sentencesImported: number;
+  videoUrl: string;
+  success: boolean;
+  message: string;
+  previewData?: {
+    videoTitle: string;
+    availableSubtitles: string[];
+    subtitlePreviews: Array<{
+      language: string;
+      filename: string;
+      preview: string;
+      entryCount: number;
+      isMultiFormat?: boolean;
+      contentAnalysis?: string;
+    }>;
+    parsedEntries: number;
+  };
+}
+
 export const SCENE_1_SENTENCES: Sentence[] = [
   {
     id: 1,
@@ -160,9 +190,9 @@ export class MediaService {
       },
       {
         id: 2,
-        title: 'Shrek',
-        type: 'movie',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/39/Shrek.jpg',
+        title: 'Jiayun',
+        type: 'tv',
+        imageUrl: 'https://i3.ytimg.com/vi/oaA5N6Wso_o/hqdefault.jpg',
         knownCache: 80,
       },
     ]);
@@ -181,8 +211,8 @@ export class MediaService {
     ]);
   }
 
-  getEpisodesForSeason(seasonId: number): Observable<Episode[]> {
-    return this.http.get<Episode[]>(`/api/seasons/${seasonId}/episodes`);
+  getEpisodesForMedia(mediaId: number): Observable<Episode[]> {
+    return this.http.get<Episode[]>(`/api/episodes/${mediaId}/media-episodes`);
   }
 
   getScenesForEpisode(episodeId: number): Observable<EpisodeDTO> {
@@ -205,5 +235,9 @@ export class MediaService {
 
   getCharactersForEpisode(episodeId: number): Observable<CharacterDTO[]> {
     return this.http.get<CharacterDTO[]>(`/api/episodes/${episodeId}/characters`);
+  }
+
+  importFromYouTube(request: YouTubeImportRequest): Observable<YouTubeImportResult> {
+    return this.http.post<YouTubeImportResult>('/api/youtube-import', request);
   }
 }

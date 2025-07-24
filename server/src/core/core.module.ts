@@ -24,6 +24,7 @@ import { UserCharacterKnowledgeService } from '../services/user-character-knowle
 import { SRTParserService } from '../services/srt-parser.service';
 import { YouTubeImportService } from '../services/youtube-import.service';
 import { MovieAiService } from '../ai/services/movie.service';
+import { Season } from 'src/entities/season.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { MovieAiService } from '../ai/services/movie.service';
       Scene,
       Episode,
       UserCharacterKnowledge,
+      Season,
     ]),
   ],
   providers: [

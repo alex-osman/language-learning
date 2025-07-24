@@ -1,6 +1,54 @@
 <div class="media-gallery">
   <h2>Media Gallery</h2>
 
+  <!-- YouTube Import Section -->
+  <div class="youtube-import-section">
+    <h3>Import from YouTube</h3>
+    <div class="import-form">
+      <div class="form-group">
+        <input
+          type="url"
+          [(ngModel)]="youtubeUrl"
+          placeholder="YouTube URL (e.g., https://youtube.com/watch?v=abc123)"
+          class="input"
+        />
+        <input type="number" [(ngModel)]="seasonId" placeholder="Season ID" class="input" min="1" />
+        <input
+          type="text"
+          [(ngModel)]="title"
+          placeholder="Custom title (optional)"
+          class="input"
+        />
+      </div>
+      <div class="form-options">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="dryRun" />
+          Dry run (preview only)
+        </label>
+      </div>
+      <button
+        (click)="onYouTubeImport()"
+        [disabled]="!youtubeUrl || !seasonId || isImporting"
+        class="button import-button"
+      >
+        {{ isImporting ? 'Importing...' : 'Import Video' }}
+      </button>
+    </div>
+
+    <!-- Import feedback messages -->
+    <div *ngIf="importError" class="message error">
+      {{ importError }}
+    </div>
+    <div *ngIf="importSuccess" class="message success">
+      {{ importSuccess }}
+    </div>
+    <div *ngIf="isImporting" class="message info">
+      🎬 Processing video... This may take a few minutes depending on video length and subtitle
+      complexity.
+    </div>
+  </div>
+
+  <!-- Existing media list -->
   <div *ngIf="isLoading" class="loading">Loading media...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
 

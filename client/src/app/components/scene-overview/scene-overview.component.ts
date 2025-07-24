@@ -33,7 +33,6 @@ interface SceneOverviewData {
 export class SceneOverviewComponent implements OnInit {
   // Route parameters
   mediaId: string = '';
-  seasonId: string = '';
   episodeId: string = '';
   sceneId: number = 0;
 
@@ -100,7 +99,6 @@ export class SceneOverviewComponent implements OnInit {
   private extractRouteParameters() {
     this.route.params.subscribe(params => {
       this.mediaId = params['mediaId'] || '';
-      this.seasonId = params['seasonId'] || '';
       this.episodeId = params['episodeId'] || '';
       this.sceneId = params['sceneId'] || '';
 
@@ -113,7 +111,7 @@ export class SceneOverviewComponent implements OnInit {
   }
 
   private hasValidRouteParameters(): boolean {
-    return !!(this.mediaId && this.seasonId && this.episodeId && this.sceneId);
+    return !!(this.mediaId && this.episodeId && this.sceneId);
   }
 
   private handleRouteError() {
@@ -250,7 +248,6 @@ export class SceneOverviewComponent implements OnInit {
     this.router.navigate(['/sentence-flashcard', this.sceneId], {
       queryParams: {
         mediaId: this.mediaId,
-        seasonId: this.seasonId,
         episodeId: this.episodeId,
       },
     });

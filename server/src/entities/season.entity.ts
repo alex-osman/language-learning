@@ -14,8 +14,11 @@ export class Season {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int' })
+  media_id: number;
+
   @ManyToOne(() => Media, (media: Media) => media.seasons)
-  @JoinColumn({ name: 'mediaId' })
+  @JoinColumn({ name: 'media_id' })
   media: Media;
 
   @Column({ type: 'varchar', length: 200 })

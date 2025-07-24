@@ -70,23 +70,23 @@ export const routes: Routes = [
     component: MediaGalleryComponent,
   },
   {
-    path: 'media/:mediaId/seasons/:seasonId/episodes',
+    path: 'media/:mediaId/episodes',
     component: EpisodeGalleryComponent,
   },
   {
-    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId',
+    path: 'media/:mediaId/episodes/:episodeId',
     component: EpisodeOverviewComponent,
   },
   {
-    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes',
+    path: 'media/:mediaId/episodes/:episodeId/scenes',
     component: SceneGalleryComponent,
   },
   {
-    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes/:sceneId',
+    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId',
     component: SceneOverviewComponent,
   },
   {
-    path: 'media/:mediaId/seasons/:seasonId/episodes/:episodeId/scenes/:sceneId/sentences',
+    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId/sentences',
     component: SentenceGalleryComponent,
   },
   {

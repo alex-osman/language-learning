@@ -42,7 +42,6 @@ interface EpisodeOverviewData {
 export class EpisodeOverviewComponent implements OnInit {
   // Route parameters
   mediaId: string = '';
-  seasonId: string = '';
   episodeId: number = 0;
 
   // Component state
@@ -108,7 +107,6 @@ export class EpisodeOverviewComponent implements OnInit {
   private extractRouteParameters() {
     this.route.params.subscribe(params => {
       this.mediaId = params['mediaId'] || '';
-      this.seasonId = params['seasonId'] || '';
       this.episodeId = params['episodeId'] || '';
 
       if (this.hasValidRouteParameters()) {
@@ -120,7 +118,7 @@ export class EpisodeOverviewComponent implements OnInit {
   }
 
   private hasValidRouteParameters(): boolean {
-    return !!(this.mediaId && this.seasonId && this.episodeId);
+    return !!(this.mediaId && this.episodeId);
   }
 
   private handleRouteError() {
@@ -356,7 +354,6 @@ export class EpisodeOverviewComponent implements OnInit {
       this.router.navigate(['/sentence-flashcard', firstScene.id], {
         queryParams: {
           mediaId: this.mediaId,
-          seasonId: this.seasonId,
           episodeId: this.episodeId,
         },
       });
@@ -379,16 +376,7 @@ export class EpisodeOverviewComponent implements OnInit {
   }
 
   goToScene(scene: any) {
-    this.router.navigate([
-      '/media',
-      this.mediaId,
-      'seasons',
-      this.seasonId,
-      'episodes',
-      this.episodeId,
-      'scenes',
-      scene.id,
-    ]);
+    this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'scenes', scene.id]);
   }
 
   toggleView() {

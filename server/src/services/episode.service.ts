@@ -1,17 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
 import { CreateEpisodeDTO, EpisodeDTO } from '../../shared/dto/episode.dto';
 import { Scene } from 'src/entities/scene.entity';
 import { CharacterService } from './character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
+import { Season } from 'src/entities/season.entity';
 
 @Injectable()
 export class EpisodeService {
   constructor(
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
+    @InjectRepository(Season)
+    private seasonRepository: Repository<Season>,
     private characterService: CharacterService,
   ) {}
 
@@ -38,6 +41,15 @@ export class EpisodeService {
 
   async delete(id: number): Promise<void> {
     await this.episodeRepository.delete(id);
+  }
+
+  async getEpisodesForMedia(mediaId: number): Promise<Episode[]> {
+    const allSeasons = await this.seasonRepository.find({
+      where: { media_id: mediaId },
+    });
+    return this.episodeRepository.find({
+      where: { season_id: In(allSeasons.map((s) => s.id)) },
+    });
   }
 
   async getEpisodesForSeason(seasonId: number): Promise<Episode[]> {
