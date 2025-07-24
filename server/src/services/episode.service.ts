@@ -4,6 +4,7 @@ import { In, Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
 import { CreateEpisodeDTO, EpisodeDTO } from '../../shared/dto/episode.dto';
 import { Scene } from 'src/entities/scene.entity';
+import { Sentence } from 'src/entities/sentence.entity';
 import { CharacterService } from './character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { Season } from 'src/entities/season.entity';
@@ -15,6 +16,10 @@ export class EpisodeService {
     private episodeRepository: Repository<Episode>,
     @InjectRepository(Season)
     private seasonRepository: Repository<Season>,
+    @InjectRepository(Scene)
+    private sceneRepository: Repository<Scene>,
+    @InjectRepository(Sentence)
+    private sentenceRepository: Repository<Sentence>,
     private characterService: CharacterService,
   ) {}
 
@@ -113,5 +118,30 @@ export class EpisodeService {
         this.characterService.makeCharacterDTO(char!, userId),
       ),
     );
+  }
+
+  async deleteEpisodeWithCascade(episodeId: number): Promise<void> {
+    const episode = await this.episodeRepository.findOne({
+      where: { id: episodeId },
+      relations: ['scenes', 'scenes.sentences'],
+    });
+
+    if (!episode) {
+      throw new NotFoundException('Episode not found');
+    }
+
+    for (const scene of episode.scenes) {
+      if (scene.sentences && scene.sentences.length > 0) {
+        const sentenceIds = scene.sentences.map(sentence => sentence.id);
+        await this.sentenceRepository.delete(sentenceIds);
+      }
+    }
+
+    if (episode.scenes.length > 0) {
+      const sceneIds = episode.scenes.map(scene => scene.id);
+      await this.sceneRepository.delete(sceneIds);
+    }
+
+    await this.episodeRepository.delete(episodeId);
   }
 }

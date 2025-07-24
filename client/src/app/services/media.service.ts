@@ -240,4 +240,8 @@ export class MediaService {
   importFromYouTube(request: YouTubeImportRequest): Observable<YouTubeImportResult> {
     return this.http.post<YouTubeImportResult>('/api/youtube-import', request);
   }
+
+  deleteEpisode(episodeId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`/api/episodes/${episodeId}`);
+  }
 }

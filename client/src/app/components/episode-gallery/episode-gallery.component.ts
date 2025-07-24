@@ -46,4 +46,20 @@ export class EpisodeGalleryComponent implements OnInit {
   onEpisodeClick(episode: Episode): void {
     this.router.navigate(['/media', this.mediaId, 'episodes', episode.id]);
   }
+
+  deleteEpisode(episode: Episode, event: Event): void {
+    event.stopPropagation();
+    
+    if (confirm(`Are you sure you want to delete "${episode.title}"? This will permanently delete the episode and all its scenes and sentences.`)) {
+      this.mediaService.deleteEpisode(episode.id).subscribe({
+        next: () => {
+          this.episodes = this.episodes.filter(e => e.id !== episode.id);
+        },
+        error: (error) => {
+          console.error('Failed to delete episode:', error);
+          alert('Failed to delete episode. Please try again.');
+        }
+      });
+    }
+  }
 }

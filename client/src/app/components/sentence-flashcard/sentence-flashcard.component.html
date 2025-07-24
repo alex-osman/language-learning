@@ -35,7 +35,13 @@
 
     <!-- Video Player Section -->
     <div class="video-container" [class.playing]="isVideoPlaying">
-      <video #sceneVideo [src]="assetUrl" [muted]="false" [autoplay]="true"></video>
+      <video
+        #sceneVideo
+        [src]="assetUrl"
+        [playsInline]="true"
+        [muted]="false"
+        [autoplay]="true"
+      ></video>
 
       <!-- Video Controls -->
       <div class="video-controls" *ngIf="sentencePlaybackCompleted && !isFlipped">

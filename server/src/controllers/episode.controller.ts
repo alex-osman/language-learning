@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Delete } from '@nestjs/common';
 import { EpisodeService } from 'src/services/episode.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserID } from 'src/decorators/user.decorator';
@@ -25,5 +25,11 @@ export class EpisodeController {
     @UserID() userId: number,
   ): Promise<CharacterDTO[]> {
     return this.episodeService.getCharactersForEpisode(parseInt(id), userId);
+  }
+
+  @Delete(':id')
+  async deleteEpisode(@Param('id') id: string): Promise<{ message: string }> {
+    await this.episodeService.deleteEpisodeWithCascade(parseInt(id));
+    return { message: 'Episode deleted successfully' };
   }
 }

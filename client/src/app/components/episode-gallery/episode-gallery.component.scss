@@ -102,7 +102,6 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s;
   display: flex;
   flex-direction: column;
@@ -110,11 +109,18 @@
   padding: 1.2rem 1rem;
   text-align: center;
   border: 1px solid #eee;
+  position: relative;
 }
 
 .episode-card:hover {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px) scale(1.03);
+}
+
+.episode-info {
+  cursor: pointer;
+  flex: 1;
+  width: 100%;
 }
 
 .episode-info h3 {
@@ -126,6 +132,31 @@
 .progress-bar-container {
   margin-top: 0.5rem;
   width: 100%;
+}
+
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 10;
+}
+
+.delete-button:hover {
+  background: #cc0000;
+  transform: scale(1.1);
 }
 
 .loading,
