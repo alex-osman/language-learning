@@ -4,9 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, Episode, Scene, EpisodeDTO } from '../../services/media.service';
 import {
   SentenceAnalysisResult,
+  EnhancedSentenceAnalysisResult,
   SentenceAnalysisService,
 } from '../../services/sentence-analysis.service';
-import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
+import {
+  ProgressIndicatorComponent,
+  ProgressSegment,
+} from '../progress-indicator/progress-indicator.component';
 import { EpisodeCharactersComponent } from '../episode-characters/episode-characters.component';
 
 interface EpisodeOverviewData {
@@ -21,6 +25,11 @@ interface EpisodeOverviewData {
     sentenceCount: number;
     startMs: number;
   }>;
+  // NEW: Enhanced progress data
+  progressSegments: ProgressSegment[];
+  learnedCount: number;
+  seenCount: number;
+  unknownCount: number;
 }
 
 @Component({
@@ -42,6 +51,7 @@ export class EpisodeOverviewComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
+  enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
   // UI state
   isScriptView = true;
@@ -69,6 +79,7 @@ export class EpisodeOverviewComponent implements OnInit {
     if (!this.episode) return null;
 
     const actualProgress = this.calculateActualProgress();
+    const progressSegments = this.calculateProgressSegments();
 
     return {
       title: this.episode.title,
@@ -82,6 +93,10 @@ export class EpisodeOverviewComponent implements OnInit {
         sentenceCount: scene.sentences?.length || 0,
         startMs: 0, // Scene interface doesn't have startMs, we'll use 0 for now
       })),
+      progressSegments: progressSegments.filter(segment => segment.label !== 'unknown'),
+      learnedCount: actualProgress.learnedCharacters,
+      seenCount: actualProgress.seenCharacters,
+      unknownCount: actualProgress.unknownCharacters,
     };
   }
 
@@ -153,28 +168,41 @@ export class EpisodeOverviewComponent implements OnInit {
   private startSentenceAnalysis() {
     if (!this.episode) return;
 
-    this.episode.scenes.forEach(scene => {
-      if (scene.sentences) {
-        scene.sentences.forEach(sentence => {
-          this.analyzeSentence(sentence.id, sentence.sentence);
-        });
-      }
+    // Clear existing analysis data
+    this.sentenceAnalysisData = {};
+    this.enhancedAnalysisData = {};
+
+    const allSentences = this.episode.scenes.flatMap(scene => scene.sentences || []);
+
+    if (allSentences.length === 0) return;
+
+    console.log(`Starting enhanced analysis for ${allSentences.length} sentences`);
+
+    // Use enhanced analysis for better progress tracking
+    allSentences.forEach(sentence => {
+      this.sentenceAnalysisService.analyzeTextWithKnowledgeStatus(sentence.sentence).subscribe({
+        next: (analysis: EnhancedSentenceAnalysisResult) => {
+          this.enhancedAnalysisData[sentence.id] = analysis;
+          console.log(`Enhanced analysis completed for sentence ${sentence.id}:`, {
+            learned: analysis.learned_count,
+            seen: analysis.seen_count,
+            unknown: analysis.unknown_count,
+          });
+        },
+        error: err => {
+          console.error(`Enhanced analysis failed for sentence ${sentence.id}:`, err);
+          // Fallback to basic analysis
+          this.sentenceAnalysisService.analyzeSentence(sentence.sentence).subscribe({
+            next: (analysis: SentenceAnalysisResult) => {
+              this.sentenceAnalysisData[sentence.id] = analysis;
+            },
+            error: err => {
+              console.error(`Fallback analysis failed for sentence ${sentence.id}:`, err);
+            },
+          });
+        },
+      });
     });
-  }
-
-  private analyzeSentence(sentenceId: number, chinese: string) {
-    this.sentenceAnalysisService.analyzeSentence(chinese).subscribe({
-      next: result => this.handleAnalysisResult(sentenceId, result),
-      error: err => this.handleAnalysisError(chinese, err),
-    });
-  }
-
-  private handleAnalysisResult(sentenceId: number, result: SentenceAnalysisResult) {
-    this.sentenceAnalysisData[sentenceId] = result;
-  }
-
-  private handleAnalysisError(chinese: string, err: any) {
-    console.error('Error analyzing sentence:', chinese, err);
   }
 
   // ===== CALCULATIONS =====
@@ -183,47 +211,89 @@ export class EpisodeOverviewComponent implements OnInit {
     percentKnown: number;
     knownCharacters: number;
     totalCharacters: number;
+    learnedCharacters: number;
+    seenCharacters: number;
+    unknownCharacters: number;
   } {
-    if (!this.episode || !this.hasAnalysisData()) {
-      return { percentKnown: 0, knownCharacters: 0, totalCharacters: 0 };
+    if (!this.episode || !this.hasEnhancedAnalysisData()) {
+      return {
+        percentKnown: 0,
+        knownCharacters: 0,
+        totalCharacters: 0,
+        learnedCharacters: 0,
+        seenCharacters: 0,
+        unknownCharacters: 0,
+      };
     }
 
-    const { totalKnownCharacters, totalCharacters } = this.aggregateAnalysisData();
+    const { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters } =
+      this.aggregateEnhancedAnalysisData();
 
     if (totalCharacters === 0) {
-      return { percentKnown: 0, knownCharacters: 0, totalCharacters: 0 };
+      return {
+        percentKnown: 0,
+        knownCharacters: 0,
+        totalCharacters: 0,
+        learnedCharacters: 0,
+        seenCharacters: 0,
+        unknownCharacters: 0,
+      };
     }
 
-    const percentKnown = Math.round((totalKnownCharacters / totalCharacters) * 100);
+    const knownCharacters = totalLearnedCharacters + totalSeenCharacters;
+    const percentKnown = Math.round((knownCharacters / totalCharacters) * 100);
 
     return {
       percentKnown,
-      knownCharacters: totalKnownCharacters,
+      knownCharacters,
       totalCharacters,
+      learnedCharacters: totalLearnedCharacters,
+      seenCharacters: totalSeenCharacters,
+      unknownCharacters: totalUnknownCharacters,
     };
   }
 
-  private hasAnalysisData(): boolean {
-    return Object.keys(this.sentenceAnalysisData).length > 0;
+  private hasEnhancedAnalysisData(): boolean {
+    if (!this.episode) return false;
+
+    const allSentences = this.episode.scenes.flatMap(scene => scene.sentences || []);
+    return (
+      allSentences.length > 0 &&
+      allSentences.every(sentence => this.enhancedAnalysisData[sentence.id] !== undefined)
+    );
   }
 
-  private aggregateAnalysisData(): { totalKnownCharacters: number; totalCharacters: number } {
-    let totalKnownCharacters = 0;
-    let totalCharacters = 0;
+  private aggregateEnhancedAnalysisData(): {
+    totalLearnedCharacters: number;
+    totalSeenCharacters: number;
+    totalUnknownCharacters: number;
+    totalCharacters: number;
+  } {
+    // Use Sets to track unique characters by status
+    const learnedChars = new Set<string>();
+    const seenChars = new Set<string>();
+    const unknownChars = new Set<string>();
 
     this.episode!.scenes.forEach(scene => {
       if (scene.sentences) {
         scene.sentences.forEach(sentence => {
-          const analysis = this.sentenceAnalysisData[sentence.id];
+          const analysis = this.enhancedAnalysisData[sentence.id];
           if (analysis) {
-            totalKnownCharacters += analysis.known_count;
-            totalCharacters += analysis.total_characters;
+            // Add unique characters to appropriate sets
+            analysis.learned_characters.forEach(char => learnedChars.add(char));
+            analysis.seen_characters.forEach(char => seenChars.add(char));
+            analysis.unknown_characters.forEach(char => unknownChars.add(char));
           }
         });
       }
     });
 
-    return { totalKnownCharacters, totalCharacters };
+    const totalLearnedCharacters = learnedChars.size;
+    const totalSeenCharacters = seenChars.size;
+    const totalUnknownCharacters = unknownChars.size;
+    const totalCharacters = totalLearnedCharacters + totalSeenCharacters + totalUnknownCharacters;
+
+    return { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters };
   }
 
   private getTotalSentenceCount(): number {
@@ -249,6 +319,50 @@ export class EpisodeOverviewComponent implements OnInit {
     });
 
     return totalCharacters > 0 ? Math.round((totalKnown / totalCharacters) * 100) : 0;
+  }
+
+  private calculateProgressSegments(): ProgressSegment[] {
+    const progress = this.calculateActualProgress();
+
+    if (progress.totalCharacters === 0) {
+      return [];
+    }
+
+    const learnedPercent = Math.round(
+      (progress.learnedCharacters / progress.totalCharacters) * 100
+    );
+    const seenPercent = Math.round((progress.seenCharacters / progress.totalCharacters) * 100);
+    const unknownPercent = Math.round(
+      (progress.unknownCharacters / progress.totalCharacters) * 100
+    );
+
+    const segments: ProgressSegment[] = [];
+
+    if (learnedPercent > 0) {
+      segments.push({
+        value: learnedPercent,
+        color: '#28a745', // Green for learned
+        label: 'learned',
+      });
+    }
+
+    if (seenPercent > 0) {
+      segments.push({
+        value: seenPercent,
+        color: '#17a2b8', // Cyan for seen
+        label: 'seen',
+      });
+    }
+
+    if (unknownPercent > 0) {
+      segments.push({
+        value: unknownPercent,
+        color: '#dc3545', // Red for unknown
+        label: 'unknown',
+      });
+    }
+
+    return segments;
   }
 
   // ===== UI UPDATES =====

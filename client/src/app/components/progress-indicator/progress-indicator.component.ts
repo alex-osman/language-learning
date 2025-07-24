@@ -69,8 +69,28 @@ export interface ProgressSegment {
           stroke="#f0f0f0"
           [attr.stroke-width]="strokeWidth"
         />
-        <!-- Progress circle -->
+
+        <!-- Multi-segment circles -->
+        <g *ngIf="segments && segments.length > 0">
+          <circle
+            *ngFor="let segment of segments; let i = index"
+            [attr.cx]="size / 2"
+            [attr.cy]="size / 2"
+            [attr.r]="radius"
+            fill="none"
+            [attr.stroke]="segment.color"
+            [attr.stroke-width]="strokeWidth"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="getConsecutiveSegmentDashArray(i)"
+            [attr.stroke-dashoffset]="getSegmentDashOffset(i)"
+            [attr.transform]="'rotate(-90 ' + size / 2 + ' ' + size / 2 + ')'"
+            [style.transition]="animated ? 'stroke-dashoffset 0.3s ease' : 'none'"
+          />
+        </g>
+
+        <!-- Single progress circle (backward compatibility) -->
         <circle
+          *ngIf="!segments || segments.length === 0"
           [attr.cx]="size / 2"
           [attr.cy]="size / 2"
           [attr.r]="radius"
@@ -84,7 +104,10 @@ export interface ProgressSegment {
           [style.transition]="animated ? 'stroke-dashoffset 0.3s ease' : 'none'"
         />
       </svg>
-      <div *ngIf="showLabel" class="circular-progress-text">{{ totalValue }}%</div>
+      <div *ngIf="showLabel" class="circular-progress-text">
+        <ng-container *ngIf="segments && segments.length > 0"> {{ totalValue }}% </ng-container>
+        <ng-container *ngIf="!segments || segments.length === 0"> {{ totalValue }}% </ng-container>
+      </div>
     </div>
   `,
   styles: [
@@ -250,5 +273,39 @@ export class ProgressIndicatorComponent {
       leftPosition += this.segments[i].value;
     }
     return leftPosition;
+  }
+
+  // New methods for circular segment calculations
+  getSegmentDashArray(segmentValue: number): string {
+    const segmentLength = (segmentValue / 100) * this.circumference;
+    return `${segmentLength} ${this.circumference}`;
+  }
+
+  getSegmentDashOffset(segmentIndex: number): number {
+    if (!this.segments) return 0;
+
+    // Calculate cumulative value of all previous segments
+    let cumulativeValue = 0;
+    for (let i = 0; i < segmentIndex; i++) {
+      cumulativeValue += this.segments[i].value;
+    }
+
+    // Start this segment where the previous one ended
+    // We need to offset backwards from the circumference
+    const totalProgress = cumulativeValue / 100;
+    return this.circumference * (1 - totalProgress);
+  }
+
+  // New method to get individual segment dash array for consecutive rendering
+  getConsecutiveSegmentDashArray(segmentIndex: number): string {
+    if (!this.segments || segmentIndex >= this.segments.length) return '0 0';
+
+    const segment = this.segments[segmentIndex];
+    const segmentLength = (segment.value / 100) * this.circumference;
+
+    // Calculate total gap (everything else in the circle)
+    const gapLength = this.circumference - segmentLength;
+
+    return `${segmentLength} ${gapLength}`;
   }
 }

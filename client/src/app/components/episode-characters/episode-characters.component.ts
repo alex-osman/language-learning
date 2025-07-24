@@ -23,7 +23,6 @@ import { CharacterExplorerComponent } from '../character-explorer/character-expl
       [showLearningButtons]="true"
       [showMovieGeneration]="true"
       [collapsed]="collapsed"
-      [showMovie]="true"
     >
     </app-character-explorer>
   `,

@@ -9,6 +9,7 @@ import {
 import {
   SentenceAnalyzerService,
   SentenceAnalysis,
+  EnhancedSentenceAnalysis,
 } from '../services/sentence-analyzer.service';
 import { UserID } from 'src/decorators/user.decorator';
 
@@ -54,6 +55,42 @@ export class SentenceAnalyzerController {
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to analyze sentence',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('analyze-enhanced')
+  async analyzeTextWithKnowledgeStatus(
+    @Body() request: AnalyzeSentenceRequest,
+    @UserID() userId: number,
+  ): Promise<EnhancedSentenceAnalysis> {
+    try {
+      if (!request.text) {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Text is required',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return await this.sentenceAnalyzerService.analyzeTextWithKnowledgeStatus(
+        request.text,
+        userId,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      this.logger.error(`Failed to analyze text with knowledge status:`, error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to analyze text with knowledge status',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

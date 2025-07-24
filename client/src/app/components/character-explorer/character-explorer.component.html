@@ -122,14 +122,25 @@
         >
       </div>
 
-      <div class="character-actions" *ngIf="showActions && showMovie">
+      <div class="character-actions" *ngIf="showActions">
         <button
-          *ngIf="char.pinyin"
+          *ngIf="char.pinyin && showMovie"
           class="audio-btn"
           (click)="playCharacterAudio(char); $event.stopPropagation()"
           [disabled]="isPlayingAudio"
         >
           🔊
+        </button>
+
+        <!-- Mark as Seen Button for unknown characters -->
+        <button
+          *ngIf="canMarkAsSeen(char)"
+          class="mark-seen-btn-card"
+          (click)="markCharacterAsSeenFromCard(char); $event.stopPropagation()"
+          [disabled]="isMarkingAsSeen"
+          title="Mark as seen"
+        >
+          👁️
         </button>
       </div>
     </div>

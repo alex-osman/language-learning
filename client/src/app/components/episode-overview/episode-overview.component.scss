@@ -105,6 +105,26 @@
         color: #666;
         font-size: 0.9rem;
       }
+
+      .character-breakdown {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+
+        .learned-count {
+          color: #28a745; // Green for learned
+        }
+
+        .seen-count {
+          color: #17a2b8; // Cyan for seen
+        }
+
+        .unknown-count {
+          color: #dc3545; // Red for unknown
+        }
+      }
     }
 
     .progress-circle {

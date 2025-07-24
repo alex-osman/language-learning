@@ -5,9 +5,7 @@
       ← Back to Episodes
     </button>
     <h1>Episode Overview</h1>
-    <button class="view-toggle-btn" (click)="toggleView()">
-      {{ isScriptView ? 'Scene View' : 'Script View' }}
-    </button>
+    <div></div>
   </div>
 
   <!-- Loading State -->
@@ -32,12 +30,17 @@
         <p>{{ episodeData.percentUnderstood }}% understood</p>
         <p>{{ episodeData.totalSentencesCount }} total sentences</p>
         <p>{{ episodeData.scenes.length }} scenes</p>
+        <!-- NEW: Character learning breakdown -->
+        <div class="character-breakdown" *ngIf="episodeData.progressSegments.length > 0">
+          <span class="learned-count">{{ episodeData.learnedCount }} learned</span>
+          <span class="seen-count">{{ episodeData.seenCount }} seen</span>
+          <span class="unknown-count">{{ episodeData.unknownCount }} unknown</span>
+        </div>
       </div>
       <div class="progress-circle">
         <app-progress-indicator
           type="circular"
-          [value]="episodeData.percentUnderstood"
-          theme="warning"
+          [segments]="episodeData.progressSegments"
           [size]="80"
           [strokeWidth]="8"
           [showLabel]="true"
@@ -58,28 +61,6 @@
 
     <!-- Scene Gallery -->
     <div class="scene-gallery">
-      <h3>{{ isScriptView ? 'Scenes' : 'Scene Details' }}</h3>
-
-      <!-- Scene View (Detailed view) -->
-      <div *ngIf="!isScriptView" class="scenes-list scene-view">
-        <div *ngFor="let scene of episodeData.scenes" class="scene-card" (click)="goToScene(scene)">
-          <div class="scene-content">
-            <h4>{{ scene.title }}</h4>
-            <p class="scene-meta">{{ scene.sentenceCount }} sentences</p>
-            <div class="scene-progress">
-              <app-progress-indicator
-                type="linear"
-                [value]="scene.percentKnown"
-                theme="success"
-                [height]="6"
-                [showLabel]="true"
-                labelText="known"
-              ></app-progress-indicator>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Script View (Concise view) -->
       <div *ngIf="isScriptView" class="scenes-list script-view">
         <div *ngFor="let scene of episodeData.scenes" class="scene-line" (click)="goToScene(scene)">

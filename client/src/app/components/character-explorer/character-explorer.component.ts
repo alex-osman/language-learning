@@ -247,6 +247,39 @@ export class CharacterExplorerComponent implements OnInit {
     });
   }
 
+  // NEW: Mark character as seen from card (without opening modal)
+  markCharacterAsSeenFromCard(char: CharacterDTO): void {
+    if (!char || !this.canMarkAsSeen(char)) return;
+
+    this.isMarkingAsSeen = true;
+
+    // Pass episode context if available (could be enhanced to pass actual episode info)
+    const context = this.mode === 'episode' ? { movie: 'Episode Context' } : undefined;
+
+    this.flashcardService.markCharacterAsSeen(char.id, context).subscribe({
+      next: response => {
+        console.log('Character marked as seen:', response);
+        // Update the character's seen status in the local array
+        const charIndex = this.characters.findIndex(c => c.id === char.id);
+        if (charIndex !== -1) {
+          this.characters[charIndex] = response;
+          // Also update selectedCharacter if it's the same character
+          if (this.selectedCharacter?.id === char.id) {
+            this.selectedCharacter = response;
+          }
+        }
+        // Update filtered characters since seen status changed
+        this.updateFilteredCharacters();
+        this.isMarkingAsSeen = false;
+      },
+      error: error => {
+        console.error('Error marking character as seen:', error);
+        this.isMarkingAsSeen = false;
+        this.error = 'Failed to mark character as seen. Please try again.';
+      },
+    });
+  }
+
   // NEW: Get character knowledge status
   getCharacterKnowledgeStatus(char: CharacterDTO): CharacterKnowledgeStatus {
     if (char.lastReviewDate) {

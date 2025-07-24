@@ -315,6 +315,29 @@
       }
     }
 
+    &.mark-seen-btn-card {
+      background: #17a2b8;
+      color: white;
+      font-size: 0.9rem;
+      min-width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #138496;
+        transform: scale(1.05);
+      }
+
+      &:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+
     &.learn-btn {
       background: #007bff;
       color: white;
