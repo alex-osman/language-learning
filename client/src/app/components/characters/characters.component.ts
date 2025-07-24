@@ -29,11 +29,12 @@ import {
         [showStats]="true"
         [showSorting]="true"
         [showFilters]="true"
-        [compact]="false"
+        [compact]="true"
         mode="explorer"
         [showActions]="true"
         [showLearningButtons]="true"
         [showMovieGeneration]="true"
+        [showMovie]="true"
       >
       </app-character-explorer>
     </div>
