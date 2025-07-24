@@ -298,7 +298,6 @@ export class CharacterExplorerComponent implements OnInit {
   // NEW: Check if character can be marked as seen (unknown characters only)
   canMarkAsSeen(char: CharacterDTO): boolean {
     const status = this.getCharacterKnowledgeStatus(char);
-    console.log(status, char);
     return status === CharacterKnowledgeStatus.UNKNOWN;
   }
 

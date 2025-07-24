@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Sentence } from '../entities/sentence.entity';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
+import { SRTEntry } from './srt-parser.service';
 
 @Injectable()
 export class SentenceService {
@@ -63,5 +64,46 @@ export class SentenceService {
       startMs: 0, // TODO: Add startMs to sentence entity if needed
       endMs: 0, // TODO: Add endMs to sentence entity if needed
     };
+  }
+
+  /**
+   * Create sentences from SRT entries for a specific scene
+   */
+  async createSentencesFromSRT(
+    srtEntries: SRTEntry[],
+    sceneId: number,
+  ): Promise<Sentence[]> {
+    const sentences: Partial<Sentence>[] = srtEntries.map((entry) => ({
+      sentence: entry.text,
+      startMs: entry.startTime,
+      endMs: entry.endTime,
+      scene: { id: sceneId } as any, // TypeORM will handle the relation
+      source: 'SRT_IMPORT',
+      // Set default spaced repetition values
+      easinessFactor: 2.5,
+      repetitions: 0,
+      interval: 1,
+    }));
+
+    const createdSentences = this.sentenceRepository.create(sentences);
+    return this.sentenceRepository.save(createdSentences);
+  }
+
+  /**
+   * Check if scene has existing sentences to avoid duplicates
+   */
+  async countSentencesForScene(sceneId: number): Promise<number> {
+    return this.sentenceRepository.count({
+      where: { scene: { id: sceneId } },
+    });
+  }
+
+  /**
+   * Delete all sentences for a scene (useful for re-importing)
+   */
+  async deleteSentencesForScene(sceneId: number): Promise<void> {
+    await this.sentenceRepository.delete({
+      scene: { id: sceneId },
+    });
   }
 }

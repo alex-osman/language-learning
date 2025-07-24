@@ -19,6 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "scene-import": "npm run build && node dist/src/import-srt-cli.js",
     "radio:generate": "npm run build && node dist/radio/buildHardBlock.js",
     "radio:preview": "npm run build && node dist/radio/buildPreviewOnly.js",
     "radio:preview:1": "npm run build && node dist/radio/buildPreviewOnly.js --count=1",

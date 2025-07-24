@@ -21,6 +21,7 @@ import { Episode } from 'src/entities/episode.entity';
 import { EpisodeService } from 'src/services/episode.service';
 import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
 import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
+import { SRTParserService } from '../services/srt-parser.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { UserCharacterKnowledgeService } from '../services/user-character-knowle
     SceneService,
     EpisodeService,
     UserCharacterKnowledgeService,
+    SRTParserService,
   ],
   exports: [
     CharacterService,
@@ -63,6 +65,7 @@ import { UserCharacterKnowledgeService } from '../services/user-character-knowle
     SceneService,
     EpisodeService,
     UserCharacterKnowledgeService,
+    SRTParserService,
   ],
 })
 export class CoreModule {}
