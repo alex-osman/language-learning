@@ -670,6 +670,7 @@ export class YouTubeImportService {
 
   /**
    * Detect if subtitle content contains multiple formats (Traditional + Simplified + Pinyin + English)
+   * Handles both Traditional-first and Simplified-first formats
    */
   private detectMultiFormatContent(content: string): boolean {
     // Look for patterns that indicate multi-format content
@@ -687,22 +688,18 @@ export class YouTubeImportService {
       const line3 = textLines[i + 2] || '';
       const line4 = textLines[i + 3] || '';
 
-      // Check for Traditional Chinese characters (more complex forms)
-      const hasTraditional =
-        /[備們個來時間問題現實際際應該專業業務務項發現實]/.test(line1);
+      // Check for Chinese characters (any Chinese characters)
+      const hasChinese1 = /[\u4e00-\u9fff]/.test(line1);
+      const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
 
-      // Check for Simplified Chinese characters
-      const hasSimplified =
-        /[备们个来时间问题现实际际应该专业业务务项发现实]/.test(line2);
-
-      // Check for pinyin (Latin with tone marks)
+      // Check for pinyin (Latin with tone marks or basic Latin)
       const hasPinyin =
         /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line3) || /\b[a-zA-Z]+\b/.test(line3);
 
-      // Check for English
+      // Check for English (pure English text)
       const hasEnglish = /^[a-zA-Z\s\.,!?'"]+$/.test(line4);
 
-      if (hasTraditional && hasSimplified && hasPinyin && hasEnglish) {
+      if (hasChinese1 && hasChinese2 && hasPinyin && hasEnglish) {
         return true;
       }
     }

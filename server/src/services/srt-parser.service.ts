@@ -80,6 +80,7 @@ export class SRTParserService {
   /**
    * Parse multi-format SRT content that contains Traditional, Simplified, Pinyin, and English
    * Returns only Simplified Chinese, Pinyin, and English (skips Traditional)
+   * Handles both Traditional-first and Simplified-first formats
    */
   parseMultiFormatSRT(content: string): MultiFormatSRTEntry[] {
     const lines = content.split('\n');
@@ -93,10 +94,20 @@ export class SRTParserService {
       if (!line) {
         // Empty line indicates end of entry
         if (currentEntry.index !== undefined && textLines.length >= 4) {
-          // Extract the 4 lines: Traditional (skip), Simplified, Pinyin, English
-          currentEntry.simplifiedChinese = textLines[1] || ''; // Line 2: Simplified Chinese
-          currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
-          currentEntry.english = textLines[3] || ''; // Line 4: English
+          // Determine the format by checking the first text line
+          const isSimplifiedFirst = this.isSimplifiedChinese(textLines[0]);
+
+          if (isSimplifiedFirst) {
+            // Format: Simplified, Traditional, Pinyin, English
+            currentEntry.simplifiedChinese = textLines[0] || ''; // Line 1: Simplified Chinese
+            currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
+            currentEntry.english = textLines[3] || ''; // Line 4: English
+          } else {
+            // Format: Traditional, Simplified, Pinyin, English
+            currentEntry.simplifiedChinese = textLines[1] || ''; // Line 2: Simplified Chinese
+            currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
+            currentEntry.english = textLines[3] || ''; // Line 4: English
+          }
 
           entries.push(currentEntry as MultiFormatSRTEntry);
         }
@@ -137,13 +148,38 @@ export class SRTParserService {
 
     // Add the last entry if it exists
     if (currentEntry.index !== undefined && textLines.length >= 4) {
-      currentEntry.simplifiedChinese = textLines[1] || '';
-      currentEntry.pinyin = textLines[2] || '';
-      currentEntry.english = textLines[3] || '';
+      const isSimplifiedFirst = this.isSimplifiedChinese(textLines[0]);
+
+      if (isSimplifiedFirst) {
+        // Format: Simplified, Traditional, Pinyin, English
+        currentEntry.simplifiedChinese = textLines[0] || '';
+        currentEntry.pinyin = textLines[2] || '';
+        currentEntry.english = textLines[3] || '';
+      } else {
+        // Format: Traditional, Simplified, Pinyin, English
+        currentEntry.simplifiedChinese = textLines[1] || '';
+        currentEntry.pinyin = textLines[2] || '';
+        currentEntry.english = textLines[3] || '';
+      }
+
       entries.push(currentEntry as MultiFormatSRTEntry);
     }
 
     return entries;
+  }
+
+  /**
+   * Check if a string contains Simplified Chinese characters
+   */
+  private isSimplifiedChinese(text: string): boolean {
+    // Look for Simplified Chinese characters (simpler forms)
+    const simplifiedPattern =
+      /[备们个来时间问题现实际际应该专业业务务项发现实]/;
+    // Look for Traditional Chinese characters (more complex forms)
+    const traditionalPattern =
+      /[備們個來時間問題現實際際應該專業業務務項發現實]/;
+
+    return simplifiedPattern.test(text) && !traditionalPattern.test(text);
   }
 
   /**
