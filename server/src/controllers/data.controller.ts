@@ -79,6 +79,17 @@ export class DataController {
     );
   }
 
+  @Get('additionalCharacters')
+  getAdditionalCharacters(
+    @UserID() userId: number,
+    @Query('extraChars') extraChars: string = '0',
+  ): Promise<CharacterDTO[]> {
+    return this.characterService.getAdditionalCharacters(
+      userId,
+      parseInt(extraChars),
+    );
+  }
+
   @Post('actors')
   addActor(@Body() createActorDto: CreateActorDTO): Promise<ActorDTO> {
     return this.actorService.create(createActorDto);

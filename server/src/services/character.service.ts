@@ -24,6 +24,30 @@ export class CharacterService {
     private userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
+  async getAdditionalCharacters(
+    userId: number,
+    additionalCount: number,
+  ): Promise<CharacterDTO[]> {
+    const latestChar = await this.getNextCharacterWithoutMovie(userId);
+    if (!latestChar) {
+      return [];
+    }
+    const characters = await this.characterRepository.find({
+      where: {
+        id: MoreThan(latestChar.id),
+      },
+      order: {
+        id: 'ASC',
+      },
+      take: additionalCount,
+    });
+    return Promise.all(
+      characters.map(async (character) =>
+        this.makeCharacterDTO(character, userId),
+      ),
+    );
+  }
+
   async getAllCharacterDTOs(
     userId: number,
     additionalCount?: number,

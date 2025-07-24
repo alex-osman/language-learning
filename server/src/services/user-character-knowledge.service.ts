@@ -14,6 +14,8 @@ export class UserCharacterKnowledgeService {
     private userCharacterKnowledgeRepository: Repository<UserCharacterKnowledge>,
   ) {}
 
+  async;
+
   async findAllCharactersWithKnowledge(
     userId: number,
   ): Promise<UserCharacterKnowledge[]> {

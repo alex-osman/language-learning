@@ -114,6 +114,12 @@ export class DataService {
     return this.http.get<CharacterDTO[]>(`${this.apiUrl}/characters?extraChars=${extraChars}`);
   }
 
+  getAdditionalCharacters(extraChars: number = 0): Observable<CharacterDTO[]> {
+    return this.http.get<CharacterDTO[]>(
+      `${this.apiUrl}/additionalCharacters?extraChars=${extraChars}`
+    );
+  }
+
   getWords(): Observable<WordDTO[]> {
     return this.http.get<WordDTO[]>(`${this.wordsApiUrl}`);
   }

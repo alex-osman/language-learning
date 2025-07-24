@@ -84,6 +84,14 @@ export class CharactersComponent implements OnInit {
         characters.filter(char => !!char.lastReviewDate).sort((a, b) => b.id - a.id)?.[0]?.id ?? 0;
       this.updateFilteredCharacters();
       this.isLoading = false;
+      this.getAdditionalCharacters();
+    });
+  }
+
+  private getAdditionalCharacters() {
+    this.dataService.getAdditionalCharacters(400).subscribe(characters => {
+      this.characters = [...this.characters, ...characters];
+      this.updateFilteredCharacters();
     });
   }
 
