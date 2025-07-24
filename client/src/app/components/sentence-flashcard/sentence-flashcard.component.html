@@ -101,7 +101,15 @@
 
         <!-- Back of card (Full translation) -->
         <div class="flashcard-back" [class.processing]="isProcessingReview">
-          <div class="sentence-chinese">{{ currentSentence.sentence }}</div>
+          <div class="sentence-chinese">
+            <span
+              *ngFor="let char of currentSentence.sentence.split('')"
+              class="character"
+              [ngStyle]="['。', '？', '！', '，'].includes(char) ? {} : getWordUnderlineStyle(char)"
+            >
+              {{ char }}
+            </span>
+          </div>
           <div class="sentence-pinyin">{{ currentSentence.pinyin }}</div>
           <div class="sentence-translation">{{ currentSentence.translation }}</div>
 

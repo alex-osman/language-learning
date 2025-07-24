@@ -816,6 +816,18 @@
   }
 }
 
+// Character styling for underlining
+.character {
+  display: inline-block;
+  padding-bottom: 4px; // Increased to accommodate thicker underline
+  margin-right: 1px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
 @media (max-width: 768px) {
   .sentence-flashcards-container {
     padding: 0.5rem;

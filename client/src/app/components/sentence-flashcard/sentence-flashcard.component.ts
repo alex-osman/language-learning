@@ -311,6 +311,11 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
     this.isFlipped = true;
     this.isWaitingForUserInput = false;
 
+    // Automatically analyze the sentence for underlining when card is flipped
+    if (this.analysisResults.length === 0) {
+      this.analyzeSentence(false);
+    }
+
     // TODO: Play audio when revealing answer
     // this.playAudio();
   }
@@ -381,7 +386,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
 
   // ===== CHARACTER ANALYSIS =====
 
-  analyzeSentence() {
+  analyzeSentence(showModal: boolean = true) {
     if (!this.currentSentence || this.isAnalyzing) return;
 
     this.isAnalyzing = true;
@@ -398,7 +403,9 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
             unknownCharacters: analysis.unknown_count,
             knownPercentage: analysis.known_percent,
           };
-          this.showAnalysis = true;
+          if (showModal) {
+            this.showAnalysis = true;
+          }
           this.isAnalyzing = false;
         },
         error: err => {
@@ -417,11 +424,30 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
     } else if (this.analysisResults.length > 0) {
       this.showAnalysis = true;
     } else {
-      this.analyzeSentence();
+      this.analyzeSentence(true);
     }
   }
 
   closeAnalysis() {
     this.showAnalysis = false;
+  }
+
+  // ===== CHARACTER UNDERLINING =====
+
+  getWordUnderlineStyle(char: string): { [key: string]: string } {
+    if (!this.analysisResults || this.analysisResults.length === 0) {
+      return { 'border-bottom': '3px solid #999999' }; // Grey for unknown
+    }
+
+    const charData = this.analysisResults.find(c => c.char === char);
+    if (!charData) {
+      return { 'border-bottom': '3px solid #999999' }; // Grey for unknown
+    }
+
+    if (charData.known) {
+      return { 'border-bottom': '3px solid #2e7d32' }; // Green for known
+    } else {
+      return { 'border-bottom': '3px solid #999999' }; // Grey for unknown
+    }
   }
 }
