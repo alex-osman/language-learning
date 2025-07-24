@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Sentence } from '../entities/sentence.entity';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
-import { SRTEntry } from './srt-parser.service';
+import { SRTEntry, MultiFormatSRTEntry } from './srt-parser.service';
 
 @Injectable()
 export class SentenceService {
@@ -80,6 +80,31 @@ export class SentenceService {
       scene: { id: sceneId } as any, // TypeORM will handle the relation
       source: 'SRT_IMPORT',
       // Set default spaced repetition values
+      easinessFactor: 2.5,
+      repetitions: 0,
+      interval: 1,
+    }));
+
+    const createdSentences = this.sentenceRepository.create(sentences);
+    return this.sentenceRepository.save(createdSentences);
+  }
+
+  /**
+   * Create sentences from multi-format SRT entries
+   * Populates sentence (simplified Chinese), pinyin, and translation (English) fields
+   */
+  async createSentencesFromMultiFormatSRT(
+    multiFormatEntries: MultiFormatSRTEntry[],
+    sceneId: number,
+  ): Promise<Sentence[]> {
+    const sentences: Partial<Sentence>[] = multiFormatEntries.map((entry) => ({
+      sentence: entry.simplifiedChinese, // Simplified Chinese text
+      pinyin: entry.pinyin, // Pinyin romanization
+      translation: entry.english, // English translation
+      startMs: entry.startTime,
+      endMs: entry.endTime,
+      scene: { id: sceneId } as any,
+      source: 'MULTI_FORMAT_SRT_IMPORT',
       easinessFactor: 2.5,
       repetitions: 0,
       interval: 1,

@@ -37,7 +37,14 @@ export interface YouTubeImportResult {
   previewData?: {
     videoTitle: string;
     availableSubtitles: string[];
-    subtitlePreview: string;
+    subtitlePreviews: Array<{
+      language: string;
+      filename: string;
+      preview: string;
+      entryCount: number;
+      isMultiFormat?: boolean;
+      contentAnalysis?: string;
+    }>;
     parsedEntries: number;
   };
 }
@@ -113,27 +120,30 @@ export class YouTubeImportService {
 
       // 3. Download subtitles (always do this for debugging)
       this.logger.log('🔍 Downloading and analyzing subtitles...');
-      const subtitleData = await this.downloadSubtitlesWithDebug(
+      const subtitleData = await this.downloadAllSubtitlesWithDebug(
         options.youtubeUrl,
         tempDir,
         options.preferredLanguage || 'zh',
       );
 
-      if (!subtitleData.path) {
+      if (!subtitleData.primarySubtitle) {
         throw new Error('No Chinese subtitles found for this video');
       }
 
       // 4. Parse subtitles for preview
-      const subtitleContent = fs.readFileSync(subtitleData.path, 'utf-8');
+      const subtitleContent = fs.readFileSync(
+        subtitleData.primarySubtitle.path,
+        'utf-8',
+      );
       const srtEntries = this.srtParser.parseSRT(subtitleContent);
 
       this.logger.log(`📝 Parsed ${srtEntries.length} subtitle entries`);
       this.logger.log(
-        `📄 Subtitle preview (first 200 chars): ${subtitleContent.substring(0, 200)}...`,
+        `📄 Primary subtitle preview (first 200 chars): ${subtitleContent.substring(0, 200)}...`,
       );
 
       if (options.dryRun) {
-        // Return dry-run preview data
+        // Return dry-run preview data with all subtitle tracks
         this.logger.log('🧪 DRY RUN COMPLETE - Preview data generated');
         return {
           episode: null,
@@ -145,7 +155,7 @@ export class YouTubeImportService {
           previewData: {
             videoTitle,
             availableSubtitles,
-            subtitlePreview: subtitleContent.substring(0, 500),
+            subtitlePreviews: subtitleData.allSubtitles,
             parsedEntries: srtEntries.length,
           },
         };
@@ -185,10 +195,36 @@ export class YouTubeImportService {
         episodeId: episode.id,
       });
 
-      // 8. Parse and import subtitles
+      // 8. Parse and import subtitles - check if multi-format
       this.logger.log('Parsing and importing subtitles...');
-      const createdSentences =
-        await this.sentenceService.createSentencesFromSRT(srtEntries, scene.id);
+
+      let createdSentences: any[] = [];
+      const isMultiFormat = this.detectMultiFormatContent(subtitleContent);
+
+      if (isMultiFormat) {
+        this.logger.log(
+          '🎯 Using MULTI-FORMAT parsing - extracting Simplified Chinese, Pinyin, and English',
+        );
+        const multiFormatEntries =
+          this.srtParser.parseMultiFormatSRT(subtitleContent);
+        createdSentences =
+          await this.sentenceService.createSentencesFromMultiFormatSRT(
+            multiFormatEntries,
+            scene.id,
+          );
+        this.logger.log(
+          `📚 Multi-format import: ${createdSentences.length} sentences with Chinese + Pinyin + English`,
+        );
+      } else {
+        this.logger.log('📝 Using standard SRT parsing');
+        createdSentences = await this.sentenceService.createSentencesFromSRT(
+          srtEntries,
+          scene.id,
+        );
+        this.logger.log(
+          `📝 Standard import: ${createdSentences.length} sentences`,
+        );
+      }
 
       this.logger.log(
         `Successfully imported ${createdSentences.length} sentences`,
@@ -200,7 +236,7 @@ export class YouTubeImportService {
         sentencesImported: createdSentences.length,
         videoUrl,
         success: true,
-        message: `Successfully imported ${videoTitle} with ${createdSentences.length} sentences`,
+        message: `Successfully imported ${videoTitle} with ${createdSentences.length} sentences${isMultiFormat ? ' (Multi-format: Chinese + Pinyin + English)' : ''}`,
       };
     } catch (error) {
       this.logger.error(`YouTube import failed: ${error.message}`);
@@ -389,6 +425,309 @@ export class YouTubeImportService {
       this.logger.warn(`Subtitle download failed: ${error.message}`);
       return { path: null, content: null };
     }
+  }
+
+  private async downloadAllSubtitlesWithDebug(
+    url: string,
+    outputDir: string,
+    language: string = 'zh',
+  ): Promise<{
+    primarySubtitle: { path: string; content: string } | null;
+    allSubtitles: Array<{
+      language: string;
+      filename: string;
+      preview: string;
+      entryCount: number;
+      isMultiFormat?: boolean;
+      contentAnalysis?: string;
+    }>;
+  }> {
+    const allSubtitles: Array<{
+      language: string;
+      filename: string;
+      preview: string;
+      entryCount: number;
+      isMultiFormat?: boolean;
+      contentAnalysis?: string;
+    }> = [];
+    let primarySubtitle: { path: string; content: string } | null = null;
+
+    // Priority queue - "zh" is now TOP priority since it contains all 4 formats!
+    const priorityLanguages = [
+      'zh', // HIGHEST PRIORITY - Multi-format (traditional + simplified + pinyin + English)
+      'zh-Hans', // Simplified Chinese only
+      'zh-Hant', // Traditional Chinese only
+      'zh-CN', // China Chinese
+      'zh-TW', // Taiwan Chinese
+      'zh-HK', // Hong Kong Chinese
+      'en', // English (for comparison)
+    ];
+
+    try {
+      this.logger.log('🔍 Downloading subtitle languages in priority order...');
+      this.logger.log(
+        '🎯 Looking for multi-format "zh" track first (traditional + simplified + pinyin + English)',
+      );
+
+      for (const lang of priorityLanguages) {
+        try {
+          this.logger.log(`📥 Trying ${lang} subtitles...`);
+
+          // Clear any previous files for this language
+          const existingFiles = fs.readdirSync(outputDir);
+          const existingLangFiles = existingFiles.filter(
+            (file) =>
+              file.includes('subtitles') &&
+              file.includes(lang) &&
+              file.endsWith('.srt'),
+          );
+
+          if (existingLangFiles.length > 0) {
+            this.logger.log(`✅ ${lang} already downloaded, skipping...`);
+            continue;
+          }
+
+          const command = `yt-dlp "${url}" --write-subs --write-auto-subs --sub-langs "${lang}" --skip-download --sub-format srt -o "${outputDir}/subtitles.%(ext)s" --no-playlist`;
+          await execAsync(command);
+
+          // Check if we got new files
+          const newFiles = fs.readdirSync(outputDir);
+          const newSubtitleFiles = newFiles.filter(
+            (file) =>
+              file.includes('subtitles') &&
+              file.includes(lang) &&
+              file.endsWith('.srt'),
+          );
+
+          if (newSubtitleFiles.length > 0) {
+            this.logger.log(
+              `✅ Downloaded ${newSubtitleFiles.length} ${lang} subtitle files: ${newSubtitleFiles.join(', ')}`,
+            );
+
+            // Special check for multi-format content
+            if (lang === 'zh') {
+              const zhFile = newSubtitleFiles[0];
+              const zhPath = path.join(outputDir, zhFile);
+              const zhContent = fs.readFileSync(zhPath, 'utf-8');
+
+              if (this.detectMultiFormatContent(zhContent)) {
+                this.logger.log(
+                  `🎯 JACKPOT! Multi-format track detected in ${zhFile}`,
+                );
+                this.logger.log(
+                  `📚 Contains: Traditional + Simplified + Pinyin + English`,
+                );
+              }
+            }
+          } else {
+            this.logger.log(`⚠️ No ${lang} subtitles found`);
+          }
+
+          // Small delay to be respectful to YouTube
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        } catch (error) {
+          this.logger.warn(
+            `❌ Failed to download ${lang} subtitles: ${error.message}`,
+          );
+          // Continue trying other languages
+        }
+      }
+
+      // Now analyze all downloaded files
+      const files = fs.readdirSync(outputDir);
+      const subtitleFiles = files.filter(
+        (file) => file.includes('subtitles') && file.endsWith('.srt'),
+      );
+
+      this.logger.log(`📂 Total subtitle files found: ${subtitleFiles.length}`);
+      if (subtitleFiles.length > 0) {
+        this.logger.log(`📋 Files: ${subtitleFiles.join(', ')}`);
+      }
+
+      for (const subtitleFile of subtitleFiles) {
+        const filePath = path.join(outputDir, subtitleFile);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const entries = this.srtParser.parseSRT(content);
+
+        // Extract language info from filename
+        const languageCode = subtitleFile
+          .replace('subtitles.', '')
+          .replace('.srt', '');
+
+        // Detect content type
+        const isMultiFormat = this.detectMultiFormatContent(content);
+        const contentAnalysis = this.analyzeSubtitleContent(content);
+
+        allSubtitles.push({
+          language: languageCode,
+          filename: subtitleFile,
+          preview: content.substring(0, 500) + '...',
+          entryCount: entries.length,
+          isMultiFormat,
+          contentAnalysis,
+        } as any);
+
+        this.logger.log(`📝 ${subtitleFile}: ${entries.length} entries`);
+        this.logger.log(
+          `   📊 Content type: ${isMultiFormat ? 'MULTI-FORMAT (Traditional + Simplified + Pinyin + English)' : contentAnalysis}`,
+        );
+        this.logger.log(
+          `   🔍 Preview: ${content.substring(0, 120).replace(/\n/g, ' | ')}...`,
+        );
+      }
+
+      // Now select the best primary subtitle based on priority
+      for (const subtitle of allSubtitles) {
+        const filePath = path.join(outputDir, subtitle.filename);
+        const content = fs.readFileSync(filePath, 'utf-8');
+
+        if (!primarySubtitle) {
+          // Priority 1: Multi-format "zh" track (HIGHEST PRIORITY)
+          if (subtitle.language === 'zh' && subtitle.isMultiFormat) {
+            primarySubtitle = { path: filePath, content };
+            this.logger.log(
+              `🎯 Selected PRIMARY (MULTI-FORMAT zh): ${subtitle.filename}`,
+            );
+            break; // This is the best, stop looking
+          }
+        }
+      }
+
+      // If no multi-format found, look for next best options
+      if (!primarySubtitle) {
+        for (const subtitle of allSubtitles) {
+          const filePath = path.join(outputDir, subtitle.filename);
+          const content = fs.readFileSync(filePath, 'utf-8');
+
+          // Priority 2: Generic "zh" track
+          if (subtitle.language === 'zh') {
+            primarySubtitle = { path: filePath, content };
+            this.logger.log(`🎯 Selected PRIMARY (zh): ${subtitle.filename}`);
+            break;
+          }
+        }
+      }
+
+      // If still no primary, look for simplified Chinese
+      if (!primarySubtitle) {
+        for (const subtitle of allSubtitles) {
+          const filePath = path.join(outputDir, subtitle.filename);
+          const content = fs.readFileSync(filePath, 'utf-8');
+
+          // Priority 3: Simplified Chinese
+          if (subtitle.language.includes('zh-Hans')) {
+            primarySubtitle = { path: filePath, content };
+            this.logger.log(
+              `🎯 Selected PRIMARY (zh-Hans): ${subtitle.filename}`,
+            );
+            break;
+          }
+        }
+      }
+
+      // If still no primary, look for any Chinese track
+      if (!primarySubtitle) {
+        for (const subtitle of allSubtitles) {
+          const filePath = path.join(outputDir, subtitle.filename);
+          const content = fs.readFileSync(filePath, 'utf-8');
+
+          if (subtitle.language.includes('zh')) {
+            primarySubtitle = { path: filePath, content };
+            this.logger.log(
+              `🎯 Selected PRIMARY (${subtitle.language}): ${subtitle.filename}`,
+            );
+            break;
+          }
+        }
+      }
+
+      // Final fallback: use first available subtitle if no Chinese found
+      if (!primarySubtitle && allSubtitles.length > 0) {
+        const firstSubtitle = allSubtitles[0];
+        const filePath = path.join(outputDir, firstSubtitle.filename);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        primarySubtitle = { path: filePath, content };
+        this.logger.warn(
+          `⚠️ No Chinese subtitle found, using first available: ${firstSubtitle.filename}`,
+        );
+      }
+
+      this.logger.log(
+        `📊 Analysis complete: ${allSubtitles.length} tracks analyzed`,
+      );
+      if (primarySubtitle) {
+        this.logger.log(
+          `🏆 Primary subtitle selected from: ${primarySubtitle.path}`,
+        );
+      }
+
+      return { primarySubtitle, allSubtitles };
+    } catch (error) {
+      this.logger.warn(`Subtitle download failed: ${error.message}`);
+      return { primarySubtitle: null, allSubtitles: [] };
+    }
+  }
+
+  /**
+   * Detect if subtitle content contains multiple formats (Traditional + Simplified + Pinyin + English)
+   */
+  private detectMultiFormatContent(content: string): boolean {
+    // Look for patterns that indicate multi-format content
+    const lines = content.split('\n');
+    const textLines = lines.filter(
+      (line) => line.trim() && !line.includes('-->') && !line.match(/^\d+$/),
+    );
+
+    if (textLines.length < 4) return false;
+
+    // Check if we have multiple lines per subtitle entry
+    for (let i = 0; i < Math.min(textLines.length - 3, 10); i += 4) {
+      const line1 = textLines[i] || '';
+      const line2 = textLines[i + 1] || '';
+      const line3 = textLines[i + 2] || '';
+      const line4 = textLines[i + 3] || '';
+
+      // Check for Traditional Chinese characters (more complex forms)
+      const hasTraditional =
+        /[備們個來時間問題現實際際應該專業業務務項發現實]/.test(line1);
+
+      // Check for Simplified Chinese characters
+      const hasSimplified =
+        /[备们个来时间问题现实际际应该专业业务务项发现实]/.test(line2);
+
+      // Check for pinyin (Latin with tone marks)
+      const hasPinyin =
+        /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line3) || /\b[a-zA-Z]+\b/.test(line3);
+
+      // Check for English
+      const hasEnglish = /^[a-zA-Z\s\.,!?'"]+$/.test(line4);
+
+      if (hasTraditional && hasSimplified && hasPinyin && hasEnglish) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Analyze subtitle content to determine type
+   */
+  private analyzeSubtitleContent(content: string): string {
+    const hasTraditional =
+      /[備們個來時間問題現實際際應該專業業務務項發現實]/.test(content);
+    const hasSimplified =
+      /[备们个来时间问题现实际际应该专业业务务项发现实]/.test(content);
+    const hasPinyin = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(content);
+    const hasEnglish = /\b[a-zA-Z]{3,}\b/.test(content);
+
+    const types: string[] = [];
+    if (hasTraditional) types.push('Traditional Chinese');
+    if (hasSimplified) types.push('Simplified Chinese');
+    if (hasPinyin) types.push('Pinyin');
+    if (hasEnglish) types.push('English');
+
+    return types.length > 0 ? types.join(' + ') : 'Unknown';
   }
 
   private cleanupTempDir(tempDir: string): void {

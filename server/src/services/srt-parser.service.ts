@@ -2,60 +2,145 @@ import { Injectable } from '@nestjs/common';
 
 export interface SRTEntry {
   index: number;
-  startTime: number; // milliseconds
-  endTime: number; // milliseconds
+  startTime: number; // in milliseconds
+  endTime: number; // in milliseconds
   text: string;
+}
+
+export interface MultiFormatSRTEntry {
+  index: number;
+  startTime: number; // in milliseconds
+  endTime: number; // in milliseconds
+  simplifiedChinese: string;
+  pinyin: string;
+  english: string;
 }
 
 @Injectable()
 export class SRTParserService {
-  /**
-   * Parse SRT file content and return array of subtitle entries
-   */
   parseSRT(content: string): SRTEntry[] {
+    const lines = content.split('\n');
     const entries: SRTEntry[] = [];
-    const blocks = content.trim().split(/\n\s*\n/);
+    let currentEntry: Partial<SRTEntry> = {};
 
-    for (const block of blocks) {
-      const lines = block.trim().split('\n');
-      if (lines.length < 3) continue;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
 
-      // Parse index
-      const index = parseInt(lines[0].trim());
-      if (isNaN(index)) continue;
+      if (!line) {
+        // Empty line indicates end of entry
+        if (currentEntry.index !== undefined) {
+          entries.push(currentEntry as SRTEntry);
+          currentEntry = {};
+        }
+        continue;
+      }
 
-      // Parse timing line (e.g., "00:02:21,265 --> 00:02:29,331")
-      const timingMatch = lines[1].match(
-        /(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/,
-      );
-      if (!timingMatch) continue;
+      if (/^\d+$/.test(line)) {
+        // Entry index
+        currentEntry.index = parseInt(line);
+      } else if (line.includes('-->')) {
+        // Timestamp line
+        const timeMatch = line.match(
+          /(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/,
+        );
+        if (timeMatch) {
+          const [, startH, startM, startS, startMs, endH, endM, endS, endMs] =
+            timeMatch;
+          currentEntry.startTime = this.timeToMilliseconds(
+            parseInt(startH),
+            parseInt(startM),
+            parseInt(startS),
+            parseInt(startMs),
+          );
+          currentEntry.endTime = this.timeToMilliseconds(
+            parseInt(endH),
+            parseInt(endM),
+            parseInt(endS),
+            parseInt(endMs),
+          );
+        }
+      } else {
+        // Text content
+        if (currentEntry.text) {
+          currentEntry.text += '\n' + line;
+        } else {
+          currentEntry.text = line;
+        }
+      }
+    }
 
-      const startTime = this.timeToMilliseconds(
-        parseInt(timingMatch[1]), // hours
-        parseInt(timingMatch[2]), // minutes
-        parseInt(timingMatch[3]), // seconds
-        parseInt(timingMatch[4]), // milliseconds
-      );
+    // Add the last entry if it exists
+    if (currentEntry.index !== undefined) {
+      entries.push(currentEntry as SRTEntry);
+    }
 
-      const endTime = this.timeToMilliseconds(
-        parseInt(timingMatch[5]), // hours
-        parseInt(timingMatch[6]), // minutes
-        parseInt(timingMatch[7]), // seconds
-        parseInt(timingMatch[8]), // milliseconds
-      );
+    return entries;
+  }
 
-      // Combine all text lines (subtitle may span multiple lines)
-      const text = lines.slice(2).join(' ').trim();
+  /**
+   * Parse multi-format SRT content that contains Traditional, Simplified, Pinyin, and English
+   * Returns only Simplified Chinese, Pinyin, and English (skips Traditional)
+   */
+  parseMultiFormatSRT(content: string): MultiFormatSRTEntry[] {
+    const lines = content.split('\n');
+    const entries: MultiFormatSRTEntry[] = [];
+    let currentEntry: Partial<MultiFormatSRTEntry> = {};
+    let textLines: string[] = [];
 
-      // Skip empty text entries
-      if (!text) continue;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
 
-      entries.push({
-        index,
-        startTime,
-        endTime,
-        text,
-      });
+      if (!line) {
+        // Empty line indicates end of entry
+        if (currentEntry.index !== undefined && textLines.length >= 4) {
+          // Extract the 4 lines: Traditional (skip), Simplified, Pinyin, English
+          currentEntry.simplifiedChinese = textLines[1] || ''; // Line 2: Simplified Chinese
+          currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
+          currentEntry.english = textLines[3] || ''; // Line 4: English
+
+          entries.push(currentEntry as MultiFormatSRTEntry);
+        }
+        currentEntry = {};
+        textLines = [];
+        continue;
+      }
+
+      if (/^\d+$/.test(line)) {
+        // Entry index
+        currentEntry.index = parseInt(line);
+      } else if (line.includes('-->')) {
+        // Timestamp line
+        const timeMatch = line.match(
+          /(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/,
+        );
+        if (timeMatch) {
+          const [, startH, startM, startS, startMs, endH, endM, endS, endMs] =
+            timeMatch;
+          currentEntry.startTime = this.timeToMilliseconds(
+            parseInt(startH),
+            parseInt(startM),
+            parseInt(startS),
+            parseInt(startMs),
+          );
+          currentEntry.endTime = this.timeToMilliseconds(
+            parseInt(endH),
+            parseInt(endM),
+            parseInt(endS),
+            parseInt(endMs),
+          );
+        }
+      } else {
+        // Text content - collect all text lines for this entry
+        textLines.push(line);
+      }
+    }
+
+    // Add the last entry if it exists
+    if (currentEntry.index !== undefined && textLines.length >= 4) {
+      currentEntry.simplifiedChinese = textLines[1] || '';
+      currentEntry.pinyin = textLines[2] || '';
+      currentEntry.english = textLines[3] || '';
+      entries.push(currentEntry as MultiFormatSRTEntry);
     }
 
     return entries;

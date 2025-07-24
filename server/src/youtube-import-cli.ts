@@ -106,10 +106,163 @@ async function importFromYouTube() {
         );
         console.log(`📝 Parsed Entries: ${result.previewData.parsedEntries}`);
         console.log('');
-        console.log('📄 Subtitle Preview (first 500 characters):');
-        console.log('─'.repeat(60));
-        console.log(result.previewData.subtitlePreview);
-        console.log('─'.repeat(60));
+
+        console.log('📄 SUBTITLE TRACKS FOUND (in priority order):');
+        console.log('═'.repeat(80));
+
+        if (result.previewData.subtitlePreviews.length === 0) {
+          console.log('❌ No subtitle tracks were successfully downloaded');
+        } else {
+          // Sort by NEW priority (zh first, then zh-Hans, etc.)
+          const priorityOrder = [
+            'zh',
+            'zh-Hans',
+            'zh-Hant',
+            'zh-CN',
+            'zh-TW',
+            'zh-HK',
+            'en',
+          ];
+          const sortedTracks = result.previewData.subtitlePreviews.sort(
+            (a, b) => {
+              const aPriority = priorityOrder.findIndex((p) =>
+                a.language.includes(p),
+              );
+              const bPriority = priorityOrder.findIndex((p) =>
+                b.language.includes(p),
+              );
+              const aIndex = aPriority === -1 ? 999 : aPriority;
+              const bIndex = bPriority === -1 ? 999 : bPriority;
+              return aIndex - bIndex;
+            },
+          );
+
+          // Check if we found the holy grail multi-format track
+          const hasMultiFormat = sortedTracks.some(
+            (track) => track.isMultiFormat,
+          );
+
+          if (hasMultiFormat) {
+            console.log('🎉 HOLY GRAIL FOUND! Multi-format track detected!');
+            console.log(
+              '🏆 Perfect for language learning: Traditional + Simplified + Pinyin + English',
+            );
+            console.log('');
+          }
+
+          sortedTracks.forEach((subtitle, index) => {
+            const isPrimary = index === 0 && subtitle.language.includes('zh');
+            const priority =
+              priorityOrder.findIndex((p) => subtitle.language.includes(p)) + 1;
+            const isMulti = subtitle.isMultiFormat;
+
+            console.log(
+              `\n${index + 1}. ${isPrimary ? '🎯 PRIMARY' : '📋'} ${isMulti ? '🏆 MULTI-FORMAT' : ''} TRACK: ${subtitle.language} ${isPrimary ? '(SELECTED FOR IMPORT)' : ''}`,
+            );
+
+            if (isMulti) {
+              console.log(
+                `   🎉 JACKPOT! Contains: Traditional + Simplified + Pinyin + English`,
+              );
+            } else {
+              console.log(
+                `   📊 Content: ${subtitle.contentAnalysis || 'Unknown'}`,
+              );
+            }
+
+            console.log(
+              `   🏆 Priority: ${priority > 0 ? `#${priority}` : 'Lower'} ${priority === 1 ? '(NEW HIGHEST - Multi-format zh)' : priority === 2 ? '(Simplified Chinese)' : ''}`,
+            );
+            console.log(`   📁 File: ${subtitle.filename}`);
+            console.log(`   📊 Entries: ${subtitle.entryCount}`);
+            console.log(`   📄 Content Preview:`);
+            console.log('   ' + '─'.repeat(70));
+
+            // Show first few lines of actual subtitle content
+            const lines = subtitle.preview
+              .split('\n')
+              .slice(0, isMulti ? 8 : 6);
+            lines.forEach((line) => {
+              if (line.trim()) {
+                console.log('   ' + line);
+              }
+            });
+
+            if (isMulti) {
+              console.log(
+                '   ↑ Traditional, ↑ Simplified, ↑ Pinyin, ↑ English',
+              );
+            }
+
+            console.log('   ' + '─'.repeat(70));
+          });
+        }
+
+        console.log('\n' + '═'.repeat(80));
+        console.log('');
+        console.log('💡 SUBTITLE ANALYSIS:');
+
+        const hasMultiFormat = result.previewData.subtitlePreviews.some(
+          (s) => s.isMultiFormat,
+        );
+        const hasSimplified = result.previewData.subtitlePreviews.some((s) =>
+          s.language.includes('zh-Hans'),
+        );
+        const hasTraditional = result.previewData.subtitlePreviews.some((s) =>
+          s.language.includes('zh-Hant'),
+        );
+        const hasEnglish = result.previewData.subtitlePreviews.some((s) =>
+          s.language.includes('en'),
+        );
+
+        console.log(
+          `  🏆 Multi-format track (zh): ${hasMultiFormat ? '✅ FOUND! (PERFECT)' : '❌ Not found'}`,
+        );
+        console.log(
+          `  📝 Simplified Chinese (zh-Hans): ${hasSimplified ? '✅ Found' : '❌ Not found'}`,
+        );
+        console.log(
+          `  📝 Traditional Chinese (zh-Hant): ${hasTraditional ? '✅ Found' : '❌ Not found'}`,
+        );
+        console.log(
+          `  📝 English (en): ${hasEnglish ? '✅ Found' : '❌ Not found'}`,
+        );
+
+        if (hasMultiFormat) {
+          console.log(
+            `  🎯 RECOMMENDATION: Use multi-format "zh" track - contains ALL formats!`,
+          );
+          console.log(`     • Traditional Chinese for character recognition`);
+          console.log(`     • Simplified Chinese for modern learning`);
+          console.log(`     • Pinyin for pronunciation`);
+          console.log(`     • English for meaning comprehension`);
+        } else if (hasSimplified) {
+          console.log(
+            `  🎯 RECOMMENDED: Use zh-Hans track (simplified Chinese)`,
+          );
+        } else if (hasTraditional) {
+          console.log(
+            `  🎯 RECOMMENDED: Use zh-Hant track (traditional Chinese)`,
+          );
+        }
+
+        console.log('');
+        console.log('🔍 NEXT STEPS:');
+        if (hasMultiFormat) {
+          console.log(
+            '  ✅ Perfect! Multi-format track found - ready for import',
+          );
+          console.log(
+            '  • This will create sentences with Traditional, Simplified, Pinyin, and English',
+          );
+          console.log(
+            '  • Optimal for comprehensive Chinese language learning',
+          );
+        } else {
+          console.log('  • Review the content previews above');
+          console.log('  • Look for pure Chinese characters vs mixed content');
+          console.log('  • Consider if single-format tracks meet your needs');
+        }
         console.log('');
         console.log(
           '✨ To perform actual import, run the same command without --dry-run',
