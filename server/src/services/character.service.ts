@@ -28,10 +28,26 @@ export class CharacterService {
     userId: number,
     additionalCount: number,
   ): Promise<CharacterDTO[]> {
-    const latestChar = await this.getNextCharacterWithoutMovie(userId);
+    // Get characters with user knowledge using left join
+    const charactersWithKnowledge = await this.characterRepository
+      .createQueryBuilder('character')
+      .leftJoin(
+        UserCharacterKnowledge,
+        'userCharacterKnowledge',
+        'userCharacterKnowledge.characterID = character.id',
+      )
+      .where('userCharacterKnowledge.userID = :userId', { userId })
+      .getMany();
+
+    // Find the latest character from user's knowledge
+    const latestChar =
+      charactersWithKnowledge.sort((a, b) => b.id - a.id)[0] ?? null;
+
     if (!latestChar) {
       return [];
     }
+
+    // Get additional characters with IDs greater than the latest one
     const characters = await this.characterRepository.find({
       where: {
         id: MoreThan(latestChar.id),
@@ -41,6 +57,7 @@ export class CharacterService {
       },
       take: additionalCount,
     });
+
     return Promise.all(
       characters.map(async (character) =>
         this.makeCharacterDTO(character, userId),
