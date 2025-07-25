@@ -10,6 +10,7 @@
     <!-- Enhanced Stats -->
     <div *ngIf="showStats" class="stats">
       <span class="learned-count">{{ learnedCharactersCount }} learned</span>
+      <span class="learning-count">{{ learningCharactersCount }} learning</span>
       <span class="seen-count">{{ seenCharactersCount }} seen</span>
       <span class="unknown-count">{{ unknownCharactersCount }} unknown</span>
     </div>
@@ -24,6 +25,10 @@
     <div class="stat-item">
       <span class="stat-number">{{ learnedCharactersCount }}</span>
       <span class="stat-label">Learned Characters</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{ learningCharactersCount }}</span>
+      <span class="stat-label">Learning Characters</span>
     </div>
     <div class="stat-item">
       <span class="stat-number">{{ seenCharactersCount }}</span>

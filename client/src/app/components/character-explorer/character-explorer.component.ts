@@ -94,6 +94,12 @@ export class CharacterExplorerComponent implements OnInit {
     ).length;
   }
 
+  get learningCharactersCount(): number {
+    return this.characters.filter(
+      char => this.getCharacterKnowledgeStatus(char) === CharacterKnowledgeStatus.LEARNING
+    ).length;
+  }
+
   get seenCharactersCount(): number {
     return this.characters.filter(
       char => this.getCharacterKnowledgeStatus(char) === CharacterKnowledgeStatus.SEEN
@@ -282,7 +288,7 @@ export class CharacterExplorerComponent implements OnInit {
 
   // NEW: Get character knowledge status
   getCharacterKnowledgeStatus(char: CharacterDTO): CharacterKnowledgeStatus {
-    if (char.lastReviewDate) {
+    if (char.lastReviewDate && !!char.movie) {
       // Has been reviewed = learning or learned
       const isLearned = (char.repetitions || 0) >= 3 && (char.easinessFactor || 2.5) >= 2.0;
       return isLearned ? CharacterKnowledgeStatus.LEARNED : CharacterKnowledgeStatus.LEARNING;
@@ -361,7 +367,10 @@ export class CharacterExplorerComponent implements OnInit {
 
       switch (this.learningFilter) {
         case 'learned':
-          return status === CharacterKnowledgeStatus.LEARNED;
+          return (
+            status === CharacterKnowledgeStatus.LEARNED ||
+            status === CharacterKnowledgeStatus.LEARNING
+          );
         case 'seen':
           return status === CharacterKnowledgeStatus.SEEN;
         case 'notLearned':

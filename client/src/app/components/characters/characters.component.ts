@@ -69,6 +69,7 @@ export class CharactersComponent implements OnInit {
 
     this.dataService.getCharacters().subscribe({
       next: characters => {
+        console.log('got - characters', characters);
         this.characters = characters;
         this.updateCharactersProgress();
         this.isLoading = false;
