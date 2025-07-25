@@ -14,6 +14,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
+interface YouTubeSubtitleFormat {
+  ext: string;
+  url: string;
+  name: string;
+}
+
+interface YouTubeMetadata {
+  title: string;
+  subtitles: { [key: string]: YouTubeSubtitleFormat[] };
+  automatic_captions: { [key: string]: YouTubeSubtitleFormat[] };
+}
+
 const execAsync = promisify(exec);
 
 export interface YouTubeImportOptions {
@@ -90,11 +102,13 @@ export class YouTubeImportService {
       await this.checkYtDlpInstallation();
 
       // 1. Get video metadata and available subtitles
-      const metadata = await this.getVideoMetadata(options.youtubeUrl);
+      const { stdout } = await execAsync(`yt-dlp -J "${options.youtubeUrl}"`);
+      const metadata = JSON.parse(stdout) as YouTubeMetadata;
       const videoTitle = options.title || metadata.title || 'Untitled Video';
-      const availableSubtitles = await this.getAvailableSubtitles(
-        options.youtubeUrl,
-      );
+      const availableSubtitles = [
+        ...Object.keys(metadata.subtitles || {}),
+        ...Object.keys(metadata.automatic_captions || {}),
+      ];
 
       this.logger.log(`Video title: ${videoTitle}`);
       this.logger.log(
@@ -117,6 +131,7 @@ export class YouTubeImportService {
       const subtitleData = await this.downloadAllSubtitlesWithDebug(
         options.youtubeUrl,
         tempDir,
+        metadata,
         options.preferredLanguage || 'zh',
       );
 
@@ -412,6 +427,7 @@ export class YouTubeImportService {
   private async downloadAllSubtitlesWithDebug(
     url: string,
     outputDir: string,
+    metadata: YouTubeMetadata,
     language: string = 'zh',
   ): Promise<{
     primarySubtitle: { path: string; content: string } | null;
@@ -446,133 +462,101 @@ export class YouTubeImportService {
     ];
 
     try {
-      this.logger.log('🔍 Downloading subtitle languages in priority order...');
-      this.logger.log(
-        '🎯 Looking for multi-format "zh" track first (traditional + simplified + pinyin + English)',
-      );
+      this.logger.log('🔍 Analyzing available subtitles...');
 
+      const subtitles = metadata.subtitles || {};
+      const autoSubtitles = metadata.automatic_captions || {};
+
+      this.logger.log('Available subtitle tracks:');
+      for (const [lang, formats] of Object.entries(subtitles)) {
+        this.logger.log(
+          `- ${lang} (manual): ${formats.map((f) => f.ext).join(', ')}`,
+        );
+      }
+      for (const [lang, formats] of Object.entries(autoSubtitles)) {
+        this.logger.log(
+          `- ${lang} (auto): ${formats.map((f) => f.ext).join(', ')}`,
+        );
+      }
+
+      // Try to find and download subtitles in priority order
       for (const lang of priorityLanguages) {
-        try {
-          this.logger.log(`📥 Trying ${lang} subtitles...`);
+        const manualFormats = subtitles[lang] || [];
+        const autoFormats = autoSubtitles[lang] || [];
 
-          // Clear any previous files for this language
-          const existingFiles = fs.readdirSync(outputDir);
-          const existingLangFiles = existingFiles.filter(
-            (file) =>
-              file.includes('subtitles') &&
-              file.includes(lang) &&
-              file.endsWith('.srt'),
+        if (manualFormats.length === 0 && autoFormats.length === 0) {
+          this.logger.log(`⚠️ No ${lang} subtitles found`);
+          continue;
+        }
+
+        this.logger.log(`📥 Downloading ${lang} subtitles...`);
+
+        // Prefer manual subtitles over auto-generated
+        const formats = manualFormats.length > 0 ? manualFormats : autoFormats;
+
+        // Download this language's subtitles
+        const command = `yt-dlp "${url}" --write-subs --write-auto-subs --sub-langs "${lang}" --skip-download --sub-format srt -o "${outputDir}/subtitles.%(ext)s" --no-playlist`;
+        await execAsync(command);
+
+        // Check downloaded files
+        const files = fs.readdirSync(outputDir);
+        const subtitleFiles = files.filter(
+          (file) =>
+            file.includes('subtitles') &&
+            file.includes(lang) &&
+            file.endsWith('.srt'),
+        );
+
+        if (subtitleFiles.length > 0) {
+          this.logger.log(
+            `✅ Downloaded ${subtitleFiles.length} ${lang} subtitle files: ${subtitleFiles.join(', ')}`,
           );
 
-          if (existingLangFiles.length > 0) {
-            this.logger.log(`✅ ${lang} already downloaded, skipping...`);
-            continue;
-          }
+          // Analyze each subtitle file
+          for (const subtitleFile of subtitleFiles) {
+            const filePath = path.join(outputDir, subtitleFile);
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const entries = this.srtParser.parseSRT(content);
 
-          const command = `yt-dlp "${url}" --write-subs --write-auto-subs --sub-langs "${lang}" --skip-download --sub-format srt -o "${outputDir}/subtitles.%(ext)s" --no-playlist`;
-          await execAsync(command);
+            // Detect content type
+            const isMultiFormat = this.detectMultiFormatContent(content);
+            const contentAnalysis = this.analyzeSubtitleContent(content);
 
-          // Check if we got new files
-          const newFiles = fs.readdirSync(outputDir);
-          const newSubtitleFiles = newFiles.filter(
-            (file) =>
-              file.includes('subtitles') &&
-              file.includes(lang) &&
-              file.endsWith('.srt'),
-          );
+            allSubtitles.push({
+              language: lang,
+              filename: subtitleFile,
+              preview: content.substring(0, 500) + '...',
+              entryCount: entries.length,
+              isMultiFormat,
+              contentAnalysis,
+            });
 
-          if (newSubtitleFiles.length > 0) {
+            this.logger.log(`📝 ${subtitleFile}: ${entries.length} entries`);
             this.logger.log(
-              `✅ Downloaded ${newSubtitleFiles.length} ${lang} subtitle files: ${newSubtitleFiles.join(', ')}`,
+              `   📊 Content type: ${isMultiFormat ? 'MULTI-FORMAT (Traditional + Simplified + Pinyin + English)' : contentAnalysis}`,
+            );
+            this.logger.log(
+              `   🔍 Preview: ${content.substring(0, 120).replace(/\n/g, ' | ')}...`,
             );
 
-            // Special check for multi-format content
-            if (lang === 'zh') {
-              const zhFile = newSubtitleFiles[0];
-              const zhPath = path.join(outputDir, zhFile);
-              const zhContent = fs.readFileSync(zhPath, 'utf-8');
-
-              if (this.detectMultiFormatContent(zhContent)) {
-                this.logger.log(
-                  `🎯 JACKPOT! Multi-format track detected in ${zhFile}`,
-                );
-                this.logger.log(
-                  `📚 Contains: Traditional + Simplified + Pinyin + English`,
-                );
-              }
+            // If this is a multi-format Chinese track, we've found our primary
+            if (lang === 'zh' && isMultiFormat && !primarySubtitle) {
+              primarySubtitle = { path: filePath, content };
+              this.logger.log(
+                `🎯 Selected PRIMARY (MULTI-FORMAT zh): ${subtitleFile}`,
+              );
+              break; // Stop processing more files for this language
             }
-          } else {
-            this.logger.log(`⚠️ No ${lang} subtitles found`);
           }
 
-          // Small delay to be respectful to YouTube
-          await new Promise((resolve) => setTimeout(resolve, 800));
-        } catch (error) {
-          this.logger.warn(
-            `❌ Failed to download ${lang} subtitles: ${error.message}`,
-          );
-          // Continue trying other languages
-        }
-      }
-
-      // Now analyze all downloaded files
-      const files = fs.readdirSync(outputDir);
-      const subtitleFiles = files.filter(
-        (file) => file.includes('subtitles') && file.endsWith('.srt'),
-      );
-
-      this.logger.log(`📂 Total subtitle files found: ${subtitleFiles.length}`);
-      if (subtitleFiles.length > 0) {
-        this.logger.log(`📋 Files: ${subtitleFiles.join(', ')}`);
-      }
-
-      for (const subtitleFile of subtitleFiles) {
-        const filePath = path.join(outputDir, subtitleFile);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const entries = this.srtParser.parseSRT(content);
-
-        // Extract language info from filename
-        const languageCode = subtitleFile
-          .replace('subtitles.', '')
-          .replace('.srt', '');
-
-        // Detect content type
-        const isMultiFormat = this.detectMultiFormatContent(content);
-        const contentAnalysis = this.analyzeSubtitleContent(content);
-
-        allSubtitles.push({
-          language: languageCode,
-          filename: subtitleFile,
-          preview: content.substring(0, 500) + '...',
-          entryCount: entries.length,
-          isMultiFormat,
-          contentAnalysis,
-        } as any);
-
-        this.logger.log(`📝 ${subtitleFile}: ${entries.length} entries`);
-        this.logger.log(
-          `   📊 Content type: ${isMultiFormat ? 'MULTI-FORMAT (Traditional + Simplified + Pinyin + English)' : contentAnalysis}`,
-        );
-        this.logger.log(
-          `   🔍 Preview: ${content.substring(0, 120).replace(/\n/g, ' | ')}...`,
-        );
-      }
-
-      // Now select the best primary subtitle based on priority
-      for (const subtitle of allSubtitles) {
-        const filePath = path.join(outputDir, subtitle.filename);
-        const content = fs.readFileSync(filePath, 'utf-8');
-
-        if (!primarySubtitle) {
-          // Priority 1: Multi-format "zh" track (HIGHEST PRIORITY)
-          if (subtitle.language === 'zh' && subtitle.isMultiFormat) {
-            primarySubtitle = { path: filePath, content };
-            this.logger.log(
-              `🎯 Selected PRIMARY (MULTI-FORMAT zh): ${subtitle.filename}`,
-            );
-            break; // This is the best, stop looking
+          // If we found a primary subtitle, we can stop looking
+          if (primarySubtitle) {
+            break;
           }
         }
+
+        // Small delay to be respectful to YouTube
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
 
       // If no multi-format found, look for next best options
@@ -786,7 +770,7 @@ export class YouTubeImportService {
   async getAvailableSubtitles(url: string): Promise<string[]> {
     try {
       const { stdout } = await execAsync(`yt-dlp -J "${url}"`);
-      const metadata = JSON.parse(stdout);
+      const metadata = JSON.parse(stdout) as YouTubeMetadata;
       const subtitles = metadata.subtitles || {};
       const autoSubtitles = metadata.automatic_captions || {};
 
