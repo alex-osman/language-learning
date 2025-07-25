@@ -14,11 +14,14 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   title = 'chinois';
   mobileMenuOpen = false;
+  isVideoPlayerPage = false;
 
   constructor(private router: Router, public authService: AuthService) {
-    // Close mobile menu on route change
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+    // Close mobile menu on route change and check for video player page
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       this.mobileMenuOpen = false;
+      // Check if current route is the video player page
+      this.isVideoPlayerPage = event.url.includes('/video');
     });
   }
 

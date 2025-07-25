@@ -3,6 +3,17 @@
   <div class="header">
     <button class="back-button" (click)="goBack()" aria-label="Back">← Back</button>
     <h1 class="scene-title">{{ scene?.title || 'Video Player' }}</h1>
+    <!-- Progress Circle -->
+    <div class="progress-circle" *ngIf="scene">
+      <app-progress-indicator
+        type="circular"
+        [value]="sceneProgressPercent"
+        theme="warning"
+        [size]="60"
+        [strokeWidth]="6"
+        [showLabel]="true"
+      ></app-progress-indicator>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -58,7 +69,19 @@
           [attr.data-sentence-id]="sentence.id"
           (click)="goToSentence(sentence)"
         >
-          <div class="chinese">{{ sentence.sentence }}</div>
+          <div class="chinese">
+            <span
+              *ngFor="let char of sentence.sentence.split('')"
+              class="character"
+              [ngStyle]="
+                ['。', '？', '！', '，'].includes(char)
+                  ? {}
+                  : getWordUnderlineStyle(sentence.id, char)
+              "
+            >
+              {{ char }}
+            </span>
+          </div>
           <div *ngIf="sentence.pinyin" class="pinyin">{{ sentence.pinyin }}</div>
           <div class="english">{{ sentence.translation }}</div>
           <div class="timing">{{ sentence.startMs / 1000 | number : '1.1-1' }}s</div>

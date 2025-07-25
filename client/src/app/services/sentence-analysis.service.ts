@@ -61,4 +61,15 @@ export class SentenceAnalysisService {
       text,
     });
   }
+
+  // Batch analysis methods
+  analyzeSentences(texts: string[]): Observable<SentenceAnalysisResult[]> {
+    return this.http.post<SentenceAnalysisResult[]>(`${this.apiUrl}/analyze-batch`, { texts });
+  }
+
+  analyzeTextsWithKnowledgeStatus(texts: string[]): Observable<EnhancedSentenceAnalysisResult[]> {
+    return this.http.post<EnhancedSentenceAnalysisResult[]>(`${this.apiUrl}/analyze-batch-enhanced`, {
+      texts,
+    });
+  }
 }

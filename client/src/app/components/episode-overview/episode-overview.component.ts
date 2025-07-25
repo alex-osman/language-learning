@@ -174,7 +174,53 @@ export class EpisodeOverviewComponent implements OnInit {
 
     if (allSentences.length === 0) return;
 
-    // Use enhanced analysis for better progress tracking
+    const texts = allSentences.map(sentence => sentence.sentence);
+
+    // Use batch enhanced analysis for better performance
+    this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
+      next: (results: EnhancedSentenceAnalysisResult[]) => {
+        this.handleBatchAnalysisResults(results, allSentences);
+      },
+      error: err => {
+        console.error('Enhanced batch analysis failed:', err);
+        // Fallback to batch basic analysis
+        this.sentenceAnalysisService.analyzeSentences(texts).subscribe({
+          next: (results: SentenceAnalysisResult[]) => {
+            this.handleBasicBatchAnalysisResults(results, allSentences);
+          },
+          error: err => {
+            console.error('Basic batch analysis failed, falling back to individual:', err);
+            this.fallbackToIndividualAnalysis(allSentences);
+          },
+        });
+      },
+    });
+  }
+
+  private handleBatchAnalysisResults(
+    results: EnhancedSentenceAnalysisResult[],
+    allSentences: any[]
+  ) {
+    results.forEach((result, index) => {
+      if (allSentences[index]) {
+        this.enhancedAnalysisData[allSentences[index].id] = result;
+      }
+    });
+  }
+
+  private handleBasicBatchAnalysisResults(
+    results: SentenceAnalysisResult[],
+    allSentences: any[]
+  ) {
+    results.forEach((result, index) => {
+      if (allSentences[index]) {
+        this.sentenceAnalysisData[allSentences[index].id] = result;
+      }
+    });
+  }
+
+  private fallbackToIndividualAnalysis(allSentences: any[]) {
+    // Use individual analysis as last resort
     allSentences.forEach(sentence => {
       this.sentenceAnalysisService.analyzeTextWithKnowledgeStatus(sentence.sentence).subscribe({
         next: (analysis: EnhancedSentenceAnalysisResult) => {

@@ -149,6 +149,35 @@ export class SceneOverviewComponent implements OnInit {
   private startSentenceAnalysis() {
     if (!this.scene) return;
 
+    const texts = this.scene.sentences.map(sentence => sentence.sentence);
+    
+    this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
+      next: results => this.handleBatchAnalysisResults(results),
+      error: err => this.handleBatchAnalysisError(err),
+    });
+  }
+
+  private handleBatchAnalysisResults(results: EnhancedSentenceAnalysisResult[]) {
+    // Map results back to sentence IDs
+    results.forEach((result, index) => {
+      if (this.scene && this.scene.sentences[index]) {
+        const sentenceId = this.scene.sentences[index].id;
+        this.enhancedAnalysisData[sentenceId] = result;
+      }
+    });
+    
+    this.updateDisplayedCharacters();
+  }
+
+  private handleBatchAnalysisError(err: any) {
+    console.error('Error analyzing sentences in batch:', err);
+    // Fallback to individual analysis if batch fails
+    this.fallbackToIndividualAnalysis();
+  }
+
+  private fallbackToIndividualAnalysis() {
+    if (!this.scene) return;
+
     this.scene.sentences.forEach(sentence => {
       this.analyzeSentence(sentence.id, sentence.sentence);
     });

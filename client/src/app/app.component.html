@@ -1,4 +1,4 @@
-<nav class="main-nav" *ngIf="authService.isAuthenticated$ | async">
+<nav class="main-nav" *ngIf="(authService.isAuthenticated$ | async) && !isVideoPlayerPage">
   <div class="nav-container">
     <div class="logo">
       <span>Language Learning</span>
