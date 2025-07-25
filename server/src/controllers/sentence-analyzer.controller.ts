@@ -4,14 +4,15 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Param,
   Post,
 } from '@nestjs/common';
-import {
-  SentenceAnalyzerService,
-  SentenceAnalysis,
-  EnhancedSentenceAnalysis,
-} from '../services/sentence-analyzer.service';
 import { UserID } from 'src/decorators/user.decorator';
+import {
+  EnhancedSentenceAnalysis,
+  SentenceAnalysis,
+  SentenceAnalyzerService,
+} from '../services/sentence-analyzer.service';
 
 interface AnalyzeSentenceRequest {
   text: string;
@@ -107,7 +108,11 @@ export class SentenceAnalyzerController {
     @UserID() userId: number,
   ): Promise<SentenceAnalysis[]> {
     try {
-      if (!request.texts || !Array.isArray(request.texts) || request.texts.length === 0) {
+      if (
+        !request.texts ||
+        !Array.isArray(request.texts) ||
+        request.texts.length === 0
+      ) {
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
@@ -143,7 +148,11 @@ export class SentenceAnalyzerController {
     @UserID() userId: number,
   ): Promise<EnhancedSentenceAnalysis[]> {
     try {
-      if (!request.texts || !Array.isArray(request.texts) || request.texts.length === 0) {
+      if (
+        !request.texts ||
+        !Array.isArray(request.texts) ||
+        request.texts.length === 0
+      ) {
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
@@ -162,7 +171,10 @@ export class SentenceAnalyzerController {
         throw error;
       }
 
-      this.logger.error(`Failed to analyze sentences with knowledge status:`, error);
+      this.logger.error(
+        `Failed to analyze sentences with knowledge status:`,
+        error,
+      );
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -171,5 +183,18 @@ export class SentenceAnalyzerController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Post('analyze-sentence/:sentenceId')
+  async analyzeSentenceId(
+    @Param('sentenceId') sentenceId: string,
+    @UserID() userId: number,
+  ): Promise<SentenceAnalysis[]> {
+    return [
+      await this.sentenceAnalyzerService.analyzeSentenceId(
+        parseInt(sentenceId),
+        userId,
+      ),
+    ];
   }
 }

@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, Not, MoreThan, LessThanOrEqual } from 'typeorm';
+import { IsNull, LessThanOrEqual, Repository } from 'typeorm';
 import { Character } from '../entities/character.entity';
 import { UserCharacterKnowledge } from '../entities/user-character-knowledge.entity';
-import { CharacterDTO } from '@shared/interfaces/data.interface';
 
 // NEW: Enum for character knowledge status
 export enum CharacterKnowledgeStatus {

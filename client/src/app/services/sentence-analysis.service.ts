@@ -51,6 +51,13 @@ export class SentenceAnalysisService {
 
   constructor(private http: HttpClient) {}
 
+  analyzeSentenceId(sentenceId: string): Observable<SentenceAnalysisResult> {
+    return this.http.post<SentenceAnalysisResult>(
+      `${this.apiUrl}/analyze-sentence/${sentenceId}`,
+      {}
+    );
+  }
+
   analyzeSentence(text: string): Observable<SentenceAnalysisResult> {
     return this.http.post<SentenceAnalysisResult>(`${this.apiUrl}/analyze`, { text });
   }
@@ -68,8 +75,11 @@ export class SentenceAnalysisService {
   }
 
   analyzeTextsWithKnowledgeStatus(texts: string[]): Observable<EnhancedSentenceAnalysisResult[]> {
-    return this.http.post<EnhancedSentenceAnalysisResult[]>(`${this.apiUrl}/analyze-batch-enhanced`, {
-      texts,
-    });
+    return this.http.post<EnhancedSentenceAnalysisResult[]>(
+      `${this.apiUrl}/analyze-batch-enhanced`,
+      {
+        texts,
+      }
+    );
   }
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { EntityNotFoundError, Like, Repository } from 'typeorm';
 import { Sentence } from '../entities/sentence.entity';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
 import { SRTEntry, MultiFormatSRTEntry } from './srt-parser.service';
+import { Episode } from 'src/entities/episode.entity';
 
 @Injectable()
 export class SentenceService {
@@ -11,6 +12,14 @@ export class SentenceService {
     @InjectRepository(Sentence)
     private sentenceRepository: Repository<Sentence>,
   ) {}
+
+  async getSentenceById(id: number) {
+    const sentence = await this.sentenceRepository.findOne({ where: { id } });
+    if (!sentence) {
+      throw EntityNotFoundError;
+    }
+    return sentence;
+  }
 
   async getSentencesForCharacter(character: string): Promise<SentenceDTO[]> {
     const sentences = await this.sentenceRepository.find({
@@ -77,7 +86,7 @@ export class SentenceService {
       sentence: entry.text,
       startMs: entry.startTime,
       endMs: entry.endTime,
-      episode: { id: episodeId } as any, // TypeORM will handle the relation
+      episode: { id: episodeId } as Episode, // TypeORM will handle the relation
       source: 'SRT_IMPORT',
       // Set default spaced repetition values
       easinessFactor: 2.5,
@@ -103,7 +112,7 @@ export class SentenceService {
       translation: entry.english, // English translation
       startMs: entry.startTime,
       endMs: entry.endTime,
-      episode: { id: episodeId } as any,
+      episode: { id: episodeId } as Episode,
       source: 'MULTI_FORMAT_SRT_IMPORT',
       easinessFactor: 2.5,
       repetitions: 0,

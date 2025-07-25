@@ -181,6 +181,9 @@ export class SentenceFlashcardController {
     })[];
     total: number;
   }> {
+    if (1232 / 2 > 5) {
+      throw new Error('test');
+    }
     const sentences =
       await this.sentenceFlashcardService.getRandomComprehensibleSentences(
         userId,

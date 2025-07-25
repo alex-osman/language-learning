@@ -34,8 +34,14 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   }
 
   // State management
-  remainingSentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[] = [];
-  currentSentence: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number }) | null = null;
+  remainingSentences: (SentenceDTO & {
+    episodeTitle?: string;
+    assetUrl?: string;
+    comprehensionPercentage?: number;
+  })[] = [];
+  currentSentence:
+    | (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })
+    | null = null;
   isFlipped = false;
   isLoading = true;
   isReviewing = false;
@@ -150,7 +156,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     // Add some tolerance and ensure we're actually past the start time
     const startMs = this.currentSentence.startMs || 0;
     const endMs = this.currentSentence.endMs || 0;
-    
+
     // Only check for end time if we're past the start time and have valid timing
     if (endMs > 0 && currentTimeMs > startMs + 100 && currentTimeMs >= endMs - 50) {
       this.pauseVideoAtSentenceEnd();
@@ -178,12 +184,16 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     if (video.src !== currentAssetUrl) {
       video.src = currentAssetUrl;
       this.isVideoReady = false;
-      
+
       // Wait for video to load before playing
-      video.addEventListener('loadedmetadata', () => {
-        this.isVideoReady = true;
-        this.startVideoPlayback();
-      }, { once: true });
+      video.addEventListener(
+        'loadedmetadata',
+        () => {
+          this.isVideoReady = true;
+          this.startVideoPlayback();
+        },
+        { once: true }
+      );
     } else {
       this.startVideoPlayback();
     }
@@ -207,7 +217,6 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
 
     // Small delay to ensure currentTime is set properly
     setTimeout(() => {
-      
       // Play the video
       video
         .play()
@@ -233,30 +242,32 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     this.error = null;
 
     // Try to get comprehensible sentences first (80% comprehension)
-    const sub = this.sentenceFlashcardService.getRandomComprehensibleSentences(this.batchSize, 80).subscribe({
-      next: response => {
-        if (response.sentences.length > 0) {
-          // We got comprehensible sentences
-          this.remainingSentences = response.sentences;
-          this.reviewStats.total = response.total;
-          console.log('Loaded comprehensible sentences', this.remainingSentences);
-        } else {
-          // Fallback to regular random sentences if no comprehensible ones available
-          console.log('No comprehensible sentences found, falling back to random sentences');
+    const sub = this.sentenceFlashcardService
+      .getRandomComprehensibleSentences(this.batchSize, 80)
+      .subscribe({
+        next: response => {
+          if (response.sentences.length > 0) {
+            // We got comprehensible sentences
+            this.remainingSentences = response.sentences;
+            this.reviewStats.total = response.total;
+            console.log('Loaded comprehensible sentences', this.remainingSentences);
+          } else {
+            // Fallback to regular random sentences if no comprehensible ones available
+            console.log('No comprehensible sentences found, falling back to random sentences');
+            this.loadFallbackRandomSentences();
+            return;
+          }
+
+          this.isLoading = false;
+          this.showNextSentence();
+        },
+        error: err => {
+          console.error('Error loading comprehensible sentences:', err);
+          // Fallback to regular random sentences on error
+          console.log('Falling back to random sentences due to error');
           this.loadFallbackRandomSentences();
-          return;
-        }
-        
-        this.isLoading = false;
-        this.showNextSentence();
-      },
-      error: err => {
-        console.error('Error loading comprehensible sentences:', err);
-        // Fallback to regular random sentences on error
-        console.log('Falling back to random sentences due to error');
-        this.loadFallbackRandomSentences();
-      },
-    });
+        },
+      });
 
     this.subscriptions.push(sub);
   }
@@ -427,28 +438,26 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     this.isAnalyzing = true;
     this.analysisError = null;
 
-    const sub = this.sentenceAnalysisService
-      .analyzeSentence(this.currentSentence.sentence)
-      .subscribe({
-        next: (analysis: SentenceAnalysisResult) => {
-          this.analysisResults = analysis.all_characters;
-          this.analysisStats = {
-            totalCharacters: analysis.total_characters,
-            knownCharacters: analysis.known_count,
-            unknownCharacters: analysis.unknown_count,
-            knownPercentage: analysis.known_percent,
-          };
-          if (showModal) {
-            this.showAnalysis = true;
-          }
-          this.isAnalyzing = false;
-        },
-        error: err => {
-          console.error('Error analyzing sentence:', err);
-          this.analysisError = 'Failed to analyze sentence. Please try again.';
-          this.isAnalyzing = false;
-        },
-      });
+    const sub = this.sentenceAnalysisService.analyzeSentenceId(this.currentSentence.id).subscribe({
+      next: (analysis: SentenceAnalysisResult) => {
+        this.analysisResults = analysis.all_characters;
+        this.analysisStats = {
+          totalCharacters: analysis.total_characters,
+          knownCharacters: analysis.known_count,
+          unknownCharacters: analysis.unknown_count,
+          knownPercentage: analysis.known_percent,
+        };
+        if (showModal) {
+          this.showAnalysis = true;
+        }
+        this.isAnalyzing = false;
+      },
+      error: err => {
+        console.error('Error analyzing sentence:', err);
+        this.analysisError = 'Failed to analyze sentence. Please try again.';
+        this.isAnalyzing = false;
+      },
+    });
 
     this.subscriptions.push(sub);
   }

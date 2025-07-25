@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CharacterService } from './character.service';
-import {
-  UserCharacterKnowledgeService,
-  CharacterKnowledgeStatus,
-} from './user-character-knowledge.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserSentenceKnowledge } from 'src/entities/user-sentence-knowledge.entity';
+import { Repository } from 'typeorm';
 import { CharacterDTO } from '../shared/interfaces/data.interface';
+import { CharacterService } from './character.service';
+import { SentenceService } from './sentence.service';
+import {
+  CharacterKnowledgeStatus,
+  UserCharacterKnowledgeService,
+} from './user-character-knowledge.service';
 
 interface AnalyzedCharacter {
   char: string;
@@ -54,8 +58,29 @@ const IGNORE_CHARACTERS = [];
 export class SentenceAnalyzerService {
   constructor(
     private readonly characterService: CharacterService,
+    private readonly sentenceService: SentenceService,
     private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
+    @InjectRepository(UserSentenceKnowledge)
+    private userSentenceKnowledgeRepository: Repository<UserSentenceKnowledge>,
   ) {}
+
+  async analyzeSentenceId(sentenceId: number, userId: number) {
+    const sentence = await this.sentenceService.getSentenceById(sentenceId);
+    const analysis = await this.analyzeSentence(sentence.sentence, userId);
+
+    await this.userSentenceKnowledgeRepository.delete({
+      userID: userId,
+      sentenceID: sentenceId,
+    });
+
+    await this.userSentenceKnowledgeRepository.insert({
+      userID: userId,
+      sentenceID: sentenceId,
+      comprehensionPercentage: analysis.known_percent,
+    });
+
+    return analysis;
+  }
 
   async analyzeSentence(
     text: string,
@@ -251,7 +276,7 @@ export class SentenceAnalyzerService {
     }
 
     // Process all texts to extract characters and build character count maps
-    const textProcessingResults = texts.map(text => {
+    const textProcessingResults = texts.map((text) => {
       const chars = text
         .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
         .replace(/[^\u4e00-\u9fff]/g, '') // Keep only Chinese characters
@@ -267,7 +292,9 @@ export class SentenceAnalyzerService {
     });
 
     // Get all unique characters across all texts
-    const allUniqueChars = [...new Set(textProcessingResults.flatMap(result => result.uniqueChars))];
+    const allUniqueChars = [
+      ...new Set(textProcessingResults.flatMap((result) => result.uniqueChars)),
+    ];
 
     // Batch fetch character data for all unique characters
     const characterDataMap = new Map<string, any>();
@@ -282,57 +309,75 @@ export class SentenceAnalyzerService {
     // Batch fetch user knowledge status if userId provided
     let knownCharacters: Set<string>;
     if (userId) {
-      const relevantCharData = Array.from(characterDataMap.values()).filter(char => char);
+      const relevantCharData = Array.from(characterDataMap.values()).filter(
+        (char) => char,
+      );
       const knownCharPromises = relevantCharData.map(async (char) => {
-        const hasReviewed = await this.userCharacterKnowledgeService.hasUserReviewed(userId, char.id);
+        const hasReviewed =
+          await this.userCharacterKnowledgeService.hasUserReviewed(
+            userId,
+            char.id,
+          );
         return hasReviewed ? char.character : null;
       });
 
       const knownCharResults = await Promise.all(knownCharPromises);
-      knownCharacters = new Set(knownCharResults.filter((char) => char !== null));
+      knownCharacters = new Set(
+        knownCharResults.filter((char) => char !== null),
+      );
     } else {
       knownCharacters = new Set(
         Array.from(characterDataMap.values())
           .filter((char) => char)
-          .map((char) => char.character)
+          .map((char) => char.character),
       );
     }
 
     // Process each text using the batched data
     const results = await Promise.all(
-      textProcessingResults.map(async ({ chars, charCounts, uniqueChars }, textIndex) => {
-        const allCharacters = await Promise.all(
-          uniqueChars.map(async (char) => {
-            const charData = characterDataMap.get(char);
-            const isKnown = knownCharacters.has(char);
-            return {
-              char,
-              known: isKnown,
-              charData: charData
-                ? await this.characterService.makeCharacterDTO(charData, userId)
-                : undefined,
-              count: charCounts.get(char) || 0,
-            };
-          }),
-        );
+      textProcessingResults.map(
+        async ({ chars, charCounts, uniqueChars }, textIndex) => {
+          const allCharacters = await Promise.all(
+            uniqueChars.map(async (char) => {
+              const charData = characterDataMap.get(char);
+              const isKnown = knownCharacters.has(char);
+              return {
+                char,
+                known: isKnown,
+                charData: charData
+                  ? await this.characterService.makeCharacterDTO(
+                      charData,
+                      userId,
+                    )
+                  : undefined,
+                count: charCounts.get(char) || 0,
+              };
+            }),
+          );
 
-        const knownChars = allCharacters.filter((c) => c.known).map((c) => c.char);
-        const unknownChars = allCharacters.filter((c) => !c.known).map((c) => c.char);
-        const totalChars = chars.length;
-        const knownCount = knownChars.length;
-        const unknownCount = unknownChars.length;
-        const knownPercent = totalChars > 0 ? (knownCount / uniqueChars.length) * 100 : 0;
+          const knownChars = allCharacters
+            .filter((c) => c.known)
+            .map((c) => c.char);
+          const unknownChars = allCharacters
+            .filter((c) => !c.known)
+            .map((c) => c.char);
+          const totalChars = chars.length;
+          const knownCount = knownChars.length;
+          const unknownCount = unknownChars.length;
+          const knownPercent =
+            totalChars > 0 ? (knownCount / uniqueChars.length) * 100 : 0;
 
-        return {
-          known_characters: knownChars,
-          unknown_characters: unknownChars,
-          known_count: knownCount,
-          unknown_count: unknownCount,
-          total_characters: totalChars,
-          known_percent: Math.round(knownPercent),
-          all_characters: allCharacters,
-        };
-      })
+          return {
+            known_characters: knownChars,
+            unknown_characters: unknownChars,
+            known_count: knownCount,
+            unknown_count: unknownCount,
+            total_characters: totalChars,
+            known_percent: Math.round(knownPercent),
+            all_characters: allCharacters,
+          };
+        },
+      ),
     );
 
     return results;
@@ -347,7 +392,7 @@ export class SentenceAnalyzerService {
     }
 
     // Process all texts to extract characters and build character count maps
-    const textProcessingResults = texts.map(text => {
+    const textProcessingResults = texts.map((text) => {
       const chars = text
         .replace(/[\s\p{P}\p{S}]/gu, '') // Remove spaces, punctuation, and symbols
         .replace(/[^\u4e00-\u9fff]/g, '') // Keep only Chinese characters
@@ -363,7 +408,9 @@ export class SentenceAnalyzerService {
     });
 
     // Get all unique characters across all texts
-    const allUniqueChars = [...new Set(textProcessingResults.flatMap(result => result.uniqueChars))];
+    const allUniqueChars = [
+      ...new Set(textProcessingResults.flatMap((result) => result.uniqueChars)),
+    ];
 
     // Batch fetch character data for all unique characters
     const characterDataMap = new Map<string, any>();
@@ -376,15 +423,21 @@ export class SentenceAnalyzerService {
     await Promise.all(characterDataPromises);
 
     // Batch fetch knowledge status for all relevant characters
-    const relevantCharData = Array.from(characterDataMap.values()).filter(char => char);
+    const relevantCharData = Array.from(characterDataMap.values()).filter(
+      (char) => char,
+    );
     const knowledgeStatusPromises = relevantCharData.map(async (char) => {
-      const status = await this.userCharacterKnowledgeService.getCharacterKnowledgeStatus(userId, char.id);
+      const status =
+        await this.userCharacterKnowledgeService.getCharacterKnowledgeStatus(
+          userId,
+          char.id,
+        );
       return { character: char.character, status };
     });
 
     const knowledgeStatusResults = await Promise.all(knowledgeStatusPromises);
     const knowledgeStatusMap = new Map(
-      knowledgeStatusResults.map(result => [result.character, result.status])
+      knowledgeStatusResults.map((result) => [result.character, result.status]),
     );
 
     // Process each text using the batched data
@@ -396,7 +449,9 @@ export class SentenceAnalyzerService {
             let status = CharacterKnowledgeStatus.UNKNOWN;
 
             if (charData && knowledgeStatusMap.has(char)) {
-              status = knowledgeStatusMap.get(char) || CharacterKnowledgeStatus.UNKNOWN;
+              status =
+                knowledgeStatusMap.get(char) ||
+                CharacterKnowledgeStatus.UNKNOWN;
             }
 
             return {
@@ -431,9 +486,12 @@ export class SentenceAnalyzerService {
         const unknownCount = unknownChars.length;
         const learningCount = learningChars.length;
 
-        const learnedPercent = totalUniqueChars > 0 ? (learnedCount / totalUniqueChars) * 100 : 0;
-        const seenPercent = totalUniqueChars > 0 ? (seenCount / totalUniqueChars) * 100 : 0;
-        const unknownPercent = totalUniqueChars > 0 ? (unknownCount / totalUniqueChars) * 100 : 0;
+        const learnedPercent =
+          totalUniqueChars > 0 ? (learnedCount / totalUniqueChars) * 100 : 0;
+        const seenPercent =
+          totalUniqueChars > 0 ? (seenCount / totalUniqueChars) * 100 : 0;
+        const unknownPercent =
+          totalUniqueChars > 0 ? (unknownCount / totalUniqueChars) * 100 : 0;
 
         return {
           learned_characters: learnedChars,
@@ -450,7 +508,7 @@ export class SentenceAnalyzerService {
           unknown_percent: Math.round(unknownPercent),
           all_characters: allCharacters,
         };
-      })
+      }),
     );
 
     return results;
