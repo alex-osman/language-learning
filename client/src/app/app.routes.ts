@@ -13,6 +13,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 // Scene components removed - episodes now connect directly to sentences
 import { SentenceDisplayComponent } from './components/sentence-display/sentence-display.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
+import { RandomSentenceFlashcardComponent } from './components/random-sentence-flashcard/random-sentence-flashcard.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
 import { VideoPlayerComponent } from './components/video-player/video-player.component';
 import { authGuard } from './guards/auth.guard';
@@ -55,6 +56,11 @@ export const routes: Routes = [
     path: 'sentence-flashcard/:episodeId',
     component: SentenceFlashcardComponent,
     title: 'Sentence Practice',
+  },
+  {
+    path: 'random-sentence-flashcard',
+    component: RandomSentenceFlashcardComponent,
+    title: 'Random Sentence Practice',
   },
   {
     path: 'sentence-gallery',

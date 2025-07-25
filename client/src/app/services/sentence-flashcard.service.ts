@@ -98,4 +98,18 @@ export class SentenceFlashcardService {
   resetLearning(sentenceId: string): Observable<SentenceDTO> {
     return this.http.post<SentenceDTO>(`${this.baseUrl}/${sentenceId}/reset`, {});
   }
+
+  /**
+   * Get random sentences from all content for practice
+   */
+  getRandomSentences(limit?: number): Observable<{ 
+    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[]; 
+    total: number 
+  }> {
+    const options = limit ? { params: { limit: limit.toString() } } : {};
+    return this.http.get<{ 
+      sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[]; 
+      total: number 
+    }>(`${this.baseUrl}/random`, options);
+  }
 }

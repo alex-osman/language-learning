@@ -195,4 +195,37 @@ export class SentenceFlashcardService {
 
     return this.sentenceRepository.save(sentence);
   }
+
+  /**
+   * Get random sentences from all content for practice
+   */
+  async getRandomSentences(limit: number = 10): Promise<Sentence[]> {
+    const query = this.sentenceRepository
+      .createQueryBuilder('sentence')
+      .leftJoinAndSelect('sentence.episode', 'episode')
+      .where('sentence.sentence IS NOT NULL')
+      .andWhere('sentence.sentence != :empty', { empty: '' })
+      .andWhere('sentence.startMs IS NOT NULL')
+      .andWhere('sentence.endMs IS NOT NULL')
+      .andWhere('episode.assetUrl IS NOT NULL')
+      .orderBy('RAND()') // Use RAND() for MySQL
+      .limit(limit);
+
+    return query.getMany();
+  }
+
+  /**
+   * Get total sentence count across all content
+   */
+  async getTotalSentenceCountAcrossAllContent(): Promise<number> {
+    return this.sentenceRepository
+      .createQueryBuilder('sentence')
+      .leftJoin('sentence.episode', 'episode')
+      .where('sentence.sentence IS NOT NULL')
+      .andWhere('sentence.sentence != :empty', { empty: '' })
+      .andWhere('sentence.startMs IS NOT NULL')
+      .andWhere('sentence.endMs IS NOT NULL')
+      .andWhere('episode.assetUrl IS NOT NULL')
+      .getCount();
+  }
 }

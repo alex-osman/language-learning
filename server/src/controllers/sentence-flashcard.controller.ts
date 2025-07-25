@@ -130,4 +130,28 @@ export class SentenceFlashcardController {
     const sentence = await this.sentenceFlashcardService.resetLearning(id);
     return this.sentenceService.toSentenceDTO(sentence);
   }
+
+  /**
+   * Get random sentences from all content for practice
+   * @param limit The number of random sentences to retrieve (optional, defaults to 10)
+   */
+  @Get('random')
+  async getRandomSentences(@Query('limit') limit?: number): Promise<{
+    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[];
+    total: number;
+  }> {
+    const sentences = await this.sentenceFlashcardService.getRandomSentences(
+      limit || 10,
+    );
+    const total = await this.sentenceFlashcardService.getTotalSentenceCountAcrossAllContent();
+
+    return {
+      sentences: sentences.map((sentence) => ({
+        ...this.sentenceService.toSentenceDTO(sentence),
+        episodeTitle: sentence.episode?.title,
+        assetUrl: sentence.episode?.assetUrl,
+      })),
+      total,
+    };
+  }
 }

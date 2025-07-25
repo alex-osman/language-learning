@@ -61,8 +61,8 @@ export class SentenceService {
       dueForReview,
       // Episode context (if available)
       episodeId: sentence.episode?.id,
-      startMs: 0, // TODO: Add startMs to sentence entity if needed
-      endMs: 0, // TODO: Add endMs to sentence entity if needed
+      startMs: sentence.startMs,
+      endMs: sentence.endMs,
     };
   }
 

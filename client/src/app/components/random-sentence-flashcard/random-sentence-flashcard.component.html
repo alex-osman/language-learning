@@ -1,0 +1,248 @@
+<div class="random-sentence-flashcard-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading random sentences...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <h3>Error</h3>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadRandomSentences()">Try Again</button>
+    <button class="btn btn-secondary" (click)="goBack()">Go Back</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error" class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <button class="btn btn-back" (click)="goBack()">← Back</button>
+      <h1>{{ getCurrentTitle() }}</h1>
+      <div class="stats">
+        <span>{{ reviewStats.current }}/{{ batchSize }}</span>
+        <span class="separator">|</span>
+        <span class="correct">✓ {{ reviewStats.correct }}</span>
+        <span class="incorrect">✗ {{ reviewStats.incorrect }}</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(reviewStats.current / batchSize) * 100"></div>
+      </div>
+    </div>
+
+    <!-- Review Complete -->
+    <div *ngIf="reviewCompleted" class="completion-container">
+      <h2>Batch Complete!</h2>
+      <div class="completion-stats">
+        <p>You've completed {{ reviewStats.current }} sentences in this batch.</p>
+        <div class="score-breakdown">
+          <div class="score-item correct">
+            <span class="score-number">{{ reviewStats.correct }}</span>
+            <span class="score-label">Correct</span>
+          </div>
+          <div class="score-item incorrect">
+            <span class="score-number">{{ reviewStats.incorrect }}</span>
+            <span class="score-label">Incorrect</span>
+          </div>
+          <div class="score-item accuracy" *ngIf="reviewStats.current > 0">
+            <span class="score-number"
+              >{{ Math.round((reviewStats.correct / reviewStats.current) * 100) }}%</span
+            >
+            <span class="score-label">Accuracy</span>
+          </div>
+        </div>
+      </div>
+      <div class="completion-actions">
+        <button class="btn btn-primary" (click)="loadMoreSentences()">
+          Practice More Sentences
+        </button>
+        <button class="btn btn-secondary" (click)="goBack()">Finish Session</button>
+      </div>
+    </div>
+
+    <!-- Active Review -->
+    <div *ngIf="isReviewing && currentSentence" class="review-container">
+      <!-- Video Player -->
+      <div class="video-container" *ngIf="getCurrentAssetUrl()">
+        <video
+          #sceneVideo
+          [autoplay]="false"
+          [playsInline]="true"
+          class="scene-video"
+          [src]="getCurrentAssetUrl()"
+          preload="metadata"
+          [class.ready]="isVideoReady"
+        ></video>
+
+        <!-- Video Controls -->
+        <div class="video-controls">
+          <button
+            class="btn btn-control replay-btn"
+            (click)="replayVideoSegment()"
+            [disabled]="isProcessingReview"
+            *ngIf="sentencePlaybackCompleted"
+          >
+            🔄 Replay
+          </button>
+
+          <div class="video-status" *ngIf="!isVideoReady">Loading video...</div>
+        </div>
+      </div>
+
+      <!-- Flashcard -->
+      <div class="flashcard-container">
+        <div class="flashcard" [class.flipped]="isFlipped">
+          <!-- Front of card (Chinese sentence) -->
+          <div class="card-face card-front" *ngIf="!isFlipped">
+            <div class="sentence-content">
+              <div class="sentence-chinese" [class.waiting-for-input]="isWaitingForUserInput">
+                <span
+                  *ngFor="let char of currentSentence.sentence.split('')"
+                  [ngStyle]="getWordUnderlineStyle(char)"
+                  class="character"
+                >
+                  {{ char }}
+                </span>
+              </div>
+
+              <!-- Show pinyin hint if waiting for user input -->
+              <div class="sentence-pinyin" *ngIf="isWaitingForUserInput && currentSentence.pinyin">
+                {{ currentSentence.pinyin }}
+              </div>
+
+              <div class="reveal-instruction" *ngIf="canRevealAnswer && !isFlipped">
+                <button class="btn btn-reveal" (click)="revealAnswer()">Reveal Answer</button>
+              </div>
+
+              <div class="waiting-message" *ngIf="isWaitingForUserInput && !canRevealAnswer">
+                Listen to the audio and try to understand...
+              </div>
+            </div>
+          </div>
+
+          <!-- Back of card (Translation and details) -->
+          <div class="card-face card-back" *ngIf="isFlipped">
+            <div class="sentence-content">
+              <div class="sentence-chinese">
+                <span
+                  *ngFor="let char of currentSentence.sentence.split('')"
+                  [ngStyle]="getWordUnderlineStyle(char)"
+                  class="character"
+                >
+                  {{ char }}
+                </span>
+              </div>
+
+              <div class="sentence-pinyin" *ngIf="currentSentence.pinyin">
+                {{ currentSentence.pinyin }}
+              </div>
+
+              <div class="sentence-translation">
+                {{ currentSentence.translation }}
+              </div>
+
+              <!-- Character Analysis Button -->
+              <div class="analysis-section">
+                <button
+                  class="btn btn-analysis"
+                  (click)="toggleAnalysis()"
+                  [disabled]="isAnalyzing"
+                >
+                  <span *ngIf="!isAnalyzing">
+                    📊 Character Analysis
+                    <span *ngIf="analysisStats.knownPercentage > 0">
+                      ({{ analysisStats.knownPercentage }}% known)
+                    </span>
+                  </span>
+                  <span *ngIf="isAnalyzing">Analyzing...</span>
+                </button>
+              </div>
+
+              <!-- Review Buttons -->
+              <div class="review-buttons" *ngIf="!isProcessingReview">
+                <h4>How well did you understand?</h4>
+                <div class="rating-buttons">
+                  <button
+                    class="btn btn-rating btn-fail"
+                    (click)="submitReview(0)"
+                    [class.selected]="selectedRating === 0"
+                  >
+                    0 - No idea
+                  </button>
+                  <button
+                    class="btn btn-rating btn-fail"
+                    (click)="submitReview(1)"
+                    [class.selected]="selectedRating === 1"
+                  >
+                    1 - Barely
+                  </button>
+                  <button
+                    class="btn btn-rating btn-fail"
+                    (click)="submitReview(2)"
+                    [class.selected]="selectedRating === 2"
+                  >
+                    2 - With help
+                  </button>
+                  <button
+                    class="btn btn-rating btn-pass"
+                    (click)="submitReview(3)"
+                    [class.selected]="selectedRating === 3"
+                  >
+                    3 - Understood
+                  </button>
+                  <button
+                    class="btn btn-rating btn-pass"
+                    (click)="submitReview(4)"
+                    [class.selected]="selectedRating === 4"
+                  >
+                    4 - Easy
+                  </button>
+                  <button
+                    class="btn btn-rating btn-pass"
+                    (click)="submitReview(5)"
+                    [class.selected]="selectedRating === 5"
+                  >
+                    5 - Perfect
+                  </button>
+                </div>
+              </div>
+
+              <!-- Processing State -->
+              <div class="processing-review" *ngIf="isProcessingReview">
+                <div class="spinner-small"></div>
+                <p>Recording your review...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Character Analysis Modal -->
+  <div class="analysis-overlay" *ngIf="showAnalysis" (click)="closeAnalysis()">
+    <div class="analysis-modal" (click)="$event.stopPropagation()">
+      <div class="analysis-header">
+        <h3>Character Analysis</h3>
+        <button class="close-btn" (click)="closeAnalysis()" aria-label="Close analysis">✕</button>
+      </div>
+
+      <div class="analysis-content">
+        <app-character-analysis
+          [analysisResults]="analysisResults"
+          [totalCharacters]="analysisStats.totalCharacters"
+          [knownCharacters]="analysisStats.knownCharacters"
+          [unknownCharacters]="analysisStats.unknownCharacters"
+          [knownPercentage]="analysisStats.knownPercentage"
+          [isLoading]="isAnalyzing"
+          [error]="analysisError"
+        >
+        </app-character-analysis>
+      </div>
+    </div>
+  </div>
+</div>
