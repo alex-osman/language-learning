@@ -47,11 +47,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     english: false,
   };
 
-  // Autoscroll state
-  isAutoscrollEnabled = true;
-  private isManualScrolling = false;
-  private scrollTimeout?: number;
-
   // Available playback speeds
   playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
@@ -77,9 +72,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.timeUpdateInterval) {
       clearInterval(this.timeUpdateInterval);
-    }
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
     }
   }
 
@@ -132,7 +124,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private setupVideoListeners() {
     if (this.videoElement?.nativeElement) {
       const video = this.videoElement.nativeElement;
-      
+
       video.addEventListener('loadedmetadata', () => {
         this.duration = video.duration;
       });
@@ -172,10 +164,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentSentence = currentSentence || null;
 
     // Trigger autoscroll if sentence changed and autoscroll is enabled
-    if (this.currentSentence && 
-        this.currentSentence !== previousSentence && 
-        this.isAutoscrollEnabled && 
-        !this.isManualScrolling) {
+    if (this.currentSentence && this.currentSentence !== previousSentence) {
       this.scrollToCurrentSentence();
     }
   }
@@ -210,31 +199,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Autoscroll methods
-  toggleAutoscroll() {
-    this.isAutoscrollEnabled = !this.isAutoscrollEnabled;
-    
-    // If re-enabling autoscroll, scroll to current sentence immediately
-    if (this.isAutoscrollEnabled && this.currentSentence && !this.isManualScrolling) {
-      this.scrollToCurrentSentence();
-    }
-  }
-
-  onManualScroll() {
-    // Disable autoscroll when user manually scrolls
-    this.isManualScrolling = true;
-    
-    // Clear existing timeout
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
-    }
-    
-    // Re-enable autoscroll detection after 3 seconds of no scrolling
-    this.scrollTimeout = setTimeout(() => {
-      this.isManualScrolling = false;
-    }, 3000);
-  }
-
   private scrollToCurrentSentence() {
     if (!this.currentSentence || !this.sentenceList?.nativeElement) return;
 
@@ -246,7 +210,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       sentenceElement.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
   }

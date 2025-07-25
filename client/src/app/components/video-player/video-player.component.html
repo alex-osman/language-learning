@@ -39,20 +39,18 @@
       [playbackRate]="playbackRate"
       [playbackSpeeds]="playbackSpeeds"
       [subtitleLayers]="subtitleLayers"
-      [isAutoscrollEnabled]="isAutoscrollEnabled"
       (playPause)="togglePlayPause()"
       (seek)="seekTo($event)"
       (volumeChange)="setVolume($event)"
       (speedChange)="setPlaybackRate($event)"
       (layerToggle)="toggleSubtitleLayer($event)"
-      (autoscrollToggle)="toggleAutoscroll()"
       class="player-controls"
     ></app-player-controls>
 
     <!-- Sentence List (Script) -->
     <div class="sentence-list">
       <h3>Script</h3>
-      <div #sentenceList class="sentences" (scroll)="onManualScroll()">
+      <div #sentenceList class="sentences">
         <div
           *ngFor="let sentence of scene.sentences"
           class="sentence-item"
