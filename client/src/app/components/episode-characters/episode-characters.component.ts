@@ -9,22 +9,23 @@ import { CharacterExplorerComponent } from '../character-explorer/character-expl
   standalone: true,
   imports: [CommonModule, CharacterExplorerComponent],
   template: `
-    <app-character-explorer
-      [characters]="characters"
-      [isLoading]="isLoading"
-      [error]="error"
-      title="Characters in this Episode"
-      [showStats]="true"
-      [showSorting]="true"
-      [showFilters]="true"
-      [compact]="true"
-      mode="explorer"
-      [showActions]="true"
-      [showLearningButtons]="true"
-      [showMovieGeneration]="true"
-      [collapsed]="collapsed"
-    >
-    </app-character-explorer>
+    <div *ngIf="!collapsed">
+      <app-character-explorer
+        [characters]="characters"
+        [isLoading]="isLoading"
+        [error]="error"
+        title="Characters in this Episode"
+        [showStats]="true"
+        [showSorting]="true"
+        [showFilters]="true"
+        [compact]="true"
+        mode="explorer"
+        [showActions]="true"
+        [showLearningButtons]="true"
+        [showMovieGeneration]="true"
+        [collapsed]="collapsed"
+      ></app-character-explorer>
+    </div>
   `,
   styleUrls: ['./episode-characters.component.scss'],
 })

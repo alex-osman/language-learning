@@ -444,4 +444,19 @@ export class EpisodeOverviewComponent implements OnInit {
 
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
+
+  goToTimestamp(timestamp: number) {
+    if (this.episodeVideo?.nativeElement) {
+      // Convert milliseconds to seconds
+      const timeInSeconds = timestamp / 1000;
+      this.episodeVideo.nativeElement.currentTime = timeInSeconds;
+
+      // Pause the video if it's playing to let user see the specific moment
+      this.episodeVideo.nativeElement.play();
+
+      console.log(`Navigated to timestamp: ${timeInSeconds}s`);
+    } else {
+      console.warn('Video element not found');
+    }
+  }
 }

@@ -29,11 +29,17 @@
         <h2>{{ episodeData.title }}</h2>
         <p>{{ episodeData.percentUnderstood }}% understood</p>
         <p>{{ episodeData.totalSentencesCount }} total sentences</p>
-        <!-- NEW: Character learning breakdown -->
         <div class="character-breakdown" *ngIf="episodeData.progressSegments.length > 0">
           <span class="learned-count">{{ episodeData.learnedCount }} learned</span>
           <span class="seen-count">{{ episodeData.seenCount }} seen</span>
           <span class="unknown-count">{{ episodeData.unknownCount }} unknown</span>
+        </div>
+        <div>
+          <button class="card-btn" (click)="startPractice()">Start Practice</button>
+          <button class="card-btn" (click)="goToVideo()">
+            <span class="video-icon">▶</span>
+            <span class="video-text">Watch Video</span>
+          </button>
         </div>
       </div>
       <div class="progress-circle">
@@ -55,7 +61,11 @@
       <h3>Script</h3>
       <!-- Script View (Concise view) -->
       <div class="sentences-list script-view">
-        <div *ngFor="let sentence of episode?.sentences" class="script-line">
+        <div
+          *ngFor="let sentence of episode?.sentences"
+          class="script-line"
+          (click)="goToTimestamp(sentence.startMs)"
+        >
           <span class="chinese-text">
             <span
               *ngFor="let char of sentence.sentence.split('')"
@@ -72,7 +82,12 @@
           <div class="progress-indicator">
             <app-progress-indicator
               type="linear"
-              [value]="episodeData.learnedCount"
+              [value]="
+                (((enhancedAnalysisData[sentence.id]?.learned_count || 0) +
+                  (enhancedAnalysisData[sentence.id]?.learning_count || 0)) /
+                  (enhancedAnalysisData[sentence.id]?.total_characters || 1)) *
+                100
+              "
               theme="success"
               [height]="4"
               [showLabel]="false"

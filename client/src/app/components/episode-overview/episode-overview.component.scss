@@ -195,6 +195,17 @@
     }
   }
 
+  .card-btn {
+    cursor: pointer;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    margin-right: 1rem;
+  }
+
   .video-access {
     background: white;
     border-radius: 12px;
