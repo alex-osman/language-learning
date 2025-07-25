@@ -81,6 +81,7 @@
 
   <!-- Sticky Footer -->
   <div class="footer" *ngIf="!isLoading && !error">
+    <button class="video-player-btn" (click)="openVideoPlayer()">📺 Watch with Subtitles</button>
     <button class="start-practice-btn" (click)="startPractice()">Start Practice</button>
   </div>
 </div>

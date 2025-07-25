@@ -1,0 +1,8 @@
+<div class="character-tooltip" [ngStyle]="tooltipStyle">
+  <div class="tooltip-content">
+    <div class="character-large">{{ character.char }}</div>
+    <div *ngIf="character.pinyin" class="pinyin">{{ character.pinyin }}</div>
+    <div *ngIf="character.translation" class="translation">{{ character.translation }}</div>
+  </div>
+  <div class="tooltip-arrow"></div>
+</div>

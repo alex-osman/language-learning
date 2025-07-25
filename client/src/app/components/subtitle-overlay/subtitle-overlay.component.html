@@ -1,0 +1,32 @@
+<div class="subtitle-overlay">
+  <!-- Chinese Text Layer -->
+  <div *ngIf="layers.chinese" class="subtitle-layer chinese-layer">
+    <span
+      *ngFor="let char of chineseCharacters; let i = index"
+      class="character"
+      [class.punctuation]="!isChineseCharacter(char)"
+      (mouseenter)="onCharacterHover($event, char, i)"
+      (mouseleave)="onCharacterLeave()"
+      (click)="onCharacterClick(char)"
+    >
+      {{ char }}
+    </span>
+  </div>
+
+  <!-- Pinyin Text Layer -->
+  <div *ngIf="layers.pinyin && sentence.pinyin" class="subtitle-layer pinyin-layer">
+    {{ sentence.pinyin }}
+  </div>
+
+  <!-- English Translation Layer -->
+  <div *ngIf="layers.english" class="subtitle-layer english-layer">
+    {{ sentence.translation }}
+  </div>
+
+  <!-- Character Tooltip -->
+  <app-character-tooltip
+    *ngIf="hoveredCharacter"
+    [character]="hoveredCharacter"
+    [position]="tooltipPosition"
+  ></app-character-tooltip>
+</div>

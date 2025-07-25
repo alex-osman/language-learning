@@ -1,0 +1,74 @@
+<div class="video-player-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="back-button" (click)="goBack()" aria-label="Back">
+      ← Back
+    </button>
+    <h1 class="scene-title">{{ scene?.title || 'Video Player' }}</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading video...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Video Player -->
+  <div *ngIf="!isLoading && !error && scene" class="video-player">
+    <div class="video-container">
+      <!-- Video Element -->
+      <video
+        #videoElement
+        [src]="scene.assetUrl"
+        class="video-element"
+      ></video>
+
+      <!-- Subtitle Overlay -->
+      <app-subtitle-overlay
+        *ngIf="currentSentence"
+        [sentence]="currentSentence"
+        [layers]="subtitleLayers"
+        class="subtitle-overlay"
+      ></app-subtitle-overlay>
+    </div>
+
+    <!-- Player Controls -->
+    <app-player-controls
+      [isPlaying]="isPlaying"
+      [currentTime]="currentTime"
+      [duration]="duration"
+      [volume]="volume"
+      [playbackRate]="playbackRate"
+      [playbackSpeeds]="playbackSpeeds"
+      [subtitleLayers]="subtitleLayers"
+      (playPause)="togglePlayPause()"
+      (seek)="seekTo($event)"
+      (volumeChange)="setVolume($event)"
+      (speedChange)="setPlaybackRate($event)"
+      (layerToggle)="toggleSubtitleLayer($event)"
+      class="player-controls"
+    ></app-player-controls>
+
+    <!-- Sentence List (Script) -->
+    <div class="sentence-list">
+      <h3>Script</h3>
+      <div class="sentences">
+        <div
+          *ngFor="let sentence of scene.sentences"
+          class="sentence-item"
+          [class.active]="currentSentence?.id === sentence.id"
+          (click)="goToSentence(sentence)"
+        >
+          <div class="chinese">{{ sentence.sentence }}</div>
+          <div *ngIf="sentence.pinyin" class="pinyin">{{ sentence.pinyin }}</div>
+          <div class="english">{{ sentence.translation }}</div>
+          <div class="timing">{{ sentence.startMs / 1000 | number:'1.1-1' }}s</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

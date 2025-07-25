@@ -1,0 +1,107 @@
+<div class="player-controls">
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" (click)="onProgressClick($event)">
+      <div class="progress-fill" [style.width.%]="progressPercent"></div>
+      <div class="progress-handle" [style.left.%]="progressPercent"></div>
+    </div>
+  </div>
+
+  <!-- Control Bar -->
+  <div class="control-bar">
+    <!-- Left Section - Play Controls -->
+    <div class="controls-left">
+      <!-- Play/Pause Button -->
+      <button class="control-button play-pause" (click)="onPlayPauseClick()">
+        <span *ngIf="!isPlaying">▶</span>
+        <span *ngIf="isPlaying">⏸</span>
+      </button>
+
+      <!-- Time Display -->
+      <div class="time-display">
+        {{ formattedCurrentTime }} / {{ formattedDuration }}
+      </div>
+    </div>
+
+    <!-- Right Section - Settings -->
+    <div class="controls-right">
+      <!-- Volume Control -->
+      <div class="volume-control">
+        <button class="control-button" (click)="toggleVolumeSlider()">
+          <span *ngIf="volume > 0.5">🔊</span>
+          <span *ngIf="volume > 0 && volume <= 0.5">🔉</span>
+          <span *ngIf="volume === 0">🔇</span>
+        </button>
+        
+        <div *ngIf="showVolumeSlider" class="volume-slider">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            [value]="volume"
+            (input)="onVolumeChange($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Speed Control -->
+      <div class="speed-control">
+        <button class="control-button" (click)="toggleSpeedMenu()">
+          {{ playbackRate }}x
+        </button>
+        
+        <div *ngIf="showSpeedMenu" class="speed-menu">
+          <button
+            *ngFor="let speed of playbackSpeeds"
+            class="speed-option"
+            [class.active]="speed === playbackRate"
+            (click)="onSpeedChange(speed)"
+          >
+            {{ speed }}x
+          </button>
+        </div>
+      </div>
+
+      <!-- Subtitle Controls -->
+      <div class="subtitle-control">
+        <button class="control-button" (click)="toggleSubtitleMenu()">
+          CC
+        </button>
+        
+        <div *ngIf="showSubtitleMenu" class="subtitle-menu">
+          <div class="subtitle-option">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="subtitleLayers.chinese"
+                (change)="onLayerToggle('chinese')"
+              />
+              Chinese
+            </label>
+          </div>
+          <div class="subtitle-option">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="subtitleLayers.pinyin"
+                (change)="onLayerToggle('pinyin')"
+              />
+              Pinyin
+            </label>
+          </div>
+          <div class="subtitle-option">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="subtitleLayers.english"
+                (change)="onLayerToggle('english')"
+              />
+              English
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -244,6 +244,10 @@ export class SceneOverviewComponent implements OnInit {
     this.router.navigate(['../../'], { relativeTo: this.route });
   }
 
+  openVideoPlayer() {
+    this.router.navigate(['video'], { relativeTo: this.route });
+  }
+
   startPractice() {
     this.router.navigate(['/sentence-flashcard', this.sceneId], {
       queryParams: {

@@ -15,6 +15,7 @@ import { SceneOverviewComponent } from './components/scene-overview/scene-overvi
 import { SentenceDisplayComponent } from './components/sentence-display/sentence-display.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
+import { VideoPlayerComponent } from './components/video-player/video-player.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -84,6 +85,10 @@ export const routes: Routes = [
   {
     path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId',
     component: SceneOverviewComponent,
+  },
+  {
+    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId/video',
+    component: VideoPlayerComponent,
   },
   {
     path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId/sentences',

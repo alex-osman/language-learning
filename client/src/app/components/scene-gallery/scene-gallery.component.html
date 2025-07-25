@@ -1,27 +1,4 @@
 <div class="scene-gallery">
-  <!-- Scene Card Header (Mock Style) -->
-  <div class="scene-header-card">
-    <div class="scene-header-info">
-      <div class="scene-title">Scene 3 of 26</div>
-      <div class="scene-subtitle">Bus Ride</div>
-      <div class="scene-progress-bar-container">
-        <div class="scene-progress-bar">
-          <div class="scene-progress-bar-fill" style="width: 60%"></div>
-        </div>
-      </div>
-    </div>
-    <div class="sentence-thumbnails-row">
-      <div class="sentence-thumbnail" *ngFor="let n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png"
-          alt="Sentence {{ n }}"
-        />
-        <span class="sentence-number">{{ n }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="completion-stats">Sentences completed: 16 out of 374</div>
-
   <h2>Scenes</h2>
   <div *ngIf="isLoading" class="loading">Loading scenes...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
