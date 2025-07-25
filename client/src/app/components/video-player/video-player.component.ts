@@ -66,7 +66,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   // Available playback speeds
-  playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  playbackSpeeds = [0.65, 0.75, 0.85, 0.95, 1, 1.15, 1.5, 2, 4, 8];
 
   // Sentence analysis data
   enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
@@ -409,7 +409,42 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
           event.preventDefault();
           this.toggleChineseSubtitleMode();
           break;
+        case 'Comma':
+        case 'Period':
+          if (event.shiftKey) {
+            event.preventDefault();
+            if (event.code === 'Comma') {
+              this.decreasePlaybackSpeed();
+            } else {
+              this.increasePlaybackSpeed();
+            }
+          }
+          break;
+        case 'ArrowLeft':
+          event.preventDefault();
+          this.goToPreviousSentence();
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          this.goToNextSentence();
+          break;
       }
+    }
+  }
+
+  private increasePlaybackSpeed() {
+    const currentIndex = this.playbackSpeeds.indexOf(this.playbackRate);
+    if (currentIndex < this.playbackSpeeds.length - 1) {
+      const newSpeed = this.playbackSpeeds[currentIndex + 1];
+      this.setPlaybackRate(newSpeed);
+    }
+  }
+
+  private decreasePlaybackSpeed() {
+    const currentIndex = this.playbackSpeeds.indexOf(this.playbackRate);
+    if (currentIndex > 0) {
+      const newSpeed = this.playbackSpeeds[currentIndex - 1];
+      this.setPlaybackRate(newSpeed);
     }
   }
 
@@ -424,6 +459,52 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       // In any other state, set to Chinese only
       this.subtitleLayers.chinese = true;
       this.subtitleLayers.pinyin = false;
+    }
+  }
+
+  private goToPreviousSentence() {
+    if (!this.scene?.sentences) return;
+
+    const currentTimeMs = this.currentTime * 1000;
+    let previousSentence: Sentence | undefined;
+
+    // Find the previous sentence
+    for (let i = this.scene.sentences.length - 1; i >= 0; i--) {
+      const sentence = this.scene.sentences[i];
+      if (sentence.startMs < currentTimeMs - 100) {
+        // Add small buffer to handle edge cases
+        previousSentence = sentence;
+        break;
+      }
+    }
+
+    // If we found a previous sentence, go to it
+    if (previousSentence) {
+      this.goToSentence(previousSentence);
+    } else if (this.scene.sentences.length > 0) {
+      // If we're before the first sentence, go to the first sentence
+      this.goToSentence(this.scene.sentences[0]);
+    }
+  }
+
+  private goToNextSentence() {
+    if (!this.scene?.sentences) return;
+
+    const currentTimeMs = this.currentTime * 1000;
+    let nextSentence: Sentence | undefined;
+
+    // Find the next sentence
+    for (const sentence of this.scene.sentences) {
+      if (sentence.startMs > currentTimeMs + 100) {
+        // Add small buffer to handle edge cases
+        nextSentence = sentence;
+        break;
+      }
+    }
+
+    // If we found a next sentence, go to it
+    if (nextSentence) {
+      this.goToSentence(nextSentence);
     }
   }
 }
