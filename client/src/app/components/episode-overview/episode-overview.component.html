@@ -107,18 +107,5 @@
       [episodeId]="episodeId"
     >
     </app-episode-characters>
-
-    <!-- Video Access -->
-    <div class="video-access">
-      <button class="video-btn" (click)="goToVideo()">
-        <span class="video-icon">▶</span>
-        <span class="video-text">Watch Video</span>
-      </button>
-    </div>
   </ng-container>
-
-  <!-- Sticky Footer -->
-  <div class="footer" *ngIf="!isLoading && !error">
-    <button class="start-practice-btn" (click)="startPractice()">Start Practice</button>
-  </div>
 </div>

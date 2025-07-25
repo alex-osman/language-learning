@@ -44,8 +44,8 @@ export class EpisodeOverviewComponent implements OnInit {
   enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
   // UI state
-  isCharactersCollapsed = false;
-  isSentenceGalleryCollapsed = false;
+  isCharactersCollapsed = true;
+  isSentenceGalleryCollapsed = true;
   // Template helpers
   Math = Math;
 
