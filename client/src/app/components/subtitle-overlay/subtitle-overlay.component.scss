@@ -4,13 +4,14 @@
   align-items: center;
   gap: 0.5rem;
   max-width: 95%;
-  width: max-content;
+  width: 100%; /* Changed from max-content to 100% for stable width */
   padding: 1rem 1.5rem;
   background: rgba(0, 0, 0, 0.8);
   border-radius: 12px;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   animation: subtitleFadeIn 0.3s ease-out;
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
 }
 
 @keyframes subtitleFadeIn {
@@ -28,6 +29,7 @@
   text-align: center;
   white-space: nowrap;
   overflow: visible;
+  width: 100%; /* Ensure full width for proper centering */
 }
 
 .chinese-layer {

@@ -78,9 +78,9 @@ export class SRTParserService {
   }
 
   /**
-   * Parse multi-format SRT content that contains Traditional, Simplified, Pinyin, and English
-   * Returns only Simplified Chinese, Pinyin, and English (skips Traditional)
-   * Handles both Traditional-first and Simplified-first formats
+   * Parse multi-format SRT content that contains Simplified, Pinyin, and English
+   * Handles both 3-line format (Pinyin, Simplified Chinese, English) and 4-line format (Traditional, Simplified, Pinyin, English)
+   * Automatically detects the format based on the number of text lines
    */
   parseMultiFormatSRT(content: string): MultiFormatSRTEntry[] {
     const lines = content.split('\n');
@@ -94,24 +94,32 @@ export class SRTParserService {
 
       if (!line) {
         // Empty line indicates end of entry
-        if (currentEntry.index !== undefined && textLines.length >= 4) {
+        if (currentEntry.index !== undefined && textLines.length >= 3) {
           // Collect the first line of this entry for format detection
           allFirstLines.push(textLines[0]);
 
-          // Determine the format by checking multiple first lines
-          const isSimplifiedFirst =
-            this.isSimplifiedChineseFromMultipleLines(allFirstLines);
-
-          if (isSimplifiedFirst) {
-            // Format: Simplified, Traditional, Pinyin, English
-            currentEntry.simplifiedChinese = textLines[0] || ''; // Line 1: Simplified Chinese
-            currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
-            currentEntry.english = textLines[3] || ''; // Line 4: English
-          } else {
-            // Format: Traditional, Simplified, Pinyin, English
+          if (textLines.length === 3) {
+            // 3-line format: Pinyin, Simplified Chinese, English
+            currentEntry.pinyin = textLines[0] || ''; // Line 1: Pinyin
             currentEntry.simplifiedChinese = textLines[1] || ''; // Line 2: Simplified Chinese
-            currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
-            currentEntry.english = textLines[3] || ''; // Line 4: English
+            currentEntry.english = textLines[2] || ''; // Line 3: English
+          } else if (textLines.length >= 4) {
+            // 4-line format: Traditional, Simplified, Pinyin, English
+            // Determine the format by checking multiple first lines
+            const isSimplifiedFirst =
+              this.isSimplifiedChineseFromMultipleLines(allFirstLines);
+
+            if (isSimplifiedFirst) {
+              // Format: Simplified, Traditional, Pinyin, English
+              currentEntry.simplifiedChinese = textLines[0] || ''; // Line 1: Simplified Chinese
+              currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
+              currentEntry.english = textLines[3] || ''; // Line 4: English
+            } else {
+              // Format: Traditional, Simplified, Pinyin, English
+              currentEntry.simplifiedChinese = textLines[1] || ''; // Line 2: Simplified Chinese
+              currentEntry.pinyin = textLines[2] || ''; // Line 3: Pinyin
+              currentEntry.english = textLines[3] || ''; // Line 4: English
+            }
           }
 
           entries.push(currentEntry as MultiFormatSRTEntry);
@@ -152,21 +160,30 @@ export class SRTParserService {
     }
 
     // Add the last entry if it exists
-    if (currentEntry.index !== undefined && textLines.length >= 4) {
+    if (currentEntry.index !== undefined && textLines.length >= 3) {
       allFirstLines.push(textLines[0]);
-      const isSimplifiedFirst =
-        this.isSimplifiedChineseFromMultipleLines(allFirstLines);
 
-      if (isSimplifiedFirst) {
-        // Format: Simplified, Traditional, Pinyin, English
-        currentEntry.simplifiedChinese = textLines[0] || '';
-        currentEntry.pinyin = textLines[2] || '';
-        currentEntry.english = textLines[3] || '';
-      } else {
-        // Format: Traditional, Simplified, Pinyin, English
+      if (textLines.length === 3) {
+        // 3-line format: Pinyin, Simplified Chinese, English
+        currentEntry.pinyin = textLines[0] || '';
         currentEntry.simplifiedChinese = textLines[1] || '';
-        currentEntry.pinyin = textLines[2] || '';
-        currentEntry.english = textLines[3] || '';
+        currentEntry.english = textLines[2] || '';
+      } else if (textLines.length >= 4) {
+        // 4-line format: Traditional, Simplified, Pinyin, English
+        const isSimplifiedFirst =
+          this.isSimplifiedChineseFromMultipleLines(allFirstLines);
+
+        if (isSimplifiedFirst) {
+          // Format: Simplified, Traditional, Pinyin, English
+          currentEntry.simplifiedChinese = textLines[0] || '';
+          currentEntry.pinyin = textLines[2] || '';
+          currentEntry.english = textLines[3] || '';
+        } else {
+          // Format: Traditional, Simplified, Pinyin, English
+          currentEntry.simplifiedChinese = textLines[1] || '';
+          currentEntry.pinyin = textLines[2] || '';
+          currentEntry.english = textLines[3] || '';
+        }
       }
 
       entries.push(currentEntry as MultiFormatSRTEntry);

@@ -669,42 +669,104 @@ export class YouTubeImportService {
   }
 
   /**
-   * Detect if subtitle content contains multiple formats (Traditional + Simplified + Pinyin + English)
-   * Handles both Traditional-first and Simplified-first formats
+   * Detect if subtitle content contains multiple formats
+   * Handles both 3-line format (Pinyin + Simplified Chinese + English) and 4-line format (Traditional + Simplified + Pinyin + English)
    */
   private detectMultiFormatContent(content: string): boolean {
-    // Look for patterns that indicate multi-format content
     const lines = content.split('\n');
-    const textLines = lines.filter(
-      (line) => line.trim() && !line.includes('-->') && !line.match(/^\d+$/),
-    );
+    let currentEntry: {
+      index?: number;
+      timestamp?: string;
+      textLines: string[];
+    } = { textLines: [] };
+    const entries: Array<{ textLines: string[] }> = [];
 
-    if (textLines.length < 4) return false;
+    // Parse SRT structure to group text lines by subtitle entry
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
 
-    // Check if we have multiple lines per subtitle entry
-    for (let i = 0; i < Math.min(textLines.length - 3, 10); i += 4) {
-      const line1 = textLines[i] || '';
-      const line2 = textLines[i + 1] || '';
-      const line3 = textLines[i + 2] || '';
-      const line4 = textLines[i + 3] || '';
+      if (!line) {
+        // Empty line indicates end of entry
+        if (currentEntry.textLines.length > 0) {
+          entries.push({ textLines: [...currentEntry.textLines] });
+          currentEntry = { textLines: [] };
+        }
+        continue;
+      }
 
-      // Check for Chinese characters (any Chinese characters)
-      const hasChinese1 = /[\u4e00-\u9fff]/.test(line1);
-      const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
-
-      // Check for pinyin (Latin with tone marks or basic Latin)
-      const hasPinyin =
-        /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line3) || /\b[a-zA-Z]+\b/.test(line3);
-
-      // Check for English (pure English text)
-      const hasEnglish = /^[a-zA-Z\s\.,!?'"]+$/.test(line4);
-
-      if (hasChinese1 && hasChinese2 && hasPinyin && hasEnglish) {
-        return true;
+      if (/^\d+$/.test(line)) {
+        // Entry index - start new entry
+        currentEntry = { textLines: [] };
+      } else if (line.includes('-->')) {
+        // Timestamp line - skip
+        continue;
+      } else {
+        // Text content - add to current entry
+        currentEntry.textLines.push(line);
       }
     }
 
-    return false;
+    // Add the last entry if it exists
+    if (currentEntry.textLines.length > 0) {
+      entries.push({ textLines: [...currentEntry.textLines] });
+    }
+
+    // Now check each entry for multi-format patterns
+    let multiFormatCount = 0;
+    const totalEntries = Math.min(entries.length, 5); // Check first 5 entries
+
+    for (let i = 0; i < totalEntries; i++) {
+      const entry = entries[i];
+      const textLines = entry.textLines;
+
+      if (textLines.length === 3) {
+        // 3-line format: Pinyin, Simplified Chinese, English
+        const line1 = textLines[0] || '';
+        const line2 = textLines[1] || '';
+        const line3 = textLines[2] || '';
+
+        // Check for pinyin in line 1 (Latin with tone marks or basic Latin)
+        const hasPinyin1 =
+          /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line1) ||
+          /\b[a-zA-Z]+\b/.test(line1);
+
+        // Check for Chinese characters in line 2
+        const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
+
+        // Check for English in line 3 (pure English text)
+        const hasEnglish3 = /^[a-zA-Z\s\.,!?'"]+$/.test(line3);
+
+        if (hasPinyin1 && hasChinese2 && hasEnglish3) {
+          multiFormatCount++;
+        }
+      } else if (textLines.length >= 4) {
+        // 4-line format: Traditional/Simplified Chinese, Simplified/Traditional Chinese, Pinyin, English
+        const line1 = textLines[0] || '';
+        const line2 = textLines[1] || '';
+        const line3 = textLines[2] || '';
+        const line4 = textLines[3] || '';
+
+        // Check for Chinese characters in first two lines
+        const hasChinese1 = /[\u4e00-\u9fff]/.test(line1);
+        const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
+
+        // Check for pinyin in line 3
+        const hasPinyin3 =
+          /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line3) ||
+          /\b[a-zA-Z]+\b/.test(line3);
+
+        // Check for English in line 4
+        const hasEnglish4 = /^[a-zA-Z\s\.,!?'"]+$/.test(line4);
+
+        if (hasChinese1 && hasChinese2 && hasPinyin3 && hasEnglish4) {
+          multiFormatCount++;
+        }
+      }
+    }
+
+    // Consider it multi-format if at least 60% of checked entries match the pattern
+    const threshold = Math.ceil(totalEntries * 0.6);
+    return multiFormatCount >= threshold;
   }
 
   /**
