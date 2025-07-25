@@ -180,10 +180,7 @@ export class EpisodeOverviewComponent implements OnInit {
     });
   }
 
-  private handleBasicBatchAnalysisResults(
-    results: SentenceAnalysisResult[],
-    allSentences: any[]
-  ) {
+  private handleBasicBatchAnalysisResults(results: SentenceAnalysisResult[], allSentences: any[]) {
     results.forEach((result, index) => {
       if (allSentences[index]) {
         this.sentenceAnalysisData[allSentences[index].id] = result;
@@ -391,5 +388,4 @@ export class EpisodeOverviewComponent implements OnInit {
   goToVideo() {
     this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'video']);
   }
-
 }
