@@ -153,6 +153,11 @@ export class EpisodeOverviewComponent implements OnInit {
 
     const texts = allSentences.map(sentence => sentence.sentence);
 
+    // update the sentence ids in the sentenceAnalysisData
+    // this.sentenceAnalysisService
+    //   .analyzeSentenceIds(allSentences.map(sentence => sentence.id))
+    //   .subscribe(x => console.log('got response from analysis thing - ', x));
+
     // Use batch enhanced analysis for better performance
     this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
       next: (results: EnhancedSentenceAnalysisResult[]) => {

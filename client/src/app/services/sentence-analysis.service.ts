@@ -58,6 +58,12 @@ export class SentenceAnalysisService {
     );
   }
 
+  analyzeSentenceIds(sentenceIds: number[]): Observable<SentenceAnalysisResult[]> {
+    return this.http.post<SentenceAnalysisResult[]>(`${this.apiUrl}/analyze-sentenceIds`, {
+      sentenceIds,
+    });
+  }
+
   analyzeSentence(text: string): Observable<SentenceAnalysisResult> {
     return this.http.post<SentenceAnalysisResult>(`${this.apiUrl}/analyze`, { text });
   }

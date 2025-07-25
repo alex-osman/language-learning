@@ -197,4 +197,15 @@ export class SentenceAnalyzerController {
       ),
     ];
   }
+
+  @Post('analyze-sentenceIds')
+  async analyzeSentenceIds(
+    @Body() request: { sentenceIds: number[] },
+    @UserID() userId: number,
+  ): Promise<SentenceAnalysis[]> {
+    return await this.sentenceAnalyzerService.analyzeSentenceIds(
+      request.sentenceIds,
+      userId,
+    );
+  }
 }

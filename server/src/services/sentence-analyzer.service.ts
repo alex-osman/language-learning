@@ -82,6 +82,16 @@ export class SentenceAnalyzerService {
     return analysis;
   }
 
+  async analyzeSentenceIds(sentenceIds: number[], userId: number) {
+    const analyses = await Promise.all(
+      sentenceIds.map((sentenceId) =>
+        this.analyzeSentenceId(sentenceId, userId),
+      ),
+    );
+
+    return analyses;
+  }
+
   async analyzeSentence(
     text: string,
     userId?: number,
