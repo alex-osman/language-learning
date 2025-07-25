@@ -23,7 +23,7 @@
     <!-- Episode Card -->
     <div class="episode-card" (click)="toggleVideoPlayPause()">
       <div class="episode-image">
-        <video #episodeVideo [src]="episodeData.assetUrl" loop></video>
+        <video #episodeVideo [playsInline]="true" [src]="episodeData.assetUrl" loop></video>
       </div>
       <div class="episode-info">
         <h2>{{ episodeData.title }}</h2>

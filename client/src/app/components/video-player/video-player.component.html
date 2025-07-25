@@ -30,7 +30,12 @@
   <div *ngIf="!isLoading && !error && scene" class="video-player">
     <div class="video-container">
       <!-- Video Element -->
-      <video #videoElement [src]="scene.assetUrl" class="video-element"></video>
+      <video
+        #videoElement
+        [src]="scene.assetUrl"
+        [playsInline]="true"
+        class="video-element"
+      ></video>
 
       <!-- Subtitle Overlay -->
       <app-subtitle-overlay
