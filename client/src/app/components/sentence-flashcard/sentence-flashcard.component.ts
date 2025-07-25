@@ -35,7 +35,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
   }
 
   // State management
-  sceneSentences: SentenceDTO[] = [];
+  episodeSentences: SentenceDTO[] = [];
   currentSentence: SentenceDTO | null = null;
   isFlipped = false;
   isLoading = true;
@@ -68,9 +68,8 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
   analysisError: string | null = null;
 
   // Scene context (required)
-  sceneId: string = '';
   mediaId: string = '';
-  episodeId: string = '';
+  episodeId: number = 0;
 
   // Review stats
   reviewStats = {
@@ -208,7 +207,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
 
   private extractRouteParameters() {
     this.route.params.subscribe(params => {
-      this.sceneId = params['sceneId'] || '';
+      this.episodeId = parseInt(params['episodeId']) || 0;
 
       // Get additional context from query parameters if provided
       this.route.queryParams.subscribe(queryParams => {
@@ -216,10 +215,10 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
         this.episodeId = queryParams['episodeId'] || '';
       });
 
-      if (this.sceneId) {
+      if (this.episodeId) {
         this.loadSceneSentences();
       } else {
-        this.error = 'Scene ID is required for sentence practice.';
+        this.error = 'Episode ID is required for sentence practice.';
         this.isLoading = false;
       }
     });
@@ -231,11 +230,11 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    const sub = this.sentenceFlashcardService.getSentencesForScene(this.sceneId).subscribe({
+    const sub = this.sentenceFlashcardService.getSentencesForEpisode(this.episodeId).subscribe({
       next: response => {
         this.title = response.title;
         this.assetUrl = response.assetUrl;
-        this.sceneSentences = response.sentences.map((sentence, index) => {
+        this.episodeSentences = response.sentences.map((sentence, index) => {
           if (!index) {
             return {
               ...sentence,
@@ -246,7 +245,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
         });
         this.reviewStats.total = response.total;
         this.isLoading = false;
-        console.log('Loaded scene sentences', this.sceneSentences);
+        console.log('Loaded scene sentences', this.episodeSentences);
         this.showNextSentence();
       },
       error: err => {
@@ -281,10 +280,10 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
     this.isAnalyzing = false;
     this.analysisError = null;
 
-    if (this.sceneSentences.length > 0) {
-      console.log('Showing next sentence', this.sceneSentences);
-      this.currentSentence = this.sceneSentences.shift() || null;
-      this.reviewStats.current = this.reviewStats.total - this.sceneSentences.length;
+    if (this.episodeSentences.length > 0) {
+      console.log('Showing next sentence', this.episodeSentences);
+      this.currentSentence = this.episodeSentences.shift() || null;
+      this.reviewStats.current = this.reviewStats.total - this.episodeSentences.length;
       this.isReviewing = true;
       this.isProcessingReview = false;
 
@@ -372,9 +371,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
   // ===== NAVIGATION =====
 
   goBackToScene() {
-    this.router.navigate([
-      `/media/${this.mediaId}/episodes/${this.episodeId}/scenes/${this.sceneId}`,
-    ]);
+    this.router.navigate([`/media/${this.mediaId}/episodes/${this.episodeId}`]);
   }
 
   // ===== AUDIO PLAYBACK =====

@@ -47,6 +47,41 @@
       </div>
     </div>
 
+    <!-- Sentence Gallery -->
+    <button class="toggle-characters-btn" (click)="toggleSentenceGallery()">
+      {{ isSentenceGalleryCollapsed ? 'Show Sentence Gallery' : 'Hide Sentence Gallery' }}
+    </button>
+    <div *ngIf="!isSentenceGalleryCollapsed" class="sentence-gallery">
+      <h3>Script</h3>
+      <!-- Script View (Concise view) -->
+      <div class="sentences-list script-view">
+        <div *ngFor="let sentence of episode?.sentences" class="script-line">
+          <span class="chinese-text">
+            <span
+              *ngFor="let char of sentence.sentence.split('')"
+              class="character"
+              [ngStyle]="
+                ['。', '？', '！', '，'].includes(char)
+                  ? {}
+                  : getWordUnderlineStyle(sentence.id, char)
+              "
+            >
+              {{ char }}
+            </span>
+          </span>
+          <div class="progress-indicator">
+            <app-progress-indicator
+              type="linear"
+              [value]="episodeData.learnedCount"
+              theme="success"
+              [height]="4"
+              [showLabel]="false"
+            ></app-progress-indicator>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Character Overview -->
     <button class="toggle-characters-btn" (click)="toggleCharacters()">
       {{ isCharactersCollapsed ? 'Show Characters' : 'Hide Characters' }}

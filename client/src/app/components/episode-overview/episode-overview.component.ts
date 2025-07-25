@@ -45,6 +45,7 @@ export class EpisodeOverviewComponent implements OnInit {
 
   // UI state
   isCharactersCollapsed = false;
+  isSentenceGalleryCollapsed = false;
   // Template helpers
   Math = Math;
 
@@ -85,6 +86,10 @@ export class EpisodeOverviewComponent implements OnInit {
   // ===== INITIALIZATION =====
   toggleCharacters() {
     this.isCharactersCollapsed = !this.isCharactersCollapsed;
+  }
+
+  toggleSentenceGallery() {
+    this.isSentenceGalleryCollapsed = !this.isSentenceGalleryCollapsed;
   }
 
   private extractRouteParameters() {
@@ -308,6 +313,7 @@ export class EpisodeOverviewComponent implements OnInit {
 
   private calculateProgressSegments(): ProgressSegment[] {
     const progress = this.calculateActualProgress();
+    console.log(progress);
 
     if (progress.totalCharacters === 0) {
       return [];
@@ -387,5 +393,55 @@ export class EpisodeOverviewComponent implements OnInit {
 
   goToVideo() {
     this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'video']);
+  }
+
+  getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {
+    const analysis = this.enhancedAnalysisData[sentenceId];
+    if (!analysis) {
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    const charData = analysis.all_characters.find(c => c.char === char);
+    if (!charData) {
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    if (charData.status !== 'learned' && charData.status !== 'learning') {
+      if (charData.status === 'seen') {
+        return { 'border-bottom': '3px solid #53b1ff' };
+      }
+
+      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    }
+
+    // Get color based on easiness factor if available
+    if (charData.charData?.easinessFactor) {
+      const color = this.getUnderlineColor(charData.charData.easinessFactor);
+      return { 'border-bottom': `3px solid ${color}` };
+    }
+
+    // Fallback to green for known characters without easiness data
+    return { 'border-bottom': '3px solid #2e7d32' }; // Darker green
+  }
+
+  // Specific method for underline colors with higher saturation and lower lightness
+  private getUnderlineColor(easinessFactor: number): string {
+    const minEasiness = 1.3;
+    const maxEasiness = 2.5;
+
+    // Normalize easiness factor
+    const normalizedEasiness = Math.max(
+      0,
+      Math.min(1, (easinessFactor - minEasiness) / (maxEasiness - minEasiness))
+    );
+
+    // Calculate hue (red to green)
+    const hue = 0 + normalizedEasiness * 120; // 0 = red, 120 = green
+
+    // Use higher saturation and lower lightness for more vivid underlines
+    const saturation = 80; // Higher saturation
+    const lightness = 50; // Lower lightness for more vivid colors
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 }

@@ -30,7 +30,10 @@ export class EpisodeService {
   }
 
   async findOne(id: number): Promise<Episode | null> {
-    return this.episodeRepository.findOne({ where: { id } });
+    return this.episodeRepository.findOne({
+      where: { id },
+      relations: ['sentences'],
+    });
   }
 
   async update(
@@ -90,9 +93,7 @@ export class EpisodeService {
     }
 
     // 2. Extract all Chinese characters from episode sentences
-    const allText = episode.sentences
-      ?.map((s) => s.sentence)
-      .join('') || '';
+    const allText = episode.sentences?.map((s) => s.sentence).join('') || '';
 
     // Extract unique Chinese characters using regex
     const uniqueChars = [...new Set(allText.split(''))].filter((char) =>
@@ -129,7 +130,7 @@ export class EpisodeService {
 
     // Delete all sentences belonging to this episode
     if (episode.sentences && episode.sentences.length > 0) {
-      const sentenceIds = episode.sentences.map(sentence => sentence.id);
+      const sentenceIds = episode.sentences.map((sentence) => sentence.id);
       await this.sentenceRepository.delete(sentenceIds);
     }
 
