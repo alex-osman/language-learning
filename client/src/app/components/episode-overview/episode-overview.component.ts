@@ -313,7 +313,6 @@ export class EpisodeOverviewComponent implements OnInit {
 
   private calculateProgressSegments(): ProgressSegment[] {
     const progress = this.calculateActualProgress();
-    console.log(progress);
 
     if (progress.totalCharacters === 0) {
       return [];
@@ -379,13 +378,7 @@ export class EpisodeOverviewComponent implements OnInit {
   toggleVideoPlayPause() {
     if (this.episodeVideo?.nativeElement) {
       const video = this.episodeVideo.nativeElement;
-      if (video.paused) {
-        video.play();
-        console.log('Video resumed');
-      } else {
-        video.pause();
-        console.log('Video paused');
-      }
+      video.paused ? video.play() : video.pause();
     } else {
       console.warn('Video element not found');
     }
