@@ -395,14 +395,35 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    // Only handle space if we're not in an input field
+    // Only handle keyboard shortcuts if we're not in an input field
     if (
-      event.code === 'Space' &&
       !(event.target instanceof HTMLInputElement) &&
       !(event.target instanceof HTMLTextAreaElement)
     ) {
-      event.preventDefault(); // Prevent page scroll
-      this.togglePlayPause();
+      switch (event.code) {
+        case 'Space':
+          event.preventDefault(); // Prevent page scroll
+          this.togglePlayPause();
+          break;
+        case 'KeyC':
+          event.preventDefault();
+          this.toggleChineseSubtitleMode();
+          break;
+      }
+    }
+  }
+
+  private toggleChineseSubtitleMode() {
+    if (this.subtitleLayers.chinese && this.subtitleLayers.pinyin) {
+      // If both are on, turn off pinyin
+      this.subtitleLayers.pinyin = false;
+    } else if (this.subtitleLayers.chinese && !this.subtitleLayers.pinyin) {
+      // If only Chinese is on, turn on pinyin
+      this.subtitleLayers.pinyin = true;
+    } else {
+      // In any other state, set to Chinese only
+      this.subtitleLayers.chinese = true;
+      this.subtitleLayers.pinyin = false;
     }
   }
 }
