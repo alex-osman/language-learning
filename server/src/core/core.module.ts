@@ -15,8 +15,6 @@ import { WordService } from '../services/word.service';
 import { FlashcardService } from '../services/flashcard.service';
 import { SentenceAnalyzerService } from '../services/sentence-analyzer.service';
 import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
-import { SceneService } from 'src/services/scene.service';
-import { Scene } from 'src/entities/scene.entity';
 import { Episode } from 'src/entities/episode.entity';
 import { EpisodeService } from 'src/services/episode.service';
 import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
@@ -35,7 +33,6 @@ import { Season } from 'src/entities/season.entity';
       Set,
       Sentence,
       Word,
-      Scene,
       Episode,
       UserCharacterKnowledge,
       Season,
@@ -51,7 +48,6 @@ import { Season } from 'src/entities/season.entity';
     FlashcardService,
     SentenceAnalyzerService,
     SentenceFlashcardService,
-    SceneService,
     EpisodeService,
     UserCharacterKnowledgeService,
     SRTParserService,
@@ -68,7 +64,6 @@ import { Season } from 'src/entities/season.entity';
     FlashcardService,
     SentenceAnalyzerService,
     SentenceFlashcardService,
-    SceneService,
     EpisodeService,
     UserCharacterKnowledgeService,
     SRTParserService,

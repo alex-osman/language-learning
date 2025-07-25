@@ -13,9 +13,9 @@ export class EpisodeController {
     return this.episodeService.getEpisodesForMedia(parseInt(mediaId));
   }
 
-  @Get(':id/scenes')
-  async getScenesForEpisode(@Param('id') id: string) {
-    return this.episodeService.getScenesForEpisode(parseInt(id));
+  @Get(':id/sentences')
+  async getEpisodeWithSentences(@Param('id') id: string) {
+    return this.episodeService.getEpisodeWithSentences(parseInt(id));
   }
 
   @Get(':id/characters')

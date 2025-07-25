@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
 import { CreateEpisodeDTO, EpisodeDTO } from '../../shared/dto/episode.dto';
-import { Scene } from 'src/entities/scene.entity';
 import { Sentence } from 'src/entities/sentence.entity';
 import { CharacterService } from './character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
@@ -16,8 +15,6 @@ export class EpisodeService {
     private episodeRepository: Repository<Episode>,
     @InjectRepository(Season)
     private seasonRepository: Repository<Season>,
-    @InjectRepository(Scene)
-    private sceneRepository: Repository<Scene>,
     @InjectRepository(Sentence)
     private sentenceRepository: Repository<Sentence>,
     private characterService: CharacterService,
@@ -62,10 +59,10 @@ export class EpisodeService {
     return this.episodeRepository.find({ where: { season_id: seasonId } });
   }
 
-  async getScenesForEpisode(episodeId: number): Promise<EpisodeDTO> {
+  async getEpisodeWithSentences(episodeId: number): Promise<EpisodeDTO> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['scenes', 'scenes.sentences'],
+      relations: ['sentences'],
     });
     if (!episode) {
       throw new NotFoundException('Episode not found');
@@ -74,7 +71,7 @@ export class EpisodeService {
       id: episode.id,
       title: episode.title,
       assetUrl: episode.assetUrl,
-      scenes: episode.scenes,
+      sentences: episode.sentences,
     };
   }
 
@@ -85,7 +82,7 @@ export class EpisodeService {
     // 1. Get episode with all sentences
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['scenes', 'scenes.sentences'],
+      relations: ['sentences'],
     });
 
     if (!episode) {
@@ -93,9 +90,9 @@ export class EpisodeService {
     }
 
     // 2. Extract all Chinese characters from episode sentences
-    const allText = episode.scenes
-      .map((scene) => scene.sentences?.map((s) => s.sentence).join('') || '')
-      .join('');
+    const allText = episode.sentences
+      ?.map((s) => s.sentence)
+      .join('') || '';
 
     // Extract unique Chinese characters using regex
     const uniqueChars = [...new Set(allText.split(''))].filter((char) =>
@@ -123,25 +120,20 @@ export class EpisodeService {
   async deleteEpisodeWithCascade(episodeId: number): Promise<void> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['scenes', 'scenes.sentences'],
+      relations: ['sentences'],
     });
 
     if (!episode) {
       throw new NotFoundException('Episode not found');
     }
 
-    for (const scene of episode.scenes) {
-      if (scene.sentences && scene.sentences.length > 0) {
-        const sentenceIds = scene.sentences.map(sentence => sentence.id);
-        await this.sentenceRepository.delete(sentenceIds);
-      }
+    // Delete all sentences belonging to this episode
+    if (episode.sentences && episode.sentences.length > 0) {
+      const sentenceIds = episode.sentences.map(sentence => sentence.id);
+      await this.sentenceRepository.delete(sentenceIds);
     }
 
-    if (episode.scenes.length > 0) {
-      const sceneIds = episode.scenes.map(scene => scene.id);
-      await this.sceneRepository.delete(sceneIds);
-    }
-
+    // Delete the episode
     await this.episodeRepository.delete(episodeId);
   }
 }

@@ -15,8 +15,8 @@ export interface SentenceDTO {
   lastReviewDate?: Date;
   dueForReview: boolean;
 
-  // Scene context
-  sceneId?: string;
+  // Episode context
+  episodeId?: number;
   startMs?: number;
   endMs?: number;
 }

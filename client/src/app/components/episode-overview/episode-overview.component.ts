@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MediaService, Episode, Scene, EpisodeDTO } from '../../services/media.service';
+import { MediaService, Episode, EpisodeDTO } from '../../services/media.service';
 import {
   SentenceAnalysisResult,
   EnhancedSentenceAnalysisResult,
@@ -18,14 +18,6 @@ interface EpisodeOverviewData {
   assetUrl: string;
   percentUnderstood: number;
   totalSentencesCount: number;
-  scenes: Array<{
-    id: number;
-    title: string;
-    knownCache: number;
-    sentenceCount: number;
-    startMs: number;
-  }>;
-  // NEW: Enhanced progress data
   progressSegments: ProgressSegment[];
   learnedCount: number;
   seenCount: number;
@@ -45,15 +37,13 @@ export class EpisodeOverviewComponent implements OnInit {
   episodeId: number = 0;
 
   // Component state
-  episode: Episode | null = null;
-  episodeAssetUrl: string = ''; // Store assetUrl separately since Episode interface doesn't have it
+  episode: EpisodeDTO | null = null;
   isLoading = true;
   error: string | null = null;
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
   enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
   // UI state
-  isScriptView = true;
   isCharactersCollapsed = false;
   // Template helpers
   Math = Math;
@@ -82,16 +72,9 @@ export class EpisodeOverviewComponent implements OnInit {
 
     return {
       title: this.episode.title,
-      assetUrl: this.episodeAssetUrl,
+      assetUrl: this.episode.assetUrl,
       percentUnderstood: actualProgress.percentKnown,
       totalSentencesCount: this.getTotalSentenceCount(),
-      scenes: this.episode.scenes.map(scene => ({
-        id: scene.id,
-        title: scene.title,
-        knownCache: scene.knownCache,
-        sentenceCount: scene.sentences?.length || 0,
-        startMs: 0, // Scene interface doesn't have startMs, we'll use 0 for now
-      })),
       progressSegments: progressSegments.filter(segment => segment.label !== 'unknown'),
       learnedCount: actualProgress.learnedCharacters,
       seenCount: actualProgress.seenCharacters,
@@ -132,25 +115,14 @@ export class EpisodeOverviewComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.mediaService.getScenesForEpisode(this.episodeId).subscribe({
+    this.mediaService.getEpisodeWithSentences(this.episodeId).subscribe({
       next: episodeData => this.handleEpisodeLoaded(episodeData),
       error: err => this.handleEpisodeLoadError(err),
     });
   }
 
   private handleEpisodeLoaded(episodeData: EpisodeDTO) {
-    // Store the assetUrl separately
-    this.episodeAssetUrl = episodeData.assetUrl;
-
-    // Transform the data to match our Episode interface
-    this.episode = {
-      id: episodeData.id,
-      title: episodeData.title,
-      number: 0, // We'll need to get this from the episode list
-      scenes: episodeData.scenes || [],
-      knownCache: 0,
-    };
-
+    this.episode = episodeData;
     this.isLoading = false;
     this.startSentenceAnalysis();
   }
@@ -170,7 +142,7 @@ export class EpisodeOverviewComponent implements OnInit {
     this.sentenceAnalysisData = {};
     this.enhancedAnalysisData = {};
 
-    const allSentences = this.episode.scenes.flatMap(scene => scene.sentences || []);
+    const allSentences = this.episode.sentences || [];
 
     if (allSentences.length === 0) return;
 
@@ -293,7 +265,7 @@ export class EpisodeOverviewComponent implements OnInit {
   private hasEnhancedAnalysisData(): boolean {
     if (!this.episode) return false;
 
-    const allSentences = this.episode.scenes.flatMap(scene => scene.sentences || []);
+    const allSentences = this.episode.sentences || [];
     return (
       allSentences.length > 0 &&
       allSentences.every(sentence => this.enhancedAnalysisData[sentence.id] !== undefined)
@@ -311,19 +283,17 @@ export class EpisodeOverviewComponent implements OnInit {
     const seenChars = new Set<string>();
     const unknownChars = new Set<string>();
 
-    this.episode!.scenes.forEach(scene => {
-      if (scene.sentences) {
-        scene.sentences.forEach(sentence => {
-          const analysis = this.enhancedAnalysisData[sentence.id];
-          if (analysis) {
-            // Add unique characters to appropriate sets
-            analysis.learned_characters.forEach(char => learnedChars.add(char));
-            analysis.seen_characters.forEach(char => seenChars.add(char));
-            analysis.unknown_characters.forEach(char => unknownChars.add(char));
-          }
-        });
-      }
-    });
+    if (this.episode!.sentences) {
+      this.episode!.sentences.forEach(sentence => {
+        const analysis = this.enhancedAnalysisData[sentence.id];
+        if (analysis) {
+          // Add unique characters to appropriate sets
+          analysis.learned_characters.forEach(char => learnedChars.add(char));
+          analysis.seen_characters.forEach(char => seenChars.add(char));
+          analysis.unknown_characters.forEach(char => unknownChars.add(char));
+        }
+      });
+    }
 
     const totalLearnedCharacters = learnedChars.size;
     const totalSeenCharacters = seenChars.size;
@@ -336,9 +306,7 @@ export class EpisodeOverviewComponent implements OnInit {
   private getTotalSentenceCount(): number {
     if (!this.episode) return 0;
 
-    return this.episode.scenes.reduce((total, scene) => {
-      return total + (scene.sentences?.length || 0);
-    }, 0);
+    return this.episode.sentences?.length || 0;
   }
 
   private calculateProgressSegments(): ProgressSegment[] {
@@ -394,10 +362,9 @@ export class EpisodeOverviewComponent implements OnInit {
   }
 
   startPractice() {
-    // Navigate to the first scene for practice, or implement episode-level practice
-    if (this.episode && this.episode.scenes.length > 0) {
-      const firstScene = this.episode.scenes[0];
-      this.router.navigate(['/sentence-flashcard', firstScene.id], {
+    // Navigate directly to episode practice
+    if (this.episode && this.episode.sentences && this.episode.sentences.length > 0) {
+      this.router.navigate(['/sentence-flashcard', this.episodeId], {
         queryParams: {
           mediaId: this.mediaId,
           episodeId: this.episodeId,
@@ -421,11 +388,8 @@ export class EpisodeOverviewComponent implements OnInit {
     }
   }
 
-  goToScene(scene: any) {
-    this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'scenes', scene.id]);
+  goToVideo() {
+    this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'video']);
   }
 
-  toggleView() {
-    this.isScriptView = !this.isScriptView;
-  }
 }

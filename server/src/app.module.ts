@@ -22,7 +22,6 @@ import { SentenceAnalyzerController } from './controllers/sentence-analyzer.cont
 import { SentenceFlashcardController } from './controllers/sentence-flashcard.controller';
 import { RadioModule } from './radio/radio.module';
 import { CoreModule } from './core/core.module';
-import { SceneController } from './controllers/scene.controller';
 import { EpisodeController } from './controllers/episode.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -51,7 +50,6 @@ import { YouTubeImportController } from './controllers/youtube-import.controller
   controllers: [
     DataController,
     AiController,
-    SceneController,
     EpisodeController,
     FlashcardController,
     SentenceController,

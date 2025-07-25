@@ -272,7 +272,7 @@ async function importFromYouTube() {
         console.log(`📊 Results:`);
         console.log(`   - Episode ID: ${result.episode?.id}`);
         console.log(`   - Episode Title: ${result.episode?.title}`);
-        console.log(`   - Scene ID: ${result.scene?.id}`);
+        console.log(`   - Episode ID: ${result.episode?.id}`);
         console.log(`   - Sentences imported: ${result.sentencesImported}`);
         console.log(`   - Video URL: ${result.videoUrl}`);
         console.log(`✨ ${result.message}`);

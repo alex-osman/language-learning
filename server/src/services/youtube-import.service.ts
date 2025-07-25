@@ -2,13 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Episode } from '../entities/episode.entity';
-import { Scene } from '../entities/scene.entity';
 import { Season } from '../entities/season.entity';
 import { Media } from '../entities/media.entity';
 import { SRTParserService } from './srt-parser.service';
 import { SentenceService } from './sentence.service';
 import { EpisodeService } from './episode.service';
-import { SceneService } from './scene.service';
 import { MovieAiService } from '../ai/services/movie.service';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -28,7 +26,6 @@ export interface YouTubeImportOptions {
 
 export interface YouTubeImportResult {
   episode: Episode | null;
-  scene: Scene | null;
   sentencesImported: number;
   videoUrl: string;
   success: boolean;
@@ -56,12 +53,9 @@ export class YouTubeImportService {
   constructor(
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
-    @InjectRepository(Scene)
-    private sceneRepository: Repository<Scene>,
     private srtParser: SRTParserService,
     private sentenceService: SentenceService,
     private episodeService: EpisodeService,
-    private sceneService: SceneService,
     private movieAiService: MovieAiService,
   ) {}
 
@@ -147,7 +141,6 @@ export class YouTubeImportService {
         this.logger.log('🧪 DRY RUN COMPLETE - Preview data generated');
         return {
           episode: null,
-          scene: null,
           sentencesImported: 0,
           videoUrl: '',
           success: true,
@@ -186,16 +179,7 @@ export class YouTubeImportService {
         knownCache: 0,
       });
 
-      // 7. Create scene record (one scene per episode for now)
-      this.logger.log('Creating scene record...');
-      const scene = await this.sceneService.create({
-        title: `${videoTitle} - Scene 1`,
-        number: 1,
-        knownCache: 0,
-        episodeId: episode.id,
-      });
-
-      // 8. Parse and import subtitles - check if multi-format
+      // 7. Parse and import subtitles directly to episode - check if multi-format
       this.logger.log('Parsing and importing subtitles...');
 
       let createdSentences: any[] = [];
@@ -210,7 +194,7 @@ export class YouTubeImportService {
         createdSentences =
           await this.sentenceService.createSentencesFromMultiFormatSRT(
             multiFormatEntries,
-            scene.id,
+            episode.id,
           );
         this.logger.log(
           `📚 Multi-format import: ${createdSentences.length} sentences with Chinese + Pinyin + English`,
@@ -219,7 +203,7 @@ export class YouTubeImportService {
         this.logger.log('📝 Using standard SRT parsing');
         createdSentences = await this.sentenceService.createSentencesFromSRT(
           srtEntries,
-          scene.id,
+          episode.id,
         );
         this.logger.log(
           `📝 Standard import: ${createdSentences.length} sentences`,
@@ -232,7 +216,6 @@ export class YouTubeImportService {
 
       return {
         episode,
-        scene,
         sentencesImported: createdSentences.length,
         videoUrl,
         success: true,
@@ -242,7 +225,6 @@ export class YouTubeImportService {
       this.logger.error(`YouTube import failed: ${error.message}`);
       return {
         episode: null,
-        scene: null,
         sentencesImported: 0,
         videoUrl: '',
         success: false,

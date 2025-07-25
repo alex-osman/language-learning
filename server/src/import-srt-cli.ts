@@ -4,16 +4,17 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SRTParserService } from './services/srt-parser.service';
 import { SentenceService } from './services/sentence.service';
-import { SceneService } from './services/scene.service';
+import { EpisodeService } from './services/episode.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
 async function importSRT() {
-  const filePath = process.argv[2];
+  const episodeId = parseInt(process.argv[2]);
+  const filePath = process.argv[3];
 
-  if (!filePath) {
-    console.error('Usage: npm run scene-import <path-to-srt-file>');
-    console.error('Example: npm run scene-import ~/Downloads/33.srt');
+  if (!episodeId || !filePath) {
+    console.error('Usage: npm run episode-import <episode-id> <path-to-srt-file>');
+    console.error('Example: npm run episode-import 1 ~/Downloads/33.srt');
     process.exit(1);
   }
 
@@ -38,37 +39,27 @@ async function importSRT() {
     // Get services
     const srtParser = app.get(SRTParserService);
     const sentenceService = app.get(SentenceService);
-    const sceneService = app.get(SceneService);
+    const episodeService = app.get(EpisodeService);
 
-    // Extract filename and scene ID
+    // Use provided episode ID
     const filename = path.basename(filePath);
-    const sceneId = srtParser.extractSceneIdFromFilename(filename);
-
-    if (!sceneId) {
-      console.error(
-        `❌ Invalid filename format. Expected: {sceneId}.srt (e.g., 33.srt)`,
-      );
-      console.error(`Got: ${filename}`);
-      process.exit(1);
-    }
-
     console.log(`📂 Processing file: ${filename}`);
-    console.log(`🎬 Target scene ID: ${sceneId}`);
+    console.log(`📺 Target episode ID: ${episodeId}`);
 
-    // Check if scene exists
-    const scene = await sceneService.findOne(sceneId);
-    if (!scene) {
-      console.error(`❌ Scene with ID ${sceneId} does not exist in database`);
+    // Check if episode exists
+    const episode = await episodeService.findOne(episodeId);
+    if (!episode) {
+      console.error(`❌ Episode with ID ${episodeId} does not exist in database`);
       process.exit(1);
     }
 
-    console.log(`✅ Scene found: "${scene.title}"`);
+    console.log(`✅ Episode found: "${episode.title}"`);
 
     // Check for existing sentences
-    const existingCount = await sentenceService.countSentencesForScene(sceneId);
+    const existingCount = await sentenceService.countSentencesForEpisode(episodeId);
     if (existingCount > 0) {
       console.log(
-        `⚠️  Scene ${sceneId} already has ${existingCount} sentences`,
+        `⚠️  Episode ${episodeId} already has ${existingCount} sentences`,
       );
       console.log('❓ Do you want to replace them? (y/N)');
 
@@ -91,7 +82,7 @@ async function importSRT() {
       }
 
       console.log('🗑️  Deleting existing sentences...');
-      await sentenceService.deleteSentencesForScene(sceneId);
+      await sentenceService.deleteSentencesForEpisode(episodeId);
     }
 
     // Read and parse SRT file
@@ -111,13 +102,13 @@ async function importSRT() {
     console.log('💾 Importing sentences to database...');
     const createdSentences = await sentenceService.createSentencesFromSRT(
       srtEntries,
-      sceneId,
+      episodeId,
     );
 
     console.log(
-      `✅ Successfully imported ${createdSentences.length} sentences for scene ${sceneId}`,
+      `✅ Successfully imported ${createdSentences.length} sentences for episode ${episodeId}`,
     );
-    console.log(`🎯 Scene: "${scene.title}"`);
+    console.log(`🎯 Episode: "${episode.title}"`);
     console.log(`📊 Stats:`);
     console.log(`   - Entries parsed: ${srtEntries.length}`);
     console.log(`   - Sentences created: ${createdSentences.length}`);

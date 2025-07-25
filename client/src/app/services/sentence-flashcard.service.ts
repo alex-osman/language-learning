@@ -18,13 +18,13 @@ export interface SentenceDTO {
   nextReviewDate?: Date;
   lastReviewDate?: Date;
   dueForReview: boolean;
-  // Scene context
-  sceneId?: string;
+  // Episode context
+  episodeId?: number;
   startMs?: number;
   endMs?: number;
 }
 
-export interface SceneProgressStats {
+export interface EpisodeProgressStats {
   totalSentences: number;
   practicedSentences: number;
   averageEasiness: number;
@@ -96,10 +96,10 @@ export class SentenceFlashcardService {
   }
 
   /**
-   * Get scene progress statistics
+   * Get episode progress statistics
    */
-  getSceneProgress(sceneId: string): Observable<SceneProgressStats> {
-    return this.http.get<SceneProgressStats>(`${this.baseUrl}/scene/${sceneId}/progress`);
+  getEpisodeProgress(episodeId: number): Observable<EpisodeProgressStats> {
+    return this.http.get<EpisodeProgressStats>(`${this.baseUrl}/episode/${episodeId}/progress`);
   }
 
   /**

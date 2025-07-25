@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Scene } from './scene.entity';
+import { Episode } from './episode.entity';
 
 @Entity('sentences')
 export class Sentence {
@@ -52,7 +52,7 @@ export class Sentence {
   @Column({ type: 'date', nullable: true })
   lastReviewDate: Date;
 
-  @ManyToOne(() => Scene, (scene) => scene.sentences, { nullable: true })
-  @JoinColumn({ name: 'scene_id' })
-  scene: Scene;
+  @ManyToOne(() => Episode, (episode) => episode.sentences, { nullable: true })
+  @JoinColumn({ name: 'episode_id' })
+  episode: Episode;
 }

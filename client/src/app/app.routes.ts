@@ -10,8 +10,7 @@ import { LoginComponent } from './components/login/login.component';
 import { MediaGalleryComponent } from './components/media-gallery/media-gallery.component';
 import { MemoryPalaceComponent } from './components/memory-palace/memory-palace.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { SceneGalleryComponent } from './components/scene-gallery/scene-gallery.component';
-import { SceneOverviewComponent } from './components/scene-overview/scene-overview.component';
+// Scene components removed - episodes now connect directly to sentences
 import { SentenceDisplayComponent } from './components/sentence-display/sentence-display.component';
 import { SentenceFlashcardComponent } from './components/sentence-flashcard/sentence-flashcard.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
@@ -53,7 +52,7 @@ export const routes: Routes = [
     component: FlashcardsComponent,
   },
   {
-    path: 'sentence-flashcard/:sceneId',
+    path: 'sentence-flashcard/:episodeId',
     component: SentenceFlashcardComponent,
     title: 'Sentence Practice',
   },
@@ -79,19 +78,11 @@ export const routes: Routes = [
     component: EpisodeOverviewComponent,
   },
   {
-    path: 'media/:mediaId/episodes/:episodeId/scenes',
-    component: SceneGalleryComponent,
-  },
-  {
-    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId',
-    component: SceneOverviewComponent,
-  },
-  {
-    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId/video',
+    path: 'media/:mediaId/episodes/:episodeId/video',
     component: VideoPlayerComponent,
   },
   {
-    path: 'media/:mediaId/episodes/:episodeId/scenes/:sceneId/sentences',
+    path: 'media/:mediaId/episodes/:episodeId/sentences',
     component: SentenceGalleryComponent,
   },
   {

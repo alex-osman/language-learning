@@ -6,8 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Scene } from './scene.entity';
 import { Season } from './season.entity';
+import { Sentence } from './sentence.entity';
 
 @Entity('episodes')
 export class Episode {
@@ -30,6 +30,6 @@ export class Episode {
   @Column({ type: 'int' })
   knownCache: number;
 
-  @OneToMany(() => Scene, (scene: Scene) => scene.episode)
-  scenes: Scene[];
+  @OneToMany(() => Sentence, (sentence: Sentence) => sentence.episode)
+  sentences: Sentence[];
 }

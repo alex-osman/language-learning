@@ -59,25 +59,25 @@ export class SentenceService {
       nextReviewDate: sentence.nextReviewDate,
       lastReviewDate: sentence.lastReviewDate,
       dueForReview,
-      // Scene context (if available)
-      sceneId: sentence.scene?.id?.toString(),
+      // Episode context (if available)
+      episodeId: sentence.episode?.id,
       startMs: 0, // TODO: Add startMs to sentence entity if needed
       endMs: 0, // TODO: Add endMs to sentence entity if needed
     };
   }
 
   /**
-   * Create sentences from SRT entries for a specific scene
+   * Create sentences from SRT entries for a specific episode
    */
   async createSentencesFromSRT(
     srtEntries: SRTEntry[],
-    sceneId: number,
+    episodeId: number,
   ): Promise<Sentence[]> {
     const sentences: Partial<Sentence>[] = srtEntries.map((entry) => ({
       sentence: entry.text,
       startMs: entry.startTime,
       endMs: entry.endTime,
-      scene: { id: sceneId } as any, // TypeORM will handle the relation
+      episode: { id: episodeId } as any, // TypeORM will handle the relation
       source: 'SRT_IMPORT',
       // Set default spaced repetition values
       easinessFactor: 2.5,
@@ -95,7 +95,7 @@ export class SentenceService {
    */
   async createSentencesFromMultiFormatSRT(
     multiFormatEntries: MultiFormatSRTEntry[],
-    sceneId: number,
+    episodeId: number,
   ): Promise<Sentence[]> {
     const sentences: Partial<Sentence>[] = multiFormatEntries.map((entry) => ({
       sentence: entry.simplifiedChinese, // Simplified Chinese text
@@ -103,7 +103,7 @@ export class SentenceService {
       translation: entry.english, // English translation
       startMs: entry.startTime,
       endMs: entry.endTime,
-      scene: { id: sceneId } as any,
+      episode: { id: episodeId } as any,
       source: 'MULTI_FORMAT_SRT_IMPORT',
       easinessFactor: 2.5,
       repetitions: 0,
@@ -115,20 +115,20 @@ export class SentenceService {
   }
 
   /**
-   * Check if scene has existing sentences to avoid duplicates
+   * Check if episode has existing sentences to avoid duplicates
    */
-  async countSentencesForScene(sceneId: number): Promise<number> {
+  async countSentencesForEpisode(episodeId: number): Promise<number> {
     return this.sentenceRepository.count({
-      where: { scene: { id: sceneId } },
+      where: { episode: { id: episodeId } },
     });
   }
 
   /**
-   * Delete all sentences for a scene (useful for re-importing)
+   * Delete all sentences for an episode (useful for re-importing)
    */
-  async deleteSentencesForScene(sceneId: number): Promise<void> {
+  async deleteSentencesForEpisode(episodeId: number): Promise<void> {
     await this.sentenceRepository.delete({
-      scene: { id: sceneId },
+      episode: { id: episodeId },
     });
   }
 }

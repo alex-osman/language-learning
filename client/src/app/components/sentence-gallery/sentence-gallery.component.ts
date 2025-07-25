@@ -20,9 +20,7 @@ export class SentenceGalleryComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   mediaId: string = '';
-  seasonId: string = '';
-  episodeId: string = '';
-  sceneId: string = '';
+  episodeId: number = 0;
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
 
   constructor(
@@ -33,19 +31,17 @@ export class SentenceGalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.mediaId = this.route.snapshot.paramMap.get('mediaId') || '';
-    this.seasonId = this.route.snapshot.paramMap.get('seasonId') || '';
-    this.episodeId = this.route.snapshot.paramMap.get('episodeId') || '';
-    this.sceneId = this.route.snapshot.paramMap.get('sceneId') || '';
-    if (!this.mediaId || !this.seasonId || !this.episodeId || !this.sceneId) {
-      this.error = 'No media, season, episode, or scene selected.';
+    this.episodeId = parseInt(this.route.snapshot.paramMap.get('episodeId') || '0');
+    if (!this.mediaId || !this.episodeId) {
+      this.error = 'No media or episode selected.';
       this.isLoading = false;
       return;
     }
     this.mediaService
-      .getSentencesForScene(this.mediaId, this.seasonId, this.episodeId, this.sceneId)
+      .getEpisodeWithSentences(this.episodeId)
       .subscribe({
-        next: sentences => {
-          this.sentences = sentences;
+        next: episode => {
+          this.sentences = episode.sentences || [];
           this.isLoading = false;
           this.getProgress();
         },

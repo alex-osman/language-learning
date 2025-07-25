@@ -9,6 +9,6 @@ export class CreateEpisodeDTO {
 export class EpisodeDTO {
   id: number;
   title: string;
-  scenes?: any[];
+  sentences?: any[];
   assetUrl: string;
 }

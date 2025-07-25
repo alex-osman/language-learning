@@ -7,7 +7,7 @@ export interface EpisodeDTO {
   id: number;
   title: string;
   assetUrl: string;
-  scenes: Scene[];
+  sentences: Sentence[];
 }
 
 export interface ProgressInfo {
@@ -23,28 +23,13 @@ export interface Sentence {
   endMs: number;
 }
 
-export interface Scene {
-  id: number;
-  title: string;
-  assetUrl: string;
-  sentences: Sentence[];
-  knownCache: number;
-}
-
-export interface SceneDTO {
-  id: number;
-  episodeId: number;
-  title: string;
-  assetUrl: string;
-  number: number;
-  sentences: Sentence[];
-}
+// Scene interfaces removed - episodes now connect directly to sentences
 
 export interface Episode {
   id: number;
   title: string;
   number: number;
-  scenes: Scene[];
+  sentences: Sentence[];
   knownCache: number;
 }
 
@@ -76,7 +61,6 @@ export interface YouTubeImportRequest {
 
 export interface YouTubeImportResult {
   episode: Episode | null;
-  scene: Scene | null;
   sentencesImported: number;
   videoUrl: string;
   success: boolean;
@@ -215,23 +199,11 @@ export class MediaService {
     return this.http.get<Episode[]>(`/api/episodes/${mediaId}/media-episodes`);
   }
 
-  getScenesForEpisode(episodeId: number): Observable<EpisodeDTO> {
-    return this.http.get<EpisodeDTO>(`/api/episodes/${episodeId}/scenes`);
+  getEpisodeWithSentences(episodeId: number): Observable<EpisodeDTO> {
+    return this.http.get<EpisodeDTO>(`/api/episodes/${episodeId}/sentences`);
   }
 
-  getScene(sceneId: number): Observable<SceneDTO> {
-    return this.http.get<SceneDTO>(`/api/scenes/${sceneId}`);
-  }
-
-  getSentencesForScene(
-    mediaId: string,
-    seasonId: string,
-    episodeId: string,
-    sceneId: string
-  ): Observable<Sentence[]> {
-    // TODO: Replace with real API call
-    return of(SCENE_1_SENTENCES);
-  }
+  // Scene methods removed - use getEpisodeWithSentences instead
 
   getCharactersForEpisode(episodeId: number): Observable<CharacterDTO[]> {
     return this.http.get<CharacterDTO[]>(`/api/episodes/${episodeId}/characters`);

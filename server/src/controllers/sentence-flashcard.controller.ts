@@ -10,7 +10,7 @@ import {
 import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
 import { SentenceService } from '../services/sentence.service';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
-import { SceneService } from 'src/services/scene.service';
+import { EpisodeService } from '../services/episode.service';
 
 interface ReviewRequest {
   quality: number; // 0-5 quality rating
@@ -21,30 +21,30 @@ export class SentenceFlashcardController {
   constructor(
     private readonly sentenceFlashcardService: SentenceFlashcardService,
     private readonly sentenceService: SentenceService,
-    private readonly sceneService: SceneService,
+    private readonly episodeService: EpisodeService,
   ) {}
 
   /**
-   * Get all sentences for a specific scene
+   * Get all sentences for a specific episode
    */
-  @Get('scene/:sceneId')
-  async getSentencesForScene(@Param('sceneId') sceneId: string): Promise<{
+  @Get('episode/:episodeId')
+  async getSentencesForEpisode(@Param('episodeId') episodeId: string): Promise<{
     title: string;
     assetUrl: string;
     sentences: SentenceDTO[];
     total: number;
   }> {
-    const scene = await this.sceneService.findOne(parseInt(sceneId));
-    if (!scene) {
-      throw new NotFoundException('Scene not found');
+    const episode = await this.episodeService.findOne(parseInt(episodeId));
+    if (!episode) {
+      throw new NotFoundException('Episode not found');
     }
-    const sentences = scene.sentences;
+    const sentences = episode.sentences || [];
     const total = sentences.length;
 
     // Convert to DTOs
     return {
-      title: scene.title,
-      assetUrl: scene.episode.assetUrl,
+      title: episode.title,
+      assetUrl: episode.assetUrl,
       sentences: sentences.map((s) => ({
         id: s.id,
         sentence: s.sentence,
@@ -65,21 +65,21 @@ export class SentenceFlashcardController {
   }
 
   /**
-   * Get practice sentences for a scene
-   * @param sceneId The scene ID
+   * Get practice sentences for an episode
+   * @param episodeId The episode ID
    * @param limit The number of sentences to retrieve for practice (optional)
    */
-  @Get('scene/:sceneId/practice')
+  @Get('episode/:episodeId/practice')
   async getPracticeSentences(
-    @Param('sceneId') sceneId: string,
+    @Param('episodeId') episodeId: string,
     @Query('limit') limit?: number,
   ): Promise<{ sentences: SentenceDTO[]; total: number }> {
     const sentences = await this.sentenceFlashcardService.getPracticeSentences(
-      sceneId,
+      parseInt(episodeId),
       limit,
     );
     const total =
-      await this.sentenceFlashcardService.getTotalSentenceCount(sceneId);
+      await this.sentenceFlashcardService.getTotalSentenceCount(parseInt(episodeId));
 
     // Convert to DTOs
     return {
@@ -91,11 +91,11 @@ export class SentenceFlashcardController {
   }
 
   /**
-   * Get scene progress statistics
+   * Get episode progress statistics
    */
-  @Get('scene/:sceneId/progress')
-  async getSceneProgress(@Param('sceneId') sceneId: string) {
-    return this.sentenceFlashcardService.getSceneProgress(sceneId);
+  @Get('episode/:episodeId/progress')
+  async getEpisodeProgress(@Param('episodeId') episodeId: string) {
+    return this.sentenceFlashcardService.getEpisodeProgress(parseInt(episodeId));
   }
 
   /**

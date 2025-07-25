@@ -29,7 +29,6 @@
         <h2>{{ episodeData.title }}</h2>
         <p>{{ episodeData.percentUnderstood }}% understood</p>
         <p>{{ episodeData.totalSentencesCount }} total sentences</p>
-        <p>{{ episodeData.scenes.length }} scenes</p>
         <!-- NEW: Character learning breakdown -->
         <div class="character-breakdown" *ngIf="episodeData.progressSegments.length > 0">
           <span class="learned-count">{{ episodeData.learnedCount }} learned</span>
@@ -59,24 +58,12 @@
     >
     </app-episode-characters>
 
-    <!-- Scene Gallery -->
-    <div class="scene-gallery">
-      <!-- Script View (Concise view) -->
-      <div *ngIf="isScriptView" class="scenes-list script-view">
-        <div *ngFor="let scene of episodeData.scenes" class="scene-line" (click)="goToScene(scene)">
-          <span class="scene-title">{{ scene.title }}</span>
-          <span class="scene-count">{{ scene.sentenceCount }} sentences</span>
-          <div class="progress-indicator">
-            <app-progress-indicator
-              type="linear"
-              [value]="scene.knownCache"
-              theme="success"
-              [height]="4"
-              [showLabel]="false"
-            ></app-progress-indicator>
-          </div>
-        </div>
-      </div>
+    <!-- Video Access -->
+    <div class="video-access">
+      <button class="video-btn" (click)="goToVideo()">
+        <span class="video-icon">▶</span>
+        <span class="video-text">Watch Video</span>
+      </button>
     </div>
   </ng-container>
 

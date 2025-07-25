@@ -2,12 +2,12 @@
   <!-- Header -->
   <div class="header">
     <button class="back-button" (click)="goBack()" aria-label="Back">← Back</button>
-    <h1 class="scene-title">{{ scene?.title || 'Video Player' }}</h1>
+    <h1 class="episode-title">{{ episode?.title || 'Video Player' }}</h1>
     <!-- Progress Circle -->
-    <div class="progress-circle" *ngIf="scene">
+    <div class="progress-circle" *ngIf="episode">
       <app-progress-indicator
         type="circular"
-        [value]="sceneProgressPercent"
+        [value]="episodeProgressPercent"
         theme="warning"
         [size]="60"
         [strokeWidth]="6"
@@ -27,12 +27,12 @@
   </div>
 
   <!-- Video Player -->
-  <div *ngIf="!isLoading && !error && scene" class="video-player">
+  <div *ngIf="!isLoading && !error && episode" class="video-player">
     <div class="video-container">
       <!-- Video Element -->
       <video
         #videoElement
-        [src]="scene.assetUrl"
+        [src]="episode.assetUrl"
         [playsInline]="true"
         class="video-element"
       ></video>
@@ -68,7 +68,7 @@
       <h3>Script</h3>
       <div #sentenceList class="sentences">
         <div
-          *ngFor="let sentence of scene.sentences"
+          *ngFor="let sentence of episode.sentences"
           class="sentence-item"
           [class.active]="currentSentence?.id === sentence.id"
           [attr.data-sentence-id]="sentence.id"
