@@ -450,12 +450,12 @@ export class YouTubeImportService {
     }> = [];
     let primarySubtitle: { path: string; content: string } | null = null;
 
-    // Priority queue - "zh" is now TOP priority since it contains all 4 formats!
+    // Priority queue - zh-CN is now TOP priority since it typically contains multi-format content!
     const priorityLanguages = [
-      'zh', // HIGHEST PRIORITY - Multi-format (traditional + simplified + pinyin + English)
+      'zh-CN', // HIGHEST PRIORITY - Often contains multi-format (traditional + simplified + pinyin + English)
+      'zh', // Generic Chinese - may contain multi-format
       'zh-Hans', // Simplified Chinese only
       'zh-Hant', // Traditional Chinese only
-      'zh-CN', // China Chinese
       'zh-TW', // Taiwan Chinese
       'zh-HK', // Hong Kong Chinese
       'en', // English (for comparison)
@@ -540,10 +540,10 @@ export class YouTubeImportService {
             );
 
             // If this is a multi-format Chinese track, we've found our primary
-            if (lang === 'zh' && isMultiFormat && !primarySubtitle) {
+            if ((lang === 'zh-CN' || lang === 'zh') && isMultiFormat && !primarySubtitle) {
               primarySubtitle = { path: filePath, content };
               this.logger.log(
-                `🎯 Selected PRIMARY (MULTI-FORMAT zh): ${subtitleFile}`,
+                `🎯 Selected PRIMARY (MULTI-FORMAT ${lang}): ${subtitleFile}`,
               );
               break; // Stop processing more files for this language
             }
