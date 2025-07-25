@@ -34,8 +34,8 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   }
 
   // State management
-  remainingSentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[] = [];
-  currentSentence: (SentenceDTO & { episodeTitle?: string; assetUrl?: string }) | null = null;
+  remainingSentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[] = [];
+  currentSentence: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number }) | null = null;
   isFlipped = false;
   isLoading = true;
   isReviewing = false;
@@ -232,17 +232,47 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
+    // Try to get comprehensible sentences first (80% comprehension)
+    const sub = this.sentenceFlashcardService.getRandomComprehensibleSentences(this.batchSize, 80).subscribe({
+      next: response => {
+        if (response.sentences.length > 0) {
+          // We got comprehensible sentences
+          this.remainingSentences = response.sentences;
+          this.reviewStats.total = response.total;
+          console.log('Loaded comprehensible sentences', this.remainingSentences);
+        } else {
+          // Fallback to regular random sentences if no comprehensible ones available
+          console.log('No comprehensible sentences found, falling back to random sentences');
+          this.loadFallbackRandomSentences();
+          return;
+        }
+        
+        this.isLoading = false;
+        this.showNextSentence();
+      },
+      error: err => {
+        console.error('Error loading comprehensible sentences:', err);
+        // Fallback to regular random sentences on error
+        console.log('Falling back to random sentences due to error');
+        this.loadFallbackRandomSentences();
+      },
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  private loadFallbackRandomSentences() {
     const sub = this.sentenceFlashcardService.getRandomSentences(this.batchSize).subscribe({
       next: response => {
         this.remainingSentences = response.sentences;
         this.reviewStats.total = response.total;
         this.isLoading = false;
-        console.log('Loaded random sentences', this.remainingSentences);
+        console.log('Loaded fallback random sentences', this.remainingSentences);
         this.showNextSentence();
       },
       error: err => {
-        console.error('Error loading random sentences:', err);
-        this.error = 'Failed to load random sentences. Please try again.';
+        console.error('Error loading fallback random sentences:', err);
+        this.error = 'Failed to load sentences. Please try again.';
         this.isLoading = false;
       },
     });

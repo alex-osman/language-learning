@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard';
 import { SentenceFlashcardService } from '../services/sentence-flashcard.service';
 import { SentenceService } from '../services/sentence.service';
 import { SentenceDTO } from '../shared/interfaces/sentence.interface';
 import { EpisodeService } from '../services/episode.service';
+import { UserID } from 'src/decorators/user.decorator';
 
 interface ReviewRequest {
   quality: number; // 0-5 quality rating
@@ -78,8 +81,9 @@ export class SentenceFlashcardController {
       parseInt(episodeId),
       limit,
     );
-    const total =
-      await this.sentenceFlashcardService.getTotalSentenceCount(parseInt(episodeId));
+    const total = await this.sentenceFlashcardService.getTotalSentenceCount(
+      parseInt(episodeId),
+    );
 
     // Convert to DTOs
     return {
@@ -95,7 +99,9 @@ export class SentenceFlashcardController {
    */
   @Get('episode/:episodeId/progress')
   async getEpisodeProgress(@Param('episodeId') episodeId: string) {
-    return this.sentenceFlashcardService.getEpisodeProgress(parseInt(episodeId));
+    return this.sentenceFlashcardService.getEpisodeProgress(
+      parseInt(episodeId),
+    );
   }
 
   /**
@@ -143,7 +149,8 @@ export class SentenceFlashcardController {
     const sentences = await this.sentenceFlashcardService.getRandomSentences(
       limit || 10,
     );
-    const total = await this.sentenceFlashcardService.getTotalSentenceCountAcrossAllContent();
+    const total =
+      await this.sentenceFlashcardService.getTotalSentenceCountAcrossAllContent();
 
     return {
       sentences: sentences.map((sentence) => ({
@@ -151,6 +158,60 @@ export class SentenceFlashcardController {
         episodeTitle: sentence.episode?.title,
         assetUrl: sentence.episode?.assetUrl,
       })),
+      total,
+    };
+  }
+
+  /**
+   * Get random comprehensible sentences for a user (requires authentication)
+   * @param limit The number of random sentences to retrieve (optional, defaults to 10)
+   * @param minComprehension Minimum comprehension percentage (optional, defaults to 80)
+   */
+  @Get('random/comprehensible')
+  @UseGuards(AuthGuard)
+  async getRandomComprehensibleSentences(
+    @UserID() userId: number,
+    @Query('limit') limit?: number,
+    @Query('minComprehension') minComprehension?: number,
+  ): Promise<{
+    sentences: (SentenceDTO & {
+      episodeTitle?: string;
+      assetUrl?: string;
+      comprehensionPercentage?: number;
+    })[];
+    total: number;
+  }> {
+    const sentences =
+      await this.sentenceFlashcardService.getRandomComprehensibleSentences(
+        userId,
+        limit || 10,
+        minComprehension || 80,
+      );
+    const total =
+      await this.sentenceFlashcardService.getTotalComprehensibleSentenceCount(
+        userId,
+        minComprehension || 80,
+      );
+
+    // Get comprehension percentages for each sentence
+    const sentencesWithComprehension = await Promise.all(
+      sentences.map(async (sentence) => {
+        // Try to get cached comprehension data first
+        const comprehension = await this.sentenceFlashcardService[
+          'userSentenceKnowledgeService'
+        ].getComprehensionPercentage(userId, sentence.id, sentence.sentence);
+
+        return {
+          ...this.sentenceService.toSentenceDTO(sentence),
+          episodeTitle: sentence.episode?.title,
+          assetUrl: sentence.episode?.assetUrl,
+          comprehensionPercentage: Math.round(comprehension),
+        };
+      }),
+    );
+
+    return {
+      sentences: sentencesWithComprehension,
       total,
     };
   }

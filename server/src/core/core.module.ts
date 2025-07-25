@@ -18,7 +18,9 @@ import { SentenceFlashcardService } from '../services/sentence-flashcard.service
 import { Episode } from 'src/entities/episode.entity';
 import { EpisodeService } from 'src/services/episode.service';
 import { UserCharacterKnowledge } from 'src/entities/user-character-knowledge.entity';
+import { UserSentenceKnowledge } from 'src/entities/user-sentence-knowledge.entity';
 import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
+import { UserSentenceKnowledgeService } from '../services/user-sentence-knowledge.service';
 import { SRTParserService } from '../services/srt-parser.service';
 import { YouTubeImportService } from '../services/youtube-import.service';
 import { MovieAiService } from '../ai/services/movie.service';
@@ -35,6 +37,7 @@ import { Season } from 'src/entities/season.entity';
       Word,
       Episode,
       UserCharacterKnowledge,
+      UserSentenceKnowledge,
       Season,
     ]),
   ],
@@ -50,6 +53,7 @@ import { Season } from 'src/entities/season.entity';
     SentenceFlashcardService,
     EpisodeService,
     UserCharacterKnowledgeService,
+    UserSentenceKnowledgeService,
     SRTParserService,
     YouTubeImportService,
     MovieAiService,
@@ -66,6 +70,7 @@ import { Season } from 'src/entities/season.entity';
     SentenceFlashcardService,
     EpisodeService,
     UserCharacterKnowledgeService,
+    UserSentenceKnowledgeService,
     SRTParserService,
     YouTubeImportService,
     MovieAiService,

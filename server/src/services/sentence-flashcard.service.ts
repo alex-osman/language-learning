@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sentence } from '../entities/sentence.entity';
+import { UserSentenceKnowledgeService } from './user-sentence-knowledge.service';
 
 // Response quality ratings (0-5)
 enum QualityRating {
@@ -26,6 +27,7 @@ export class SentenceFlashcardService {
   constructor(
     @InjectRepository(Sentence)
     private sentenceRepository: Repository<Sentence>,
+    private userSentenceKnowledgeService: UserSentenceKnowledgeService,
   ) {}
 
   /**
@@ -70,7 +72,7 @@ export class SentenceFlashcardService {
   /**
    * Get episode progress statistics
    */
-  async getEpisodeProgress(episodeId: number): Promise<any> {
+  async getEpisodeProgress(episodeId: number) {
     // This would require implementing progress statistics
     // For now, return a simple response
     const totalSentences = await this.getTotalSentenceCount(episodeId);
@@ -82,7 +84,6 @@ export class SentenceFlashcardService {
       completionPercentage: 0,
     };
   }
-
 
   /**
    * Process review of a sentence using SM-2 algorithm
@@ -112,7 +113,7 @@ export class SentenceFlashcardService {
     let newRepetitions: number;
 
     // If the response was correct (3-5)
-    if (quality >= 3) {
+    if (quality >= QualityRating.CORRECT_DIFFICULT) {
       if (sentence.repetitions === 0) {
         // First successful review - schedule for 1 day later
         newInterval = 1;
@@ -227,5 +228,92 @@ export class SentenceFlashcardService {
       .andWhere('sentence.endMs IS NOT NULL')
       .andWhere('episode.assetUrl IS NOT NULL')
       .getCount();
+  }
+
+  /**
+   * Get random comprehensible sentences for a user (80%+ character comprehension)
+   */
+  async getRandomComprehensibleSentences(
+    userId: number,
+    limit: number = 10,
+    minComprehension: number = 80,
+  ): Promise<Sentence[]> {
+    // First, try to get from cached comprehensible sentences
+    const comprehensibleSentences =
+      await this.userSentenceKnowledgeService.findComprehensibleSentences(
+        userId,
+        minComprehension,
+        limit * 3,
+      ); // Get more to randomize from
+
+    if (comprehensibleSentences.length >= limit) {
+      // We have enough cached sentences, randomize and return
+      const shuffled = comprehensibleSentences
+        .map((usk) => usk.sentence!)
+        .filter((sentence) => sentence && sentence.episode?.assetUrl) // Ensure we have valid sentences with media
+        .sort(() => Math.random() - 0.5)
+        .slice(0, limit);
+
+      return shuffled;
+    }
+
+    // If we don't have enough cached sentences, fall back to calculating on-the-fly
+    // This is slower but ensures we can provide sentences even with sparse cache
+    return this.getRandomSentencesWithComprehensionCheck(
+      userId,
+      limit,
+      minComprehension,
+    );
+  }
+
+  /**
+   * Fallback method: Get random sentences and check comprehension on-the-fly
+   * (Used when we don't have enough cached comprehension data)
+   */
+  private async getRandomSentencesWithComprehensionCheck(
+    userId: number,
+    limit: number,
+    minComprehension: number,
+  ): Promise<Sentence[]> {
+    // Get a larger pool of random sentences to check
+    const candidateSentences = await this.getRandomSentences(limit * 5);
+    const comprehensibleSentences: Sentence[] = [];
+
+    // Check each sentence for comprehension
+    for (const sentence of candidateSentences) {
+      if (comprehensibleSentences.length >= limit) break;
+
+      try {
+        const isComprehensible =
+          await this.userSentenceKnowledgeService.isComprehensible(
+            userId,
+            sentence.id,
+            sentence.sentence,
+            minComprehension,
+          );
+
+        if (isComprehensible) {
+          comprehensibleSentences.push(sentence);
+        }
+      } catch (error) {
+        console.error('Error checking sentence comprehension:', error);
+        // Continue with other sentences if one fails
+      }
+    }
+
+    return comprehensibleSentences;
+  }
+
+  /**
+   * Get total count of comprehensible sentences for a user
+   */
+  async getTotalComprehensibleSentenceCount(
+    userId: number,
+    minComprehension: number = 80,
+  ): Promise<number> {
+    return this.userSentenceKnowledgeService.getComprehensibleSentenceCount(
+      userId,
+      minComprehension,
+    );
   }
 }

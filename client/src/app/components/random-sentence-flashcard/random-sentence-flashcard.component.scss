@@ -273,8 +273,46 @@
               .sentence-translation {
                 font-size: 1.3rem;
                 color: #444;
-                margin-bottom: 2rem;
+                margin-bottom: 1rem;
                 line-height: 1.5;
+              }
+
+              .comprehension-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 2rem;
+                padding: 0.5rem 1rem;
+                background: #f8f9fa;
+                border-radius: 6px;
+                font-size: 0.9rem;
+
+                .comprehension-label {
+                  color: #666;
+                  font-weight: 500;
+                }
+
+                .comprehension-percentage {
+                  font-weight: bold;
+                  padding: 0.25rem 0.5rem;
+                  border-radius: 4px;
+                  
+                  &.high-comprehension {
+                    background: #d4edda;
+                    color: #155724;
+                  }
+                  
+                  &.medium-comprehension {
+                    background: #fff3cd;
+                    color: #856404;
+                  }
+                  
+                  &.low-comprehension {
+                    background: #f8d7da;
+                    color: #721c24;
+                  }
+                }
               }
               
               .reveal-instruction {

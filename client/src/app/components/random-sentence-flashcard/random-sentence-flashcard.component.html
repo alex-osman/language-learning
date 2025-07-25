@@ -145,6 +145,17 @@
                 {{ currentSentence.translation }}
               </div>
 
+              <!-- Comprehension Indicator -->
+              <div class="comprehension-indicator" *ngIf="currentSentence.comprehensionPercentage !== undefined">
+                <span class="comprehension-label">Character Comprehension:</span>
+                <span class="comprehension-percentage" 
+                      [class.high-comprehension]="currentSentence.comprehensionPercentage >= 80"
+                      [class.medium-comprehension]="currentSentence.comprehensionPercentage >= 60 && currentSentence.comprehensionPercentage < 80"
+                      [class.low-comprehension]="currentSentence.comprehensionPercentage < 60">
+                  {{ currentSentence.comprehensionPercentage }}%
+                </span>
+              </div>
+
               <!-- Character Analysis Button -->
               <div class="analysis-section">
                 <button

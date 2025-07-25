@@ -112,4 +112,22 @@ export class SentenceFlashcardService {
       total: number 
     }>(`${this.baseUrl}/random`, options);
   }
+
+  /**
+   * Get random comprehensible sentences for the authenticated user
+   */
+  getRandomComprehensibleSentences(limit?: number, minComprehension?: number): Observable<{ 
+    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[]; 
+    total: number 
+  }> {
+    const params: any = {};
+    if (limit) params.limit = limit.toString();
+    if (minComprehension) params.minComprehension = minComprehension.toString();
+    
+    const options = Object.keys(params).length > 0 ? { params } : {};
+    return this.http.get<{ 
+      sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[]; 
+      total: number 
+    }>(`${this.baseUrl}/random/comprehensible`, options);
+  }
 }
