@@ -120,7 +120,7 @@
     padding: 1rem 0.5rem;
     margin-bottom: 0.5rem;
 
-    input[type="range"] {
+    input[type='range'] {
       writing-mode: bt-lr; /* IE */
       -webkit-appearance: slider-vertical; /* WebKit */
       width: 20px;
@@ -214,10 +214,21 @@
           background: rgba(255, 255, 255, 0.1);
         }
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
           accent-color: #4a90e2;
         }
       }
+    }
+  }
+}
+
+// Autoscroll Control
+.autoscroll-control {
+  .control-button {
+    &.active {
+      background: rgba(74, 144, 226, 0.3);
+      border-color: #4a90e2;
+      color: #4a90e2;
     }
   }
 }

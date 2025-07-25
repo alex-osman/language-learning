@@ -18,9 +18,7 @@
       </button>
 
       <!-- Time Display -->
-      <div class="time-display">
-        {{ formattedCurrentTime }} / {{ formattedDuration }}
-      </div>
+      <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
     </div>
 
     <!-- Right Section - Settings -->
@@ -32,7 +30,7 @@
           <span *ngIf="volume > 0 && volume <= 0.5">🔉</span>
           <span *ngIf="volume === 0">🔇</span>
         </button>
-        
+
         <div *ngIf="showVolumeSlider" class="volume-slider">
           <input
             type="range"
@@ -47,10 +45,8 @@
 
       <!-- Speed Control -->
       <div class="speed-control">
-        <button class="control-button" (click)="toggleSpeedMenu()">
-          {{ playbackRate }}x
-        </button>
-        
+        <button class="control-button" (click)="toggleSpeedMenu()">{{ playbackRate }}x</button>
+
         <div *ngIf="showSpeedMenu" class="speed-menu">
           <button
             *ngFor="let speed of playbackSpeeds"
@@ -65,10 +61,8 @@
 
       <!-- Subtitle Controls -->
       <div class="subtitle-control">
-        <button class="control-button" (click)="toggleSubtitleMenu()">
-          CC
-        </button>
-        
+        <button class="control-button" (click)="toggleSubtitleMenu()">CC</button>
+
         <div *ngIf="showSubtitleMenu" class="subtitle-menu">
           <div class="subtitle-option">
             <label>
@@ -101,6 +95,18 @@
             </label>
           </div>
         </div>
+      </div>
+
+      <!-- Autoscroll Control -->
+      <div class="autoscroll-control">
+        <button
+          class="control-button"
+          [class.active]="isAutoscrollEnabled"
+          (click)="onAutoscrollToggle()"
+          title="Toggle autoscroll"
+        >
+          📜
+        </button>
       </div>
     </div>
   </div>

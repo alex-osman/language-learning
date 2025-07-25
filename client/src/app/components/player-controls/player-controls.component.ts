@@ -22,12 +22,14 @@ export class PlayerControlsComponent {
   @Input() playbackRate = 1;
   @Input() playbackSpeeds: number[] = [0.5, 0.75, 1, 1.25, 1.5, 2];
   @Input() subtitleLayers!: SubtitleLayers;
+  @Input() isAutoscrollEnabled = true;
 
   @Output() playPause = new EventEmitter<void>();
   @Output() seek = new EventEmitter<number>();
   @Output() volumeChange = new EventEmitter<number>();
   @Output() speedChange = new EventEmitter<number>();
   @Output() layerToggle = new EventEmitter<keyof SubtitleLayers>();
+  @Output() autoscrollToggle = new EventEmitter<void>();
 
   // UI state
   showVolumeSlider = false;
@@ -70,6 +72,10 @@ export class PlayerControlsComponent {
 
   onLayerToggle(layer: keyof SubtitleLayers) {
     this.layerToggle.emit(layer);
+  }
+
+  onAutoscrollToggle() {
+    this.autoscrollToggle.emit();
   }
 
   toggleVolumeSlider() {

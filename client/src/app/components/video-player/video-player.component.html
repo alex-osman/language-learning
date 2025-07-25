@@ -1,9 +1,7 @@
 <div class="video-player-container">
   <!-- Header -->
   <div class="header">
-    <button class="back-button" (click)="goBack()" aria-label="Back">
-      ← Back
-    </button>
+    <button class="back-button" (click)="goBack()" aria-label="Back">← Back</button>
     <h1 class="scene-title">{{ scene?.title || 'Video Player' }}</h1>
   </div>
 
@@ -21,11 +19,7 @@
   <div *ngIf="!isLoading && !error && scene" class="video-player">
     <div class="video-container">
       <!-- Video Element -->
-      <video
-        #videoElement
-        [src]="scene.assetUrl"
-        class="video-element"
-      ></video>
+      <video #videoElement [src]="scene.assetUrl" class="video-element"></video>
 
       <!-- Subtitle Overlay -->
       <app-subtitle-overlay
@@ -45,28 +39,31 @@
       [playbackRate]="playbackRate"
       [playbackSpeeds]="playbackSpeeds"
       [subtitleLayers]="subtitleLayers"
+      [isAutoscrollEnabled]="isAutoscrollEnabled"
       (playPause)="togglePlayPause()"
       (seek)="seekTo($event)"
       (volumeChange)="setVolume($event)"
       (speedChange)="setPlaybackRate($event)"
       (layerToggle)="toggleSubtitleLayer($event)"
+      (autoscrollToggle)="toggleAutoscroll()"
       class="player-controls"
     ></app-player-controls>
 
     <!-- Sentence List (Script) -->
     <div class="sentence-list">
       <h3>Script</h3>
-      <div class="sentences">
+      <div #sentenceList class="sentences" (scroll)="onManualScroll()">
         <div
           *ngFor="let sentence of scene.sentences"
           class="sentence-item"
           [class.active]="currentSentence?.id === sentence.id"
+          [attr.data-sentence-id]="sentence.id"
           (click)="goToSentence(sentence)"
         >
           <div class="chinese">{{ sentence.sentence }}</div>
           <div *ngIf="sentence.pinyin" class="pinyin">{{ sentence.pinyin }}</div>
           <div class="english">{{ sentence.translation }}</div>
-          <div class="timing">{{ sentence.startMs / 1000 | number:'1.1-1' }}s</div>
+          <div class="timing">{{ sentence.startMs / 1000 | number : '1.1-1' }}s</div>
         </div>
       </div>
     </div>
