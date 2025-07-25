@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  AfterViewInit,
+  HostListener,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, SceneDTO, Sentence } from '../../services/media.service';
 import { SubtitleOverlayComponent } from '../subtitle-overlay/subtitle-overlay.component';
@@ -19,7 +27,12 @@ interface SubtitleLayers {
 @Component({
   selector: 'app-video-player',
   standalone: true,
-  imports: [CommonModule, SubtitleOverlayComponent, PlayerControlsComponent, ProgressIndicatorComponent],
+  imports: [
+    CommonModule,
+    SubtitleOverlayComponent,
+    PlayerControlsComponent,
+    ProgressIndicatorComponent,
+  ],
   templateUrl: './video-player.component.html',
   styleUrl: './video-player.component.scss',
 })
@@ -245,7 +258,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.scene) return;
 
     const texts = this.scene.sentences.map(sentence => sentence.sentence);
-    
+
     this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
       next: results => this.handleBatchAnalysisResults(results),
       error: err => this.handleBatchAnalysisError(err),
@@ -344,7 +357,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ===== PROGRESS CALCULATION =====
-  
+
   get sceneProgressPercent(): number {
     if (!this.scene || !this.hasAnalysisData()) {
       return 0;
@@ -378,5 +391,18 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     return { totalKnownCharacters, totalCharacters };
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    // Only handle space if we're not in an input field
+    if (
+      event.code === 'Space' &&
+      !(event.target instanceof HTMLInputElement) &&
+      !(event.target instanceof HTMLTextAreaElement)
+    ) {
+      event.preventDefault(); // Prevent page scroll
+      this.togglePlayPause();
+    }
   }
 }
