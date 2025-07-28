@@ -25,6 +25,7 @@ export class LearningComponent implements OnInit {
   imagePreviewUrl: string | null = null;
   selectedFile: File | null = null;
   isUploading: boolean = false;
+  updateRadicals: boolean = false;
 
   constructor(private movieService: MovieService) {}
 

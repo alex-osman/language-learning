@@ -274,3 +274,16 @@
   font-size: 1.1rem;
   padding: 0.8rem 0;
 }
+
+.btn-danger {
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #dc3545;
+  }
+}

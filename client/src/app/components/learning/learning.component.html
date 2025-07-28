@@ -43,6 +43,7 @@
 
         <div class="element">
           <span class="label">Props:</span>
+
           <span
             class="value"
             *ngIf="currentCharacter.radicals && currentCharacter.radicals.length > 0"
@@ -57,12 +58,17 @@
           >
             No props defined yet
           </span>
+          <button *ngIf="!updateRadicals" (click)="updateRadicals = true" class="btn btn-danger">
+            🚫
+          </button>
         </div>
 
         <!-- Add props section - only show if radicals are empty -->
         <div
           class="element add-props"
-          *ngIf="!currentCharacter.radicals || currentCharacter.radicals.length === 0"
+          *ngIf="
+            updateRadicals || !currentCharacter.radicals || currentCharacter.radicals.length === 0
+          "
         >
           <span class="label">Add Props:</span>
           <div class="input-group">
