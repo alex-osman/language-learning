@@ -14,6 +14,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
+import { SentenceAnalyzerService } from './sentence-analyzer.service';
+import { Sentence } from 'src/entities/sentence.entity';
+
 interface YouTubeSubtitleFormat {
   ext: string;
   url: string;
@@ -33,6 +36,7 @@ export interface YouTubeImportOptions {
   seasonId: number;
   title?: string;
   preferredLanguage?: string; // Default: 'zh' for Chinese
+  userId?: number;
   dryRun?: boolean; // If true, preview only without importing
 }
 
@@ -69,6 +73,7 @@ export class YouTubeImportService {
     private sentenceService: SentenceService,
     private episodeService: EpisodeService,
     private movieAiService: MovieAiService,
+    private sentenceAnalyzerService: SentenceAnalyzerService,
   ) {}
 
   /**
@@ -197,7 +202,7 @@ export class YouTubeImportService {
       // 7. Parse and import subtitles directly to episode - check if multi-format
       this.logger.log('Parsing and importing subtitles...');
 
-      let createdSentences: any[] = [];
+      let createdSentences: Sentence[] = [];
       const isMultiFormat = this.detectMultiFormatContent(subtitleContent);
 
       if (isMultiFormat) {
@@ -228,6 +233,13 @@ export class YouTubeImportService {
       this.logger.log(
         `Successfully imported ${createdSentences.length} sentences`,
       );
+
+      if (options.userId) {
+        await this.sentenceAnalyzerService.analyzeSentenceIds(
+          createdSentences.map((s) => s.id),
+          options.userId,
+        );
+      }
 
       return {
         episode,
@@ -540,7 +552,11 @@ export class YouTubeImportService {
             );
 
             // If this is a multi-format Chinese track, we've found our primary
-            if ((lang === 'zh-CN' || lang === 'zh') && isMultiFormat && !primarySubtitle) {
+            if (
+              (lang === 'zh-CN' || lang === 'zh') &&
+              isMultiFormat &&
+              !primarySubtitle
+            ) {
               primarySubtitle = { path: filePath, content };
               this.logger.log(
                 `🎯 Selected PRIMARY (MULTI-FORMAT ${lang}): ${subtitleFile}`,
@@ -696,10 +712,12 @@ export class YouTubeImportService {
           if (/[\u4e00-\u9fff]/.test(line)) {
             // Has Chinese characters - now check if it's simplified
             // Strong simplified indicators (characters that are distinctly simplified)
-            const strongSimplified = /[个们来时间问题现实说话这那些什么发展国学习]/.test(line);
+            const strongSimplified =
+              /[个们来时间问题现实说话这那些什么发展国学习]/.test(line);
             // Traditional exclusion patterns (characters only found in traditional)
-            const hasTraditional = /[個們來時間問題現實說話這那些什麼發展國學習]/.test(line);
-            
+            const hasTraditional =
+              /[個們來時間問題現實說話這那些什麼發展國學習]/.test(line);
+
             if (strongSimplified && !hasTraditional) {
               hasSimplified = true;
             } else if (!hasTraditional) {
@@ -707,21 +725,23 @@ export class YouTubeImportService {
               hasSimplified = true;
             }
           }
-          
+
           // Check for Pinyin (tone marks or romanized Chinese)
           if (/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line)) {
             hasPinyin = true;
           } else if (/^[a-zA-Z\s!.,?]+$/.test(line) && /[a-z]/.test(line)) {
             // Check if it's likely English vs Pinyin by looking for common English words
-            const commonEnglishWords = /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
+            const commonEnglishWords =
+              /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
             if (!commonEnglishWords.test(line)) {
               // Looks like romanized Chinese (not pure English)
               hasPinyin = true;
             }
           }
-          
+
           // Check for English (common English words and patterns)
-          const commonEnglishWords = /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
+          const commonEnglishWords =
+            /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
           if (commonEnglishWords.test(line)) {
             hasEnglish = true;
           }
@@ -737,10 +757,12 @@ export class YouTubeImportService {
     // Consider it multi-format if at least 60% of checked entries match the pattern
     const threshold = Math.ceil(totalEntries * 0.6);
     const isMultiFormat = multiFormatCount >= threshold;
-    
+
     // Debug logging
-    this.logger.log(`🔍 Multi-format detection: ${multiFormatCount}/${totalEntries} entries match (threshold: ${threshold}) - Result: ${isMultiFormat ? 'MULTI-FORMAT' : 'Single format'}`);
-    
+    this.logger.log(
+      `🔍 Multi-format detection: ${multiFormatCount}/${totalEntries} entries match (threshold: ${threshold}) - Result: ${isMultiFormat ? 'MULTI-FORMAT' : 'Single format'}`,
+    );
+
     return isMultiFormat;
   }
 

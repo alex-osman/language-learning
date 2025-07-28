@@ -3,6 +3,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { YouTubeImportService } from './services/youtube-import.service';
+import { SentenceAnalyzerService } from './services/sentence-analyzer.service';
 
 async function importFromYouTube() {
   const args = process.argv.slice(2);
@@ -42,7 +43,7 @@ async function importFromYouTube() {
   }
 
   let app;
-  
+
   try {
     console.log('🚀 Starting YouTube import...');
     console.log(`📺 URL: ${youtubeUrl}`);
@@ -283,6 +284,14 @@ async function importFromYouTube() {
       console.error('❌ Import failed!');
       console.error(`Error: ${result.message}`);
     }
+    // Now analyze the sentences
+    const sentenceAnalyzerService = app.get(SentenceAnalyzerService);
+    console.log('🔍 Analyzing sentences...');
+    const sentences = await sentenceAnalyzerService.analyzeSentenceIds(
+      result.sentencesImported,
+      2,
+    );
+    console.log('🔍 Sentences analyzed:', sentences.length);
 
     await app.close();
     process.exit(result.success ? 0 : 1);
