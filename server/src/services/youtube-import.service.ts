@@ -636,7 +636,7 @@ export class YouTubeImportService {
 
   /**
    * Detect if subtitle content contains multiple formats
-   * Handles both 3-line format (Pinyin + Simplified Chinese + English) and 4-line format (Traditional + Simplified + Pinyin + English)
+   * Intelligently identifies if entries contain Traditional Chinese, Simplified Chinese, Pinyin, and English
    */
   private detectMultiFormatContent(content: string): boolean {
     const lines = content.split('\n');
@@ -685,46 +685,50 @@ export class YouTubeImportService {
       const entry = entries[i];
       const textLines = entry.textLines;
 
-      if (textLines.length === 3) {
-        // 3-line format: Pinyin, Simplified Chinese, English
-        const line1 = textLines[0] || '';
-        const line2 = textLines[1] || '';
-        const line3 = textLines[2] || '';
+      if (textLines.length >= 3) {
+        // Analyze all lines to identify content types
+        let hasSimplified = false;
+        let hasPinyin = false;
+        let hasEnglish = false;
 
-        // Check for pinyin in line 1 (Latin with tone marks or basic Latin)
-        const hasPinyin1 =
-          /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line1) ||
-          /\b[a-zA-Z]+\b/.test(line1);
-
-        // Check for Chinese characters in line 2
-        const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
-
-        // Check for English in line 3 (pure English text)
-        const hasEnglish3 = /^[a-zA-Z\s\.,!?'"]+$/.test(line3);
-
-        if (hasPinyin1 && hasChinese2 && hasEnglish3) {
-          multiFormatCount++;
+        for (const line of textLines) {
+          // Check for Simplified Chinese - use broader patterns but exclude traditional
+          if (/[\u4e00-\u9fff]/.test(line)) {
+            // Has Chinese characters - now check if it's simplified
+            // Strong simplified indicators (characters that are distinctly simplified)
+            const strongSimplified = /[个们来时间问题现实说话这那些什么发展国学习]/.test(line);
+            // Traditional exclusion patterns (characters only found in traditional)
+            const hasTraditional = /[個們來時間問題現實說話這那些什麼發展國學習]/.test(line);
+            
+            if (strongSimplified && !hasTraditional) {
+              hasSimplified = true;
+            } else if (!hasTraditional) {
+              // If no traditional markers found, assume simplified for common characters
+              hasSimplified = true;
+            }
+          }
+          
+          // Check for Pinyin (tone marks or romanized Chinese)
+          if (/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line)) {
+            hasPinyin = true;
+          } else if (/^[a-zA-Z\s!.,?]+$/.test(line) && /[a-z]/.test(line)) {
+            // Check if it's likely English vs Pinyin by looking for common English words
+            const commonEnglishWords = /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
+            if (!commonEnglishWords.test(line)) {
+              // Looks like romanized Chinese (not pure English)
+              hasPinyin = true;
+            }
+          }
+          
+          // Check for English (common English words and patterns)
+          const commonEnglishWords = /\b(the|and|or|is|are|a|an|to|of|in|for|with|at|by|from|that|this|it|you|I|we|they|he|she|will|can|have|has|do|does|was|were|get|go|come|make|take|see|know|think|say|tell|give|find|feel|become|leave|put|use|work|call|try|ask|need|help|move|right|good|bad|big|small|high|low|old|new|first|last|long|great|little|own|other|different|important|large|young|early|late|next|few|public|same)\b/i;
+          if (commonEnglishWords.test(line)) {
+            hasEnglish = true;
+          }
         }
-      } else if (textLines.length >= 4) {
-        // 4-line format: Traditional/Simplified Chinese, Simplified/Traditional Chinese, Pinyin, English
-        const line1 = textLines[0] || '';
-        const line2 = textLines[1] || '';
-        const line3 = textLines[2] || '';
-        const line4 = textLines[3] || '';
 
-        // Check for Chinese characters in first two lines
-        const hasChinese1 = /[\u4e00-\u9fff]/.test(line1);
-        const hasChinese2 = /[\u4e00-\u9fff]/.test(line2);
-
-        // Check for pinyin in line 3
-        const hasPinyin3 =
-          /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line3) ||
-          /\b[a-zA-Z]+\b/.test(line3);
-
-        // Check for English in line 4
-        const hasEnglish4 = /^[a-zA-Z\s\.,!?'"]+$/.test(line4);
-
-        if (hasChinese1 && hasChinese2 && hasPinyin3 && hasEnglish4) {
+        // Count as multi-format if we have all 3 types: simplified + pinyin + English
+        if (hasSimplified && hasPinyin && hasEnglish) {
           multiFormatCount++;
         }
       }
@@ -732,7 +736,12 @@ export class YouTubeImportService {
 
     // Consider it multi-format if at least 60% of checked entries match the pattern
     const threshold = Math.ceil(totalEntries * 0.6);
-    return multiFormatCount >= threshold;
+    const isMultiFormat = multiFormatCount >= threshold;
+    
+    // Debug logging
+    this.logger.log(`🔍 Multi-format detection: ${multiFormatCount}/${totalEntries} entries match (threshold: ${threshold}) - Result: ${isMultiFormat ? 'MULTI-FORMAT' : 'Single format'}`);
+    
+    return isMultiFormat;
   }
 
   /**

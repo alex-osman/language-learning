@@ -41,6 +41,8 @@ async function importFromYouTube() {
     process.exit(1);
   }
 
+  let app;
+  
   try {
     console.log('🚀 Starting YouTube import...');
     console.log(`📺 URL: ${youtubeUrl}`);
@@ -53,7 +55,7 @@ async function importFromYouTube() {
     }
 
     // Create NestJS application context
-    const app = await NestFactory.createApplicationContext(AppModule);
+    app = await NestFactory.createApplicationContext(AppModule);
 
     // Get YouTube import service
     const youtubeImportService = app.get(YouTubeImportService);
@@ -280,14 +282,21 @@ async function importFromYouTube() {
     } else {
       console.error('❌ Import failed!');
       console.error(`Error: ${result.message}`);
-      process.exit(1);
     }
 
     await app.close();
+    process.exit(result.success ? 0 : 1);
   } catch (error) {
     console.error('❌ Import failed with error:', error.message);
     if (error.stack) {
       console.error('Stack trace:', error.stack);
+    }
+    if (app) {
+      try {
+        await app.close();
+      } catch (closeError) {
+        console.error('Error closing app:', closeError.message);
+      }
     }
     process.exit(1);
   }
