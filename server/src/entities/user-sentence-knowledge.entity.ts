@@ -54,6 +54,9 @@ export class UserSentenceKnowledge {
   @Column({ type: 'timestamp', nullable: true })
   firstSeenDate?: Date; // When user first encountered this sentence
 
+  @Column({ type: 'boolean', default: false })
+  excluded: boolean;
+
   @ManyToOne(() => Sentence)
   @JoinColumn({ name: 'sentenceID' })
   sentence?: Sentence;

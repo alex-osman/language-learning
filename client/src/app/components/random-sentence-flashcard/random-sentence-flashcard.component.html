@@ -146,12 +146,20 @@
               </div>
 
               <!-- Comprehension Indicator -->
-              <div class="comprehension-indicator" *ngIf="currentSentence.comprehensionPercentage !== undefined">
+              <div
+                class="comprehension-indicator"
+                *ngIf="currentSentence.comprehensionPercentage !== undefined"
+              >
                 <span class="comprehension-label">Character Comprehension:</span>
-                <span class="comprehension-percentage" 
-                      [class.high-comprehension]="currentSentence.comprehensionPercentage >= 80"
-                      [class.medium-comprehension]="currentSentence.comprehensionPercentage >= 60 && currentSentence.comprehensionPercentage < 80"
-                      [class.low-comprehension]="currentSentence.comprehensionPercentage < 60">
+                <span
+                  class="comprehension-percentage"
+                  [class.high-comprehension]="currentSentence.comprehensionPercentage >= 80"
+                  [class.medium-comprehension]="
+                    currentSentence.comprehensionPercentage >= 60 &&
+                    currentSentence.comprehensionPercentage < 80
+                  "
+                  [class.low-comprehension]="currentSentence.comprehensionPercentage < 60"
+                >
                   {{ currentSentence.comprehensionPercentage }}%
                 </span>
               </div>
@@ -218,6 +226,18 @@
                     [class.selected]="selectedRating === 5"
                   >
                     5 - Perfect
+                  </button>
+                </div>
+
+                <!-- Exclude Sentence Button -->
+                <div class="exclude-section">
+                  <button
+                    class="btn btn-exclude"
+                    (click)="excludeSentence()"
+                    [disabled]="isProcessingExclusion"
+                  >
+                    <span *ngIf="!isProcessingExclusion">🚫 Don't show this sentence again</span>
+                    <span *ngIf="isProcessingExclusion">Excluding...</span>
                   </button>
                 </div>
               </div>

@@ -138,15 +138,30 @@ export class SentenceFlashcardController {
   }
 
   /**
+   * Exclude a sentence from future random sentence selections
+   */
+  @Post(':id/exclude')
+  async excludeSentence(
+    @Param('id') id: number,
+    @UserID() userId: number,
+  ): Promise<void> {
+    await this.sentenceFlashcardService.excludeSentence(id, userId);
+  }
+
+  /**
    * Get random sentences from all content for practice
    * @param limit The number of random sentences to retrieve (optional, defaults to 10)
    */
   @Get('random')
-  async getRandomSentences(@Query('limit') limit?: number): Promise<{
+  async getRandomSentences(
+    @UserID() userId: number,
+    @Query('limit') limit?: number,
+  ): Promise<{
     sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[];
     total: number;
   }> {
     const sentences = await this.sentenceFlashcardService.getRandomSentences(
+      userId,
       limit || 10,
     );
     const total =
@@ -181,9 +196,9 @@ export class SentenceFlashcardController {
     })[];
     total: number;
   }> {
-    if (1232 / 2 > 5) {
-      throw new Error('test');
-    }
+    // if (1232 / 2 > 5) {
+    //   throw new Error('test');
+    // }
     const sentences =
       await this.sentenceFlashcardService.getRandomComprehensibleSentences(
         userId,

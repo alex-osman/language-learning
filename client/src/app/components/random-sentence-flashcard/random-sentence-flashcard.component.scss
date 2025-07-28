@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
-  
+
   .loading-container,
   .error-container {
     display: flex;
@@ -12,7 +12,7 @@
     min-height: 80vh;
     text-align: center;
     color: white;
-    
+
     .spinner {
       width: 50px;
       height: 50px;
@@ -22,29 +22,29 @@
       animation: spin 1s linear infinite;
       margin-bottom: 1rem;
     }
-    
+
     h3 {
       margin-bottom: 1rem;
       font-size: 1.5rem;
     }
-    
+
     p {
       margin-bottom: 2rem;
       font-size: 1.1rem;
     }
   }
-  
+
   .main-content {
     max-width: 800px;
     margin: 0 auto;
-    
+
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 1rem;
       color: white;
-      
+
       .btn-back {
         background: rgba(255, 255, 255, 0.2);
         color: white;
@@ -53,49 +53,49 @@
         border-radius: 6px;
         cursor: pointer;
         font-size: 0.9rem;
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.3);
         }
       }
-      
+
       h1 {
         font-size: 1.5rem;
         margin: 0;
         text-align: center;
         flex: 1;
       }
-      
+
       .stats {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
-        
+
         .separator {
           opacity: 0.6;
         }
-        
+
         .correct {
           color: #4caf50;
         }
-        
+
         .incorrect {
           color: #f44336;
         }
       }
     }
-    
+
     .progress-container {
       margin-bottom: 2rem;
-      
+
       .progress-bar {
         width: 100%;
         height: 6px;
         background: rgba(255, 255, 255, 0.2);
         border-radius: 3px;
         overflow: hidden;
-        
+
         .progress-fill {
           height: 100%;
           background: linear-gradient(90deg, #4caf50, #8bc34a);
@@ -103,56 +103,56 @@
         }
       }
     }
-    
+
     .completion-container {
       background: white;
       border-radius: 12px;
       padding: 2rem;
       text-align: center;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      
+
       h2 {
         color: #4caf50;
         margin-bottom: 1rem;
         font-size: 1.8rem;
       }
-      
+
       .completion-stats {
         margin-bottom: 2rem;
-        
+
         p {
           margin-bottom: 1.5rem;
           color: #666;
         }
-        
+
         .score-breakdown {
           display: flex;
           justify-content: center;
           gap: 2rem;
           flex-wrap: wrap;
-          
+
           .score-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            
+
             .score-number {
               font-size: 2rem;
               font-weight: bold;
-              
+
               &.correct {
                 color: #4caf50;
               }
-              
+
               &.incorrect {
                 color: #f44336;
               }
-              
+
               &.accuracy {
                 color: #2196f3;
               }
             }
-            
+
             .score-label {
               font-size: 0.9rem;
               color: #666;
@@ -161,7 +161,7 @@
           }
         }
       }
-      
+
       .completion-actions {
         display: flex;
         gap: 1rem;
@@ -169,7 +169,7 @@
         flex-wrap: wrap;
       }
     }
-    
+
     .review-container {
       .video-container {
         background: black;
@@ -177,19 +177,19 @@
         overflow: hidden;
         margin-bottom: 2rem;
         position: relative;
-        
+
         .scene-video {
           width: 100%;
           height: auto;
           display: block;
           opacity: 0;
           transition: opacity 0.3s ease;
-          
+
           &.ready {
             opacity: 1;
           }
         }
-        
+
         .video-controls {
           position: absolute;
           bottom: 1rem;
@@ -198,7 +198,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          
+
           .replay-btn {
             background: rgba(0, 0, 0, 0.7);
             color: white;
@@ -207,17 +207,17 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
-            
+
             &:hover:not(:disabled) {
               background: rgba(0, 0, 0, 0.9);
             }
-            
+
             &:disabled {
               opacity: 0.5;
               cursor: not-allowed;
             }
           }
-          
+
           .video-status {
             color: white;
             font-size: 0.9rem;
@@ -225,51 +225,51 @@
           }
         }
       }
-      
+
       .flashcard-container {
         .flashcard {
           background: white;
           border-radius: 12px;
           min-height: 400px;
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-          
+
           .card-face {
             padding: 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 360px;
-            
+
             .sentence-content {
               text-align: center;
               width: 100%;
-              
+
               .sentence-chinese {
                 font-size: 2.5rem;
                 margin-bottom: 1rem;
                 line-height: 1.4;
                 color: #333;
-                
+
                 &.waiting-for-input {
                   animation: pulse 2s infinite;
                 }
-                
+
                 .character {
                   transition: all 0.2s ease;
-                  
+
                   &:hover {
                     transform: scale(1.1);
                   }
                 }
               }
-              
+
               .sentence-pinyin {
                 font-size: 1.2rem;
                 color: #666;
                 margin-bottom: 1rem;
                 font-style: italic;
               }
-              
+
               .sentence-translation {
                 font-size: 1.3rem;
                 color: #444;
@@ -297,27 +297,27 @@
                   font-weight: bold;
                   padding: 0.25rem 0.5rem;
                   border-radius: 4px;
-                  
+
                   &.high-comprehension {
                     background: #d4edda;
                     color: #155724;
                   }
-                  
+
                   &.medium-comprehension {
                     background: #fff3cd;
                     color: #856404;
                   }
-                  
+
                   &.low-comprehension {
                     background: #f8d7da;
                     color: #721c24;
                   }
                 }
               }
-              
+
               .reveal-instruction {
                 margin-top: 2rem;
-                
+
                 .btn-reveal {
                   background: #2196f3;
                   color: white;
@@ -327,24 +327,24 @@
                   font-size: 1.1rem;
                   cursor: pointer;
                   transition: all 0.2s ease;
-                  
+
                   &:hover {
                     background: #1976d2;
                     transform: translateY(-2px);
                   }
                 }
               }
-              
+
               .waiting-message {
                 margin-top: 2rem;
                 color: #666;
                 font-style: italic;
                 font-size: 1.1rem;
               }
-              
+
               .analysis-section {
                 margin-bottom: 2rem;
-                
+
                 .btn-analysis {
                   background: #9c27b0;
                   color: white;
@@ -354,29 +354,29 @@
                   cursor: pointer;
                   font-size: 0.9rem;
                   transition: all 0.2s ease;
-                  
+
                   &:hover:not(:disabled) {
                     background: #7b1fa2;
                   }
-                  
+
                   &:disabled {
                     opacity: 0.6;
                     cursor: not-allowed;
                   }
                 }
               }
-              
+
               .review-buttons {
                 h4 {
                   margin-bottom: 1rem;
                   color: #333;
                 }
-                
+
                 .rating-buttons {
                   display: grid;
                   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
                   gap: 0.5rem;
-                  
+
                   .btn-rating {
                     padding: 0.75rem;
                     border: 2px solid transparent;
@@ -384,31 +384,31 @@
                     cursor: pointer;
                     font-size: 0.85rem;
                     transition: all 0.2s ease;
-                    
+
                     &.btn-fail {
                       background: #ffebee;
                       color: #d32f2f;
-                      
+
                       &:hover {
                         background: #ffcdd2;
                         border-color: #d32f2f;
                       }
-                      
+
                       &.selected {
                         background: #d32f2f;
                         color: white;
                       }
                     }
-                    
+
                     &.btn-pass {
                       background: #e8f5e8;
                       color: #2e7d32;
-                      
+
                       &:hover {
                         background: #c8e6c9;
                         border-color: #2e7d32;
                       }
-                      
+
                       &.selected {
                         background: #2e7d32;
                         color: white;
@@ -417,13 +417,50 @@
                   }
                 }
               }
-              
+
+              .exclude-section {
+                margin-top: 2rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+                text-align: center;
+
+                .btn-exclude {
+                  background: #f44336;
+                  color: white;
+                  border: none;
+                  padding: 0.75rem 1.5rem;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  font-size: 0.9rem;
+                  transition: all 0.2s ease;
+                  margin-bottom: 0.5rem;
+
+                  &:hover:not(:disabled) {
+                    background: #d32f2f;
+                  }
+
+                  &:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                  }
+                }
+
+                .exclude-hint {
+                  font-size: 0.8rem;
+                  color: #666;
+                  margin: 0;
+                  font-style: italic;
+                }
+              }
+
               .processing-review {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 margin-top: 1rem;
-                
+
                 .spinner-small {
                   width: 30px;
                   height: 30px;
@@ -433,7 +470,7 @@
                   animation: spin 1s linear infinite;
                   margin-bottom: 1rem;
                 }
-                
+
                 p {
                   color: #666;
                   margin: 0;
@@ -459,27 +496,27 @@
   text-decoration: none;
   display: inline-block;
   text-align: center;
-  
+
   &.btn-primary {
     background: #2196f3;
     color: white;
-    
+
     &:hover {
       background: #1976d2;
       transform: translateY(-1px);
     }
   }
-  
+
   &.btn-secondary {
     background: #6c757d;
     color: white;
-    
+
     &:hover {
       background: #5a6268;
       transform: translateY(-1px);
     }
   }
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -489,13 +526,22 @@
 
 // Animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 // Character Analysis Modal
@@ -510,7 +556,7 @@
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  
+
   .analysis-modal {
     background: white;
     border-radius: 12px;
@@ -518,7 +564,7 @@
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    
+
     .analysis-header {
       display: flex;
       justify-content: space-between;
@@ -526,13 +572,13 @@
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #e0e0e0;
       background: #f8f9fa;
-      
+
       h3 {
         margin: 0;
         color: #333;
         font-size: 1.2rem;
       }
-      
+
       .close-btn {
         background: none;
         border: none;
@@ -546,14 +592,14 @@
         justify-content: center;
         border-radius: 50%;
         transition: all 0.2s ease;
-        
+
         &:hover {
           background: #e0e0e0;
           color: #333;
         }
       }
     }
-    
+
     .analysis-content {
       padding: 1rem;
       overflow-y: auto;
@@ -566,30 +612,30 @@
 @media (max-width: 768px) {
   .random-sentence-flashcard-container {
     padding: 0.5rem;
-    
+
     .main-content {
       .header {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
-        
+
         h1 {
           order: -1;
         }
       }
-      
+
       .review-container {
         .flashcard-container {
           .flashcard {
             .card-face {
               padding: 1rem;
               min-height: 300px;
-              
+
               .sentence-content {
                 .sentence-chinese {
                   font-size: 2rem;
                 }
-                
+
                 .rating-buttons {
                   grid-template-columns: repeat(2, 1fr);
                 }
@@ -598,14 +644,14 @@
           }
         }
       }
-      
+
       .completion-container {
         padding: 1rem;
-        
+
         .score-breakdown {
           gap: 1rem;
         }
-        
+
         .completion-actions {
           flex-direction: column;
         }

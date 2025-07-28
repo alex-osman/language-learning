@@ -210,4 +210,11 @@ export class UserSentenceKnowledgeService {
 
     return this.userSentenceKnowledgeRepository.save(knowledge);
   }
+
+  async excludeSentence(sentenceId: number, userId: number): Promise<void> {
+    await this.userSentenceKnowledgeRepository.update(
+      { sentenceID: sentenceId, userID: userId },
+      { excluded: true },
+    );
+  }
 }

@@ -46,6 +46,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   isLoading = true;
   isReviewing = false;
   isProcessingReview = false;
+  isProcessingExclusion = false;
   selectedRating: number | null = null;
   error: string | null = null;
   reviewCompleted = false;
@@ -243,7 +244,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
 
     // Try to get comprehensible sentences first (80% comprehension)
     const sub = this.sentenceFlashcardService
-      .getRandomComprehensibleSentences(this.batchSize, 80)
+      .getRandomComprehensibleSentences(this.batchSize, 85)
       .subscribe({
         next: response => {
           if (response.sentences.length > 0) {
@@ -316,6 +317,9 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     };
     this.isAnalyzing = false;
     this.analysisError = null;
+
+    // Reset exclusion state
+    this.isProcessingExclusion = false;
 
     if (this.remainingSentences.length > 0) {
       console.log('Showing next sentence', this.remainingSentences);
@@ -404,6 +408,30 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
           }, 800);
         },
       });
+
+    this.subscriptions.push(sub);
+  }
+
+  excludeSentence() {
+    if (!this.currentSentence || this.isProcessingExclusion || this.isProcessingReview) return;
+
+    // Set processing state to prevent multiple submissions
+    this.isProcessingExclusion = true;
+
+    const sub = this.sentenceFlashcardService.excludeSentence(this.currentSentence.id).subscribe({
+      next: () => {
+        console.log(`Sentence ${this.currentSentence!.id} excluded successfully`);
+        // Add a short delay before transitioning to the next sentence
+        setTimeout(() => {
+          this.showNextSentence();
+        }, 800);
+      },
+      error: (err: any) => {
+        console.error('Error excluding sentence:', err);
+        this.error = 'Failed to exclude sentence. Please try again.';
+        this.isProcessingExclusion = false;
+      },
+    });
 
     this.subscriptions.push(sub);
   }

@@ -100,34 +100,55 @@ export class SentenceFlashcardService {
   }
 
   /**
+   * Exclude a sentence from future random sentence selections
+   */
+  excludeSentence(sentenceId: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/${sentenceId}/exclude`,
+      {}
+    );
+  }
+
+  /**
    * Get random sentences from all content for practice
    */
-  getRandomSentences(limit?: number): Observable<{ 
-    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[]; 
-    total: number 
+  getRandomSentences(limit?: number): Observable<{
+    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[];
+    total: number;
   }> {
     const options = limit ? { params: { limit: limit.toString() } } : {};
-    return this.http.get<{ 
-      sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[]; 
-      total: number 
+    return this.http.get<{
+      sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string })[];
+      total: number;
     }>(`${this.baseUrl}/random`, options);
   }
 
   /**
    * Get random comprehensible sentences for the authenticated user
    */
-  getRandomComprehensibleSentences(limit?: number, minComprehension?: number): Observable<{ 
-    sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[]; 
-    total: number 
+  getRandomComprehensibleSentences(
+    limit?: number,
+    minComprehension?: number
+  ): Observable<{
+    sentences: (SentenceDTO & {
+      episodeTitle?: string;
+      assetUrl?: string;
+      comprehensionPercentage?: number;
+    })[];
+    total: number;
   }> {
     const params: any = {};
     if (limit) params.limit = limit.toString();
     if (minComprehension) params.minComprehension = minComprehension.toString();
-    
+
     const options = Object.keys(params).length > 0 ? { params } : {};
-    return this.http.get<{ 
-      sentences: (SentenceDTO & { episodeTitle?: string; assetUrl?: string; comprehensionPercentage?: number })[]; 
-      total: number 
+    return this.http.get<{
+      sentences: (SentenceDTO & {
+        episodeTitle?: string;
+        assetUrl?: string;
+        comprehensionPercentage?: number;
+      })[];
+      total: number;
     }>(`${this.baseUrl}/random/comprehensible`, options);
   }
 }

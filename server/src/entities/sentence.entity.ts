@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Episode } from './episode.entity';
+import { UserSentenceKnowledge } from './user-sentence-knowledge.entity';
 
 @Entity('sentences')
 export class Sentence {
@@ -51,6 +53,12 @@ export class Sentence {
 
   @Column({ type: 'date', nullable: true })
   lastReviewDate: Date;
+
+  @OneToMany(
+    () => UserSentenceKnowledge,
+    (userSentenceKnowledge) => userSentenceKnowledge.sentence,
+  )
+  userSentenceKnowledge: UserSentenceKnowledge[];
 
   @ManyToOne(() => Episode, (episode) => episode.sentences, { nullable: true })
   @JoinColumn({ name: 'episode_id' })

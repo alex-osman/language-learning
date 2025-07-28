@@ -198,17 +198,35 @@ export class SentenceFlashcardService {
   }
 
   /**
+   * Exclude a sentence from future random sentence selections
+   */
+  async excludeSentence(sentenceId: number, userId: number): Promise<void> {
+    await this.userSentenceKnowledgeService.excludeSentence(sentenceId, userId);
+  }
+
+  /**
    * Get random sentences from all content for practice
    */
-  async getRandomSentences(limit: number = 10): Promise<Sentence[]> {
+  async getRandomSentences(
+    userId: number,
+    limit: number = 10,
+  ): Promise<Sentence[]> {
     const query = this.sentenceRepository
       .createQueryBuilder('sentence')
       .leftJoinAndSelect('sentence.episode', 'episode')
+      .leftJoinAndSelect(
+        'sentence.userSentenceKnowledge',
+        'userSentenceKnowledge',
+      )
       .where('sentence.sentence IS NOT NULL')
       .andWhere('sentence.sentence != :empty', { empty: '' })
       .andWhere('sentence.startMs IS NOT NULL')
       .andWhere('sentence.endMs IS NOT NULL')
       .andWhere('episode.assetUrl IS NOT NULL')
+      .andWhere('userSentenceKnowledge.userID = :userId', { userId })
+      .andWhere('userSentenceKnowledge.excluded = :excluded', {
+        excluded: false,
+      })
       .orderBy('RAND()') // Use RAND() for MySQL
       .limit(limit);
 
@@ -276,11 +294,13 @@ export class SentenceFlashcardService {
     minComprehension: number,
   ): Promise<Sentence[]> {
     // Get a larger pool of random sentences to check
-    const candidateSentences = await this.getRandomSentences(limit * 5);
+    const candidateSentences = await this.getRandomSentences(userId, limit * 5);
     const comprehensibleSentences: Sentence[] = [];
 
     // Check each sentence for comprehension
-    for (const sentence of candidateSentences) {
+    for (const sentence of candidateSentences.filter(
+      (s) => !!s.userSentenceKnowledge,
+    )) {
       if (comprehensibleSentences.length >= limit) break;
 
       try {
