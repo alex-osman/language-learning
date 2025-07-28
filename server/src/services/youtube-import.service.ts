@@ -235,10 +235,7 @@ export class YouTubeImportService {
       );
 
       if (options.userId) {
-        await this.sentenceAnalyzerService.analyzeSentenceIds(
-          createdSentences.map((s) => s.id),
-          options.userId,
-        );
+        await this.episodeService.analyzeEpisode(episode.id, options.userId);
       }
 
       return {

@@ -7,6 +7,7 @@ import { Sentence } from 'src/entities/sentence.entity';
 import { CharacterService } from './character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { Season } from 'src/entities/season.entity';
+import { SentenceAnalyzerService } from './sentence-analyzer.service';
 
 @Injectable()
 export class EpisodeService {
@@ -18,7 +19,30 @@ export class EpisodeService {
     @InjectRepository(Sentence)
     private sentenceRepository: Repository<Sentence>,
     private characterService: CharacterService,
+    private sentenceAnalyzerService: SentenceAnalyzerService,
   ) {}
+
+  async analyzeEpisode(episodeId: number, userId: number): Promise<void> {
+    const episode = await this.episodeRepository.findOne({
+      where: { id: episodeId },
+      relations: ['sentences'],
+    });
+    if (!episode) {
+      throw new NotFoundException('Episode not found');
+    }
+    const results = await this.sentenceAnalyzerService.analyzeSentenceIds(
+      episode.sentences.map((s) => s.id),
+      userId,
+    );
+    const knownCount = results.reduce((acc, curr) => acc + curr.known_count, 0);
+    const totalCount = results.reduce(
+      (acc, curr) => acc + curr.total_characters,
+      0,
+    );
+    this.episodeRepository.update(episodeId, {
+      knownCache: (knownCount / totalCount) * 100,
+    });
+  }
 
   async create(createEpisodeDto: CreateEpisodeDTO): Promise<Episode> {
     const episode = this.episodeRepository.create(createEpisodeDto);
