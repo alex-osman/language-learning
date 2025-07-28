@@ -11,13 +11,18 @@ import {
 @Component({
   selector: 'app-characters',
   standalone: true,
-  imports: [CommonModule, CharacterExplorerComponent, ProgressIndicatorComponent],
+  imports: [CommonModule, CharacterExplorerComponent],
   template: `
     <div class="characters-page">
-      <!-- Progress Indicator -->
-      <div class="progress-section">
-        <h2>Character Learning Progress</h2>
-        <app-progress-indicator [segments]="charactersProgress"></app-progress-indicator>
+      <!-- Load More Section -->
+      <div class="load-more-section" *ngIf="!additionalCharactersLoaded">
+        <button
+          class="load-more-btn"
+          (click)="loadAdditionalCharacters()"
+          [disabled]="isLoadingAdditional"
+        >
+          {{ isLoadingAdditional ? 'Loading...' : 'Load More Characters (400+)' }}
+        </button>
       </div>
 
       <!-- Character Explorer -->
@@ -44,6 +49,8 @@ import {
 export class CharactersComponent implements OnInit {
   characters: CharacterDTO[] = [];
   isLoading = true;
+  isLoadingAdditional = false;
+  additionalCharactersLoaded = false;
   error: string | null = null;
   tones: Tone | null = null;
   radicalProps: RadicalProp[] = [];
@@ -72,7 +79,6 @@ export class CharactersComponent implements OnInit {
         this.characters = characters;
         this.updateCharactersProgress();
         this.isLoading = false;
-        this.getAdditionalCharacters();
       },
       error: err => {
         console.error('Error loading characters:', err);
@@ -82,14 +88,23 @@ export class CharactersComponent implements OnInit {
     });
   }
 
-  private getAdditionalCharacters() {
+  loadAdditionalCharacters() {
+    if (this.additionalCharactersLoaded || this.isLoadingAdditional) {
+      return;
+    }
+
+    this.isLoadingAdditional = true;
+
     this.dataService.getAdditionalCharacters(400).subscribe({
       next: characters => {
         this.characters = [...this.characters, ...characters];
         this.updateCharactersProgress();
+        this.additionalCharactersLoaded = true;
+        this.isLoadingAdditional = false;
       },
       error: err => {
         console.error('Error loading additional characters:', err);
+        this.isLoadingAdditional = false;
       },
     });
   }

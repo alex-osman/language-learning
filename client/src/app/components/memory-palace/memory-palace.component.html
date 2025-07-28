@@ -109,16 +109,6 @@
   </div>
 
   <div class="section-container">
-    <div class="section-header" (click)="toggleSection('words')">
-      <h2>Words</h2>
-      <span class="toggle-icon">{{ visibleSections.words ? '▼' : '►' }}</span>
-    </div>
-    <div class="section-content" [class.hidden]="!visibleSections.words">
-      <app-words></app-words>
-    </div>
-  </div>
-
-  <div class="section-container">
     <div class="section-header" (click)="toggleSection('radicals')">
       <h2>Radicals</h2>
       <span class="toggle-icon">{{ visibleSections.radicals ? '▼' : '►' }}</span>

@@ -5,7 +5,6 @@ import { CharactersComponent } from '../characters/characters.component';
 import { RadicalsComponent } from '../radicals/radicals.component';
 import { SetsComponent } from '../sets/sets.component';
 import { AddRadicalPropComponent } from '../add-radical-prop/add-radical-prop.component';
-import { WordsComponent } from '../words/words.component';
 import { SentenceAnalyzerComponent } from '../sentence-analyzer/sentence-analyzer.component';
 import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 import { PodcastService } from '../../services/podcast.service';
@@ -21,7 +20,6 @@ import { Subscription } from 'rxjs';
     CharactersComponent,
     RadicalsComponent,
     AddRadicalPropComponent,
-    WordsComponent,
     SentenceAnalyzerComponent,
     ProgressIndicatorComponent,
   ],

@@ -15,6 +15,53 @@
       <span class="unknown-count">{{ unknownCharactersCount }} unknown</span>
     </div>
   </div>
+  <div>
+    <!-- Progress Bar -->
+    <div *ngIf="showStats && characters.length > 0" class="progress-bar-container">
+      <div class="progress-bar">
+        <div
+          class="progress-segment learned"
+          [style.width.%]="(learnedCharactersCount / characters.length) * 100"
+          [title]="
+            learnedCharactersCount +
+            ' learned characters (' +
+            Math.round((learnedCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment learning"
+          [style.width.%]="(learningCharactersCount / characters.length) * 100"
+          [title]="
+            learningCharactersCount +
+            ' learning characters (' +
+            Math.round((learningCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment seen"
+          [style.width.%]="(seenCharactersCount / characters.length) * 100"
+          [title]="
+            seenCharactersCount +
+            ' seen characters (' +
+            Math.round((seenCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment unknown"
+          [style.width.%]="(unknownCharactersCount / characters.length) * 100"
+          [title]="
+            unknownCharactersCount +
+            ' unknown characters (' +
+            Math.round((unknownCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Analysis Mode Stats -->
   <div *ngIf="mode === 'analysis' && showStats" class="analysis-stats">
@@ -43,6 +90,52 @@
         >{{ Math.round((knownCharactersCount / characters.length) * 100) }}%</span
       >
       <span class="stat-label">Known Percentage</span>
+    </div>
+
+    <!-- Progress Bar for Analysis Mode -->
+    <div class="progress-bar-container analysis-mode">
+      <div class="progress-bar">
+        <div
+          class="progress-segment learned"
+          [style.width.%]="(learnedCharactersCount / characters.length) * 100"
+          [title]="
+            learnedCharactersCount +
+            ' learned characters (' +
+            Math.round((learnedCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment learning"
+          [style.width.%]="(learningCharactersCount / characters.length) * 100"
+          [title]="
+            learningCharactersCount +
+            ' learning characters (' +
+            Math.round((learningCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment seen"
+          [style.width.%]="(seenCharactersCount / characters.length) * 100"
+          [title]="
+            seenCharactersCount +
+            ' seen characters (' +
+            Math.round((seenCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+        <div
+          class="progress-segment unknown"
+          [style.width.%]="(unknownCharactersCount / characters.length) * 100"
+          [title]="
+            unknownCharactersCount +
+            ' unknown characters (' +
+            Math.round((unknownCharactersCount / characters.length) * 100) +
+            '%)'
+          "
+        ></div>
+      </div>
     </div>
   </div>
 
