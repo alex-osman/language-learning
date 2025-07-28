@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Between, MoreThanOrEqual, Repository } from 'typeorm';
 import { UserSentenceKnowledge } from '../entities/user-sentence-knowledge.entity';
 import { SentenceAnalyzerService } from './sentence-analyzer.service';
 
@@ -35,7 +35,7 @@ export class UserSentenceKnowledgeService {
     return this.userSentenceKnowledgeRepository.find({
       where: {
         userID: userId,
-        comprehensionPercentage: MoreThanOrEqual(minComprehension),
+        comprehensionPercentage: Between(minComprehension, 95),
       },
       relations: ['sentence', 'sentence.episode'],
       order: { comprehensionPercentage: 'DESC' },

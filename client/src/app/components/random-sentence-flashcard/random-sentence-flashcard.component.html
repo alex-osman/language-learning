@@ -228,18 +228,6 @@
                     5 - Perfect
                   </button>
                 </div>
-
-                <!-- Exclude Sentence Button -->
-                <div class="exclude-section">
-                  <button
-                    class="btn btn-exclude"
-                    (click)="excludeSentence()"
-                    [disabled]="isProcessingExclusion"
-                  >
-                    <span *ngIf="!isProcessingExclusion">🚫 Don't show this sentence again</span>
-                    <span *ngIf="isProcessingExclusion">Excluding...</span>
-                  </button>
-                </div>
               </div>
 
               <!-- Processing State -->
@@ -249,6 +237,18 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Exclude Sentence Button - Always visible -->
+        <div class="exclude-section">
+          <button
+            class="btn btn-exclude"
+            (click)="excludeSentence()"
+            [disabled]="isProcessingExclusion"
+          >
+            <span *ngIf="!isProcessingExclusion">🚫 Don't show this sentence again</span>
+            <span *ngIf="isProcessingExclusion">Excluding...</span>
+          </button>
         </div>
       </div>
     </div>

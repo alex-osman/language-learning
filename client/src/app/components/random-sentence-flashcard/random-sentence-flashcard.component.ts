@@ -244,7 +244,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
 
     // Try to get comprehensible sentences first (80% comprehension)
     const sub = this.sentenceFlashcardService
-      .getRandomComprehensibleSentences(this.batchSize, 85)
+      .getRandomComprehensibleSentences(this.batchSize, 70)
       .subscribe({
         next: response => {
           if (response.sentences.length > 0) {
