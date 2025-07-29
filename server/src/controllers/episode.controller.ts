@@ -9,8 +9,11 @@ export class EpisodeController {
   constructor(private readonly episodeService: EpisodeService) {}
 
   @Get(':mediaId/media-episodes')
-  async getEpisodesForMedia(@Param('mediaId') mediaId: string) {
-    return this.episodeService.getEpisodesForMedia(parseInt(mediaId));
+  async getEpisodesForMedia(
+    @UserID() userId: number,
+    @Param('mediaId') mediaId: string,
+  ) {
+    return this.episodeService.getEpisodesForMedia(parseInt(mediaId), userId);
   }
 
   @Get(':id/sentences')

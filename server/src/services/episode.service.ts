@@ -59,12 +59,20 @@ export class EpisodeService {
     await this.episodeRepository.delete(id);
   }
 
-  async getEpisodesForMedia(mediaId: number): Promise<Episode[]> {
+  async getEpisodesForMedia(
+    mediaId: number,
+    userId: number,
+  ): Promise<Episode[]> {
     const allSeasons = await this.seasonRepository.find({
       where: { media_id: mediaId },
     });
+
     return this.episodeRepository.find({
-      where: { season_id: In(allSeasons.map((s) => s.id)) },
+      where: {
+        season_id: In(allSeasons.map((s) => s.id)),
+        // userEpisodeKnowledge: { userID: userId },
+      },
+      relations: ['userEpisodeKnowledge'],
     });
   }
 

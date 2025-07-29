@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export type UserSentenceKnowledgeDTO = {
+  knownCharacters: number;
+  totalUniqueCharacters: number;
+  unknownCharacters: number;
+  easinessFactor: number;
+  comprehensionPercentage: number;
+};
 export interface AnalyzedCharacter {
   char: string;
   known: boolean;
@@ -58,10 +65,13 @@ export class SentenceAnalysisService {
     );
   }
 
-  analyzeSentenceIds(sentenceIds: number[]): Observable<SentenceAnalysisResult[]> {
-    return this.http.post<SentenceAnalysisResult[]>(`${this.apiUrl}/analyze-sentenceIds`, {
-      sentenceIds,
-    });
+  analyzeEpisode(episodeId: number): Observable<UserSentenceKnowledgeDTO[]> {
+    return this.http.post<UserSentenceKnowledgeDTO[]>(
+      `${this.apiUrl}/analyze-episode/${episodeId}`,
+      {
+        episodeId,
+      }
+    );
   }
 
   analyzeSentence(text: string): Observable<SentenceAnalysisResult> {
@@ -73,11 +83,6 @@ export class SentenceAnalysisService {
     return this.http.post<EnhancedSentenceAnalysisResult>(`${this.apiUrl}/analyze-enhanced`, {
       text,
     });
-  }
-
-  // Batch analysis methods
-  analyzeSentences(texts: string[]): Observable<SentenceAnalysisResult[]> {
-    return this.http.post<SentenceAnalysisResult[]>(`${this.apiUrl}/analyze-batch`, { texts });
   }
 
   analyzeTextsWithKnowledgeStatus(texts: string[]): Observable<EnhancedSentenceAnalysisResult[]> {

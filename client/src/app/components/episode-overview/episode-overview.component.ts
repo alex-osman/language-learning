@@ -6,6 +6,7 @@ import {
   SentenceAnalysisResult,
   EnhancedSentenceAnalysisResult,
   SentenceAnalysisService,
+  UserSentenceKnowledgeDTO,
 } from '../../services/sentence-analysis.service';
 import {
   ProgressIndicatorComponent,
@@ -20,7 +21,6 @@ interface EpisodeOverviewData {
   totalSentencesCount: number;
   progressSegments: ProgressSegment[];
   learnedCount: number;
-  learningCount: number;
   seenCount: number;
   unknownCount: number;
 }
@@ -42,7 +42,7 @@ export class EpisodeOverviewComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
-  enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
+  enhancedAnalysisData: { [sentenceId: string]: UserSentenceKnowledgeDTO } = {};
 
   // UI state
   isCharactersCollapsed = true;
@@ -79,7 +79,6 @@ export class EpisodeOverviewComponent implements OnInit {
       totalSentencesCount: this.getTotalSentenceCount(),
       progressSegments: progressSegments.filter(segment => segment.label !== 'unknown'),
       learnedCount: actualProgress.learnedCharacters,
-      learningCount: actualProgress.learningCharacters,
       seenCount: actualProgress.seenCharacters,
       unknownCount: actualProgress.unknownCharacters,
     };
@@ -165,30 +164,17 @@ export class EpisodeOverviewComponent implements OnInit {
       },
     });
 
-    this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
-      next: (results: EnhancedSentenceAnalysisResult[]) => {
+    this.sentenceAnalysisService.analyzeEpisode(this.episodeId).subscribe({
+      next: results => {
         this.handleBatchAnalysisResults(results, allSentences);
       },
       error: err => {
         console.error('Enhanced batch analysis failed:', err);
-        // Fallback to batch basic analysis
-        this.sentenceAnalysisService.analyzeSentences(texts).subscribe({
-          next: (results: SentenceAnalysisResult[]) => {
-            this.handleBasicBatchAnalysisResults(results, allSentences);
-          },
-          error: err => {
-            console.error('Basic batch analysis failed, falling back to individual:', err);
-            this.fallbackToIndividualAnalysis(allSentences);
-          },
-        });
       },
     });
   }
 
-  private handleBatchAnalysisResults(
-    results: EnhancedSentenceAnalysisResult[],
-    allSentences: any[]
-  ) {
+  private handleBatchAnalysisResults(results: UserSentenceKnowledgeDTO[], allSentences: any[]) {
     results.forEach((result, index) => {
       if (allSentences[index]) {
         this.enhancedAnalysisData[allSentences[index].id] = result;
@@ -204,29 +190,6 @@ export class EpisodeOverviewComponent implements OnInit {
     });
   }
 
-  private fallbackToIndividualAnalysis(allSentences: any[]) {
-    // Use individual analysis as last resort
-    allSentences.forEach(sentence => {
-      this.sentenceAnalysisService.analyzeTextWithKnowledgeStatus(sentence.sentence).subscribe({
-        next: (analysis: EnhancedSentenceAnalysisResult) => {
-          this.enhancedAnalysisData[sentence.id] = analysis;
-        },
-        error: err => {
-          console.error(`Enhanced analysis failed for sentence ${sentence.id}:`, err);
-          // Fallback to basic analysis
-          this.sentenceAnalysisService.analyzeSentence(sentence.sentence).subscribe({
-            next: (analysis: SentenceAnalysisResult) => {
-              this.sentenceAnalysisData[sentence.id] = analysis;
-            },
-            error: err => {
-              console.error(`Fallback analysis failed for sentence ${sentence.id}:`, err);
-            },
-          });
-        },
-      });
-    });
-  }
-
   // ===== CALCULATIONS =====
 
   private calculateActualProgress(): {
@@ -236,7 +199,6 @@ export class EpisodeOverviewComponent implements OnInit {
     learnedCharacters: number;
     seenCharacters: number;
     unknownCharacters: number;
-    learningCharacters: number;
   } {
     if (!this.episode || !this.hasEnhancedAnalysisData()) {
       return {
@@ -246,17 +208,11 @@ export class EpisodeOverviewComponent implements OnInit {
         learnedCharacters: 0,
         seenCharacters: 0,
         unknownCharacters: 0,
-        learningCharacters: 0,
       };
     }
 
-    const {
-      totalLearnedCharacters,
-      totalSeenCharacters,
-      totalUnknownCharacters,
-      totalCharacters,
-      totalLearningCharacters,
-    } = this.aggregateEnhancedAnalysisData();
+    const { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters } =
+      this.aggregateEnhancedAnalysisData();
 
     if (totalCharacters === 0) {
       return {
@@ -266,11 +222,10 @@ export class EpisodeOverviewComponent implements OnInit {
         learnedCharacters: 0,
         seenCharacters: 0,
         unknownCharacters: 0,
-        learningCharacters: 0,
       };
     }
 
-    const knownCharacters = totalLearnedCharacters + totalSeenCharacters + totalLearningCharacters;
+    const knownCharacters = totalLearnedCharacters + totalSeenCharacters;
     const percentKnown = Math.round((knownCharacters / totalCharacters) * 100);
 
     return {
@@ -280,7 +235,6 @@ export class EpisodeOverviewComponent implements OnInit {
       learnedCharacters: totalLearnedCharacters,
       seenCharacters: totalSeenCharacters,
       unknownCharacters: totalUnknownCharacters,
-      learningCharacters: totalLearningCharacters,
     };
   }
 
@@ -299,31 +253,26 @@ export class EpisodeOverviewComponent implements OnInit {
     totalSeenCharacters: number;
     totalUnknownCharacters: number;
     totalCharacters: number;
-    totalLearningCharacters: number;
   } {
     // Use Sets to track unique characters by status
-    const learnedChars = new Set<string>();
-    const seenChars = new Set<string>();
-    const unknownChars = new Set<string>();
-    const learningChars = new Set<string>();
+    let learnedChars = 0;
+    let seenChars = 0;
+    let unknownChars = 0;
 
     if (this.episode!.sentences) {
       this.episode!.sentences.forEach(sentence => {
         const analysis = this.enhancedAnalysisData[sentence.id];
         if (analysis) {
           // Add unique characters to appropriate sets
-          analysis.learning_characters.forEach(char => learningChars.add(char));
-          analysis.learned_characters.forEach(char => learnedChars.add(char));
-          analysis.seen_characters.forEach(char => seenChars.add(char));
-          analysis.unknown_characters.forEach(char => unknownChars.add(char));
+          learnedChars += analysis.knownCharacters;
+          unknownChars += analysis.unknownCharacters;
         }
       });
     }
 
-    const totalLearnedCharacters = learnedChars.size;
-    const totalSeenCharacters = seenChars.size;
-    const totalUnknownCharacters = unknownChars.size;
-    const totalLearningCharacters = learningChars.size;
+    const totalLearnedCharacters = learnedChars;
+    const totalSeenCharacters = seenChars;
+    const totalUnknownCharacters = unknownChars;
     const totalCharacters = totalLearnedCharacters + totalSeenCharacters + totalUnknownCharacters;
 
     return {
@@ -331,7 +280,6 @@ export class EpisodeOverviewComponent implements OnInit {
       totalSeenCharacters,
       totalUnknownCharacters,
       totalCharacters,
-      totalLearningCharacters,
     };
   }
 
@@ -352,9 +300,6 @@ export class EpisodeOverviewComponent implements OnInit {
     const learnedPercent = Math.round(
       (progress.learnedCharacters / progress.totalCharacters) * 100
     );
-    const learningPercent = Math.round(
-      (progress.learningCharacters / progress.totalCharacters) * 100
-    );
     const seenPercent = Math.round((progress.seenCharacters / progress.totalCharacters) * 100);
     const unknownPercent = Math.round(
       (progress.unknownCharacters / progress.totalCharacters) * 100
@@ -367,14 +312,6 @@ export class EpisodeOverviewComponent implements OnInit {
         value: learnedPercent,
         color: '#28a745', // Green for learned
         label: 'learned',
-      });
-    }
-
-    if (learningPercent > 0) {
-      segments.push({
-        value: learningPercent,
-        color: '#17a2b8', // Cyan for seen
-        label: 'learning',
       });
     }
 
@@ -436,27 +373,11 @@ export class EpisodeOverviewComponent implements OnInit {
       return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
     }
 
-    const charData = analysis.all_characters.find(c => c.char === char);
-    if (!charData) {
-      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
+    if (analysis.knownCharacters > 0) {
+      return { 'border-bottom': '3px solid #53b1ff' };
     }
 
-    if (charData.status !== 'learned' && charData.status !== 'learning') {
-      if (charData.status === 'seen') {
-        return { 'border-bottom': '3px solid #53b1ff' };
-      }
-
-      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
-    }
-
-    // Get color based on easiness factor if available
-    if (charData.charData?.easinessFactor) {
-      const color = this.getUnderlineColor(charData.charData.easinessFactor);
-      return { 'border-bottom': `3px solid ${color}` };
-    }
-
-    // Fallback to green for known characters without easiness data
-    return { 'border-bottom': '3px solid #2e7d32' }; // Darker green
+    return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
   }
 
   // Specific method for underline colors with higher saturation and lower lightness

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSentenceKnowledge } from 'src/entities/user-sentence-knowledge.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CharacterDTO } from '../shared/interfaces/data.interface';
 import { CharacterService } from './character.service';
 import { SentenceService } from './sentence.service';
@@ -9,6 +9,7 @@ import {
   CharacterKnowledgeStatus,
   UserCharacterKnowledgeService,
 } from './user-character-knowledge.service';
+import { UserSentenceKnowledgeService } from './user-sentence-knowledge.service';
 
 interface AnalyzedCharacter {
   char: string;
@@ -54,6 +55,14 @@ export interface EnhancedSentenceAnalysis {
 
 const IGNORE_CHARACTERS = [];
 
+export type UserSentenceKnowledgeDTO = {
+  knownCharacters: number;
+  totalUniqueCharacters: number;
+  unknownCharacters: number;
+  easinessFactor: number;
+  comprehensionPercentage: number;
+};
+
 @Injectable()
 export class SentenceAnalyzerService {
   constructor(
@@ -63,6 +72,45 @@ export class SentenceAnalyzerService {
     @InjectRepository(UserSentenceKnowledge)
     private userSentenceKnowledgeRepository: Repository<UserSentenceKnowledge>,
   ) {}
+
+  userSentenceKnowledgeToAnalysis(
+    userSentenceKnowledge: UserSentenceKnowledge,
+  ): UserSentenceKnowledgeDTO {
+    const sentence = userSentenceKnowledge.sentence;
+
+    if (!sentence) {
+      throw new Error('Sentence not found');
+    }
+
+    return {
+      knownCharacters: userSentenceKnowledge.knownCharacters,
+      totalUniqueCharacters: userSentenceKnowledge.totalUniqueCharacters,
+      unknownCharacters: userSentenceKnowledge.unknownCharacters,
+      easinessFactor: userSentenceKnowledge.easinessFactor,
+      comprehensionPercentage: userSentenceKnowledge.comprehensionPercentage,
+    };
+  }
+
+  async analyzeEpisode(
+    episodeId: number,
+    userId: number,
+  ): Promise<UserSentenceKnowledgeDTO[]> {
+    const sentences = await this.userSentenceKnowledgeRepository.find({
+      where: {
+        userID: userId,
+        sentence: {
+          episode: {
+            id: episodeId,
+          },
+        },
+      },
+      relations: ['sentence', 'sentence.episode'],
+    });
+
+    return sentences.map((userSentenceKnowledge) =>
+      this.userSentenceKnowledgeToAnalysis(userSentenceKnowledge),
+    );
+  }
 
   async analyzeSentenceId(sentenceId: number, userId: number) {
     const sentence = await this.sentenceService.getSentenceById(sentenceId);
@@ -77,6 +125,9 @@ export class SentenceAnalyzerService {
       userID: userId,
       sentenceID: sentenceId,
       comprehensionPercentage: analysis.known_percent,
+      knownCharacters: analysis.known_count,
+      totalUniqueCharacters: analysis.total_characters,
+      unknownCharacters: analysis.unknown_count,
     });
 
     return analysis;

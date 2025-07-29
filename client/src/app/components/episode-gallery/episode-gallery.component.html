@@ -7,10 +7,16 @@
     <div class="episode-card" *ngFor="let episode of episodes">
       <div class="episode-info" (click)="onEpisodeClick(episode)">
         <h3>Episode {{ episode.id }} - {{ episode.title }}</h3>
-        <div class="progress-bar-container" *ngIf="episode.knownCache">
+        <div
+          class="progress-bar-container"
+          *ngIf="
+            episode.userEpisodeKnowledge[0] &&
+            episode.userEpisodeKnowledge[0].comprehensionPercentage
+          "
+        >
           <app-progress-indicator
             type="linear"
-            [value]="episode.knownCache"
+            [value]="episode.userEpisodeKnowledge[0].comprehensionPercentage"
             theme="warning"
             [height]="10"
             [showLabel]="true"

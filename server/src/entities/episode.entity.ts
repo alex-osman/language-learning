@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Season } from './season.entity';
 import { Sentence } from './sentence.entity';
+import { UserEpisodeKnowledge } from './user-episode-knowledge.entity';
 
 @Entity('episodes')
 export class Episode {
@@ -29,4 +30,11 @@ export class Episode {
 
   @OneToMany(() => Sentence, (sentence: Sentence) => sentence.episode)
   sentences: Sentence[];
+
+  @OneToMany(
+    () => UserEpisodeKnowledge,
+    (userEpisodeKnowledge: UserEpisodeKnowledge) =>
+      userEpisodeKnowledge.episode,
+  )
+  userEpisodeKnowledge: UserEpisodeKnowledge[];
 }

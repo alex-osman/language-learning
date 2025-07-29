@@ -30,7 +30,9 @@ export interface Episode {
   title: string;
   number: number;
   sentences: Sentence[];
-  knownCache: number;
+  userEpisodeKnowledge: {
+    comprehensionPercentage: number;
+  }[];
 }
 
 export interface Season {
