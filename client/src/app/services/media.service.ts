@@ -161,6 +161,15 @@ export const SCENE_1_SENTENCES: Sentence[] = [
 export class MediaService {
   constructor(private http: HttpClient) {}
 
+  getEpisodeProgress(
+    episodeId: number,
+    userId: number
+  ): Observable<{ comprehensionPercentage: number }> {
+    return this.http.get<{ comprehensionPercentage: number }>(
+      `/api/episodes/${episodeId}/progress?userId=${userId}`
+    );
+  }
+
   getAllMedia(): Observable<Media[]> {
     // TODO: Replace with real API call
     return of([

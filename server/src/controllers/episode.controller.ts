@@ -32,4 +32,10 @@ export class EpisodeController {
     await this.episodeService.deleteEpisodeWithCascade(parseInt(id));
     return { message: 'Episode deleted successfully' };
   }
+
+  @Get(':id/progress')
+  @UseGuards(AuthGuard)
+  async getEpisodeProgress(@Param('id') id: string, @UserID() userId: number) {
+    return this.episodeService.getEpisodeProgress(parseInt(id), userId);
+  }
 }

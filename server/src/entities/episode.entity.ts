@@ -27,9 +27,6 @@ export class Episode {
   @Column({ type: 'varchar', length: 200 })
   title: string;
 
-  @Column({ type: 'int' })
-  knownCache: number;
-
   @OneToMany(() => Sentence, (sentence: Sentence) => sentence.episode)
   sentences: Sentence[];
 }

@@ -3,7 +3,6 @@ export class CreateEpisodeDTO {
   mediaId?: number;
   title: string;
   assetUrl?: string;
-  knownCache?: number;
 }
 
 export class EpisodeDTO {

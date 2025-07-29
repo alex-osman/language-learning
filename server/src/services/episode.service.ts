@@ -8,6 +8,7 @@ import { CharacterService } from './character.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
 import { Season } from 'src/entities/season.entity';
 import { SentenceAnalyzerService } from './sentence-analyzer.service';
+import { UserEpisodeKnowledgeService } from './user-episode-knowledge.service';
 
 @Injectable()
 export class EpisodeService {
@@ -20,28 +21,14 @@ export class EpisodeService {
     private sentenceRepository: Repository<Sentence>,
     private characterService: CharacterService,
     private sentenceAnalyzerService: SentenceAnalyzerService,
+    private userEpisodeKnowledgeService: UserEpisodeKnowledgeService,
   ) {}
 
   async analyzeEpisode(episodeId: number, userId: number): Promise<void> {
-    const episode = await this.episodeRepository.findOne({
-      where: { id: episodeId },
-      relations: ['sentences'],
-    });
-    if (!episode) {
-      throw new NotFoundException('Episode not found');
-    }
-    const results = await this.sentenceAnalyzerService.analyzeSentenceIds(
-      episode.sentences.map((s) => s.id),
+    await this.userEpisodeKnowledgeService.calculateAndCacheComprehension(
       userId,
+      episodeId,
     );
-    const knownCount = results.reduce((acc, curr) => acc + curr.known_count, 0);
-    const totalCount = results.reduce(
-      (acc, curr) => acc + curr.total_characters,
-      0,
-    );
-    this.episodeRepository.update(episodeId, {
-      knownCache: (knownCount / totalCount) * 100,
-    });
   }
 
   async create(createEpisodeDto: CreateEpisodeDTO): Promise<Episode> {
@@ -160,5 +147,17 @@ export class EpisodeService {
 
     // Delete the episode
     await this.episodeRepository.delete(episodeId);
+  }
+
+  async getEpisodeProgress(
+    episodeId: number,
+    userId: number,
+  ): Promise<{ comprehensionPercentage: number }> {
+    const percent =
+      await this.userEpisodeKnowledgeService.getComprehensionPercentage(
+        userId,
+        episodeId,
+      );
+    return { comprehensionPercentage: percent };
   }
 }

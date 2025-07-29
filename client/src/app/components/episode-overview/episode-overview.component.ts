@@ -20,6 +20,7 @@ interface EpisodeOverviewData {
   totalSentencesCount: number;
   progressSegments: ProgressSegment[];
   learnedCount: number;
+  learningCount: number;
   seenCount: number;
   unknownCount: number;
 }
@@ -78,6 +79,7 @@ export class EpisodeOverviewComponent implements OnInit {
       totalSentencesCount: this.getTotalSentenceCount(),
       progressSegments: progressSegments.filter(segment => segment.label !== 'unknown'),
       learnedCount: actualProgress.learnedCharacters,
+      learningCount: actualProgress.learningCharacters,
       seenCount: actualProgress.seenCharacters,
       unknownCount: actualProgress.unknownCharacters,
     };
@@ -153,12 +155,16 @@ export class EpisodeOverviewComponent implements OnInit {
 
     const texts = allSentences.map(sentence => sentence.sentence);
 
-    // update the sentence ids in the sentenceAnalysisData
-    // this.sentenceAnalysisService
-    //   .analyzeSentenceIds(allSentences.map(sentence => sentence.id))
-    //   .subscribe(x => console.log('got response from analysis thing - ', x));
-
     // Use batch enhanced analysis for better performance
+    this.mediaService.getEpisodeProgress(this.episodeId, 2).subscribe({
+      next: (progress: { comprehensionPercentage: number }) => {
+        console.log('progress', progress);
+      },
+      error: err => {
+        console.error('Error getting episode progress:', err);
+      },
+    });
+
     this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
       next: (results: EnhancedSentenceAnalysisResult[]) => {
         this.handleBatchAnalysisResults(results, allSentences);
@@ -230,6 +236,7 @@ export class EpisodeOverviewComponent implements OnInit {
     learnedCharacters: number;
     seenCharacters: number;
     unknownCharacters: number;
+    learningCharacters: number;
   } {
     if (!this.episode || !this.hasEnhancedAnalysisData()) {
       return {
@@ -239,11 +246,17 @@ export class EpisodeOverviewComponent implements OnInit {
         learnedCharacters: 0,
         seenCharacters: 0,
         unknownCharacters: 0,
+        learningCharacters: 0,
       };
     }
 
-    const { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters } =
-      this.aggregateEnhancedAnalysisData();
+    const {
+      totalLearnedCharacters,
+      totalSeenCharacters,
+      totalUnknownCharacters,
+      totalCharacters,
+      totalLearningCharacters,
+    } = this.aggregateEnhancedAnalysisData();
 
     if (totalCharacters === 0) {
       return {
@@ -253,10 +266,11 @@ export class EpisodeOverviewComponent implements OnInit {
         learnedCharacters: 0,
         seenCharacters: 0,
         unknownCharacters: 0,
+        learningCharacters: 0,
       };
     }
 
-    const knownCharacters = totalLearnedCharacters + totalSeenCharacters;
+    const knownCharacters = totalLearnedCharacters + totalSeenCharacters + totalLearningCharacters;
     const percentKnown = Math.round((knownCharacters / totalCharacters) * 100);
 
     return {
@@ -266,6 +280,7 @@ export class EpisodeOverviewComponent implements OnInit {
       learnedCharacters: totalLearnedCharacters,
       seenCharacters: totalSeenCharacters,
       unknownCharacters: totalUnknownCharacters,
+      learningCharacters: totalLearningCharacters,
     };
   }
 
@@ -284,17 +299,20 @@ export class EpisodeOverviewComponent implements OnInit {
     totalSeenCharacters: number;
     totalUnknownCharacters: number;
     totalCharacters: number;
+    totalLearningCharacters: number;
   } {
     // Use Sets to track unique characters by status
     const learnedChars = new Set<string>();
     const seenChars = new Set<string>();
     const unknownChars = new Set<string>();
+    const learningChars = new Set<string>();
 
     if (this.episode!.sentences) {
       this.episode!.sentences.forEach(sentence => {
         const analysis = this.enhancedAnalysisData[sentence.id];
         if (analysis) {
           // Add unique characters to appropriate sets
+          analysis.learning_characters.forEach(char => learningChars.add(char));
           analysis.learned_characters.forEach(char => learnedChars.add(char));
           analysis.seen_characters.forEach(char => seenChars.add(char));
           analysis.unknown_characters.forEach(char => unknownChars.add(char));
@@ -305,9 +323,16 @@ export class EpisodeOverviewComponent implements OnInit {
     const totalLearnedCharacters = learnedChars.size;
     const totalSeenCharacters = seenChars.size;
     const totalUnknownCharacters = unknownChars.size;
+    const totalLearningCharacters = learningChars.size;
     const totalCharacters = totalLearnedCharacters + totalSeenCharacters + totalUnknownCharacters;
 
-    return { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters };
+    return {
+      totalLearnedCharacters,
+      totalSeenCharacters,
+      totalUnknownCharacters,
+      totalCharacters,
+      totalLearningCharacters,
+    };
   }
 
   private getTotalSentenceCount(): number {
@@ -318,6 +343,7 @@ export class EpisodeOverviewComponent implements OnInit {
 
   private calculateProgressSegments(): ProgressSegment[] {
     const progress = this.calculateActualProgress();
+    console.log('progress', progress);
 
     if (progress.totalCharacters === 0) {
       return [];
@@ -325,6 +351,9 @@ export class EpisodeOverviewComponent implements OnInit {
 
     const learnedPercent = Math.round(
       (progress.learnedCharacters / progress.totalCharacters) * 100
+    );
+    const learningPercent = Math.round(
+      (progress.learningCharacters / progress.totalCharacters) * 100
     );
     const seenPercent = Math.round((progress.seenCharacters / progress.totalCharacters) * 100);
     const unknownPercent = Math.round(
@@ -338,6 +367,14 @@ export class EpisodeOverviewComponent implements OnInit {
         value: learnedPercent,
         color: '#28a745', // Green for learned
         label: 'learned',
+      });
+    }
+
+    if (learningPercent > 0) {
+      segments.push({
+        value: learningPercent,
+        color: '#17a2b8', // Cyan for seen
+        label: 'learning',
       });
     }
 

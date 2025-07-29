@@ -31,6 +31,7 @@
         <p>{{ episodeData.totalSentencesCount }} total sentences</p>
         <div class="character-breakdown" *ngIf="episodeData.progressSegments.length > 0">
           <span class="learned-count">{{ episodeData.learnedCount }} learned</span>
+          <span class="learning-count">{{ episodeData.learningCount }} learning</span>
           <span class="seen-count">{{ episodeData.seenCount }} seen</span>
           <span class="unknown-count">{{ episodeData.unknownCount }} unknown</span>
         </div>

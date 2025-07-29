@@ -196,7 +196,6 @@ export class YouTubeImportService {
         title: videoTitle,
         assetUrl: videoUrl,
         season_id: options.seasonId,
-        knownCache: 0,
       });
 
       // 7. Parse and import subtitles directly to episode - check if multi-format
