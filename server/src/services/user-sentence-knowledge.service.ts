@@ -32,15 +32,18 @@ export class UserSentenceKnowledgeService {
     minComprehension: number = 80,
     limit: number = 100,
   ): Promise<UserSentenceKnowledge[]> {
-    return this.userSentenceKnowledgeRepository.find({
-      where: {
-        userID: userId,
-        comprehensionPercentage: Between(minComprehension, 95),
-      },
-      relations: ['sentence', 'sentence.episode'],
-      order: { comprehensionPercentage: 'DESC' },
-      take: limit,
-    });
+    return this.userSentenceKnowledgeRepository
+      .createQueryBuilder('usk')
+      .leftJoinAndSelect('usk.sentence', 'sentence')
+      .leftJoinAndSelect('sentence.episode', 'episode')
+      .where('usk.userID = :userId', { userId })
+      .andWhere('usk.comprehensionPercentage BETWEEN :min AND :max', {
+        min: minComprehension,
+        max: 95,
+      })
+      .orderBy('RANDOM()')
+      .limit(limit)
+      .getMany();
   }
 
   /**

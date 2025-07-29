@@ -393,7 +393,7 @@ export class SentenceFlashcardComponent implements OnInit, OnDestroy {
       .analyzeSentence(this.currentSentence.sentence)
       .subscribe({
         next: (analysis: SentenceAnalysisResult) => {
-          this.analysisResults = analysis.all_characters;
+          this.analysisResults = analysis.all_characters || [];
           this.analysisStats = {
             totalCharacters: analysis.total_characters,
             knownCharacters: analysis.known_count,

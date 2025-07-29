@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, Not, MoreThan } from 'typeorm';
+import { Repository, IsNull, Not, MoreThan, In } from 'typeorm';
 import { Character } from '../entities/character.entity';
 import { CharacterDTO, PropDTO } from '@shared/interfaces/data.interface';
 import { TONE_MAP, TWO_LETTER_INITIALS, VOWEL_MAP } from './pinyin.constants';
@@ -39,18 +39,10 @@ export class CharacterService {
       .where('userCharacterKnowledge.userID = :userId', { userId })
       .getMany();
 
-    // Find the latest character from user's knowledge
-    const latestChar =
-      charactersWithKnowledge.sort((a, b) => b.id - a.id)[0] ?? null;
-
-    if (!latestChar) {
-      return [];
-    }
-
-    // Get additional characters with IDs greater than the latest one
+    // Get the lowest id characters that user has not seen
     const characters = await this.characterRepository.find({
       where: {
-        id: MoreThan(latestChar.id),
+        id: Not(In(charactersWithKnowledge.map((c) => c.id))),
       },
       order: {
         id: 'ASC',
