@@ -41,7 +41,7 @@ export class UserSentenceKnowledgeService {
         min: minComprehension,
         max: 95,
       })
-      .orderBy('RANDOM()')
+      .orderBy('RAND()')
       .limit(limit)
       .getMany();
   }
