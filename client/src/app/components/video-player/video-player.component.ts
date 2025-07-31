@@ -13,6 +13,8 @@ import { MediaService, EpisodeDTO, Sentence } from '../../services/media.service
 import { SubtitleOverlayComponent } from '../subtitle-overlay/subtitle-overlay.component';
 import { PlayerControlsComponent } from '../player-controls/player-controls.component';
 import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
+import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
+import { CharacterHoverDirective, CharacterHoverEvent } from '../../directives/character-hover.directive';
 import {
   SentenceAnalysisService,
   EnhancedSentenceAnalysisResult,
@@ -32,6 +34,8 @@ interface SubtitleLayers {
     SubtitleOverlayComponent,
     PlayerControlsComponent,
     ProgressIndicatorComponent,
+    CharacterTooltipComponent,
+    CharacterHoverDirective,
   ],
   templateUrl: './video-player.component.html',
   styleUrl: './video-player.component.scss',
@@ -70,6 +74,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   // Sentence analysis data
   enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
+  // Character hover state
+  hoveredCharacter: any = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private hideTooltipTimeout: any = null;
+
   private timeUpdateInterval?: number;
 
   constructor(
@@ -93,6 +102,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.timeUpdateInterval) {
       clearInterval(this.timeUpdateInterval);
+    }
+    
+    // Clean up tooltip timeout
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
     }
   }
 
@@ -389,6 +403,54 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     return { totalKnownCharacters, totalCharacters };
+  }
+
+  // ===== CHARACTER HOVER =====
+
+  onCharacterHover(event: CharacterHoverEvent) {
+    // Clear any pending hide timeout immediately
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+      this.hideTooltipTimeout = null;
+    }
+    
+    const sentenceId = this.getSentenceIdFromCharacter(event.element);
+    if (!sentenceId) return;
+    
+    const analysis = this.enhancedAnalysisData[sentenceId];
+    if (!analysis) return;
+
+    const charData = analysis.all_characters.find(c => c.char === event.character);
+    if (!charData) return;
+
+    // Immediately switch to new character
+    this.hoveredCharacter = charData;
+
+    // Position tooltip above the character element (like Lingopie)
+    this.tooltipPosition = {
+      x: event.rect.left + (event.rect.width / 2), // Center horizontally on character
+      y: event.rect.top - 10 // Position tooltip bottom above character top
+    };
+  }
+
+  onCharacterLeave() {
+    // Set timeout to hide tooltip after delay (allows moving between characters)
+    this.hideTooltipTimeout = setTimeout(() => {
+      this.hoveredCharacter = null;
+      this.hideTooltipTimeout = null;
+    }, 100);
+  }
+
+  private getSentenceIdFromCharacter(element: HTMLElement): number | null {
+    // Walk up the DOM tree to find the sentence container with data-sentence-id
+    let current = element;
+    while (current && current !== document.body) {
+      if (current.hasAttribute('data-sentence-id')) {
+        return parseInt(current.getAttribute('data-sentence-id') || '0', 10);
+      }
+      current = current.parentElement!;
+    }
+    return null;
   }
 
   @HostListener('window:keydown', ['$event'])

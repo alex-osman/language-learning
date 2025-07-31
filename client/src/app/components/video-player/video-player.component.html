@@ -78,6 +78,9 @@
             <span
               *ngFor="let char of sentence.sentence.split('')"
               class="character"
+              appCharacterHover
+              (characterHover)="onCharacterHover($event)"
+              (characterLeave)="onCharacterLeave()"
               [ngStyle]="
                 ['。', '？', '！', '，'].includes(char)
                   ? {}
@@ -94,4 +97,12 @@
       </div>
     </div>
   </div>
+
+  <!-- Character Tooltip -->
+  <app-character-tooltip
+    *ngIf="hoveredCharacter"
+    [analyzedCharacter]="hoveredCharacter"
+    [position]="tooltipPosition"
+    [showDetailed]="true"
+  ></app-character-tooltip>
 </div>
