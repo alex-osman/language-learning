@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
+import { CharacterHoverDirective, CharacterHoverEvent } from '../../directives/character-hover.directive';
 import { Sentence } from '../../services/media.service';
 
 interface SubtitleLayers {
@@ -18,11 +19,11 @@ interface CharacterInfo {
 @Component({
   selector: 'app-subtitle-overlay',
   standalone: true,
-  imports: [CommonModule, CharacterTooltipComponent],
+  imports: [CommonModule, CharacterTooltipComponent, CharacterHoverDirective],
   templateUrl: './subtitle-overlay.component.html',
   styleUrl: './subtitle-overlay.component.scss',
 })
-export class SubtitleOverlayComponent {
+export class SubtitleOverlayComponent implements OnDestroy {
   @Input() sentence!: Sentence;
   @Input() layers!: SubtitleLayers;
   @Output() characterClick = new EventEmitter<string>();
@@ -30,6 +31,7 @@ export class SubtitleOverlayComponent {
   // Tooltip state
   hoveredCharacter: CharacterInfo | null = null;
   tooltipPosition = { x: 0, y: 0 };
+  private hideTooltipTimeout: any = null;
 
   get chineseCharacters(): string[] {
     return this.sentence.sentence.split('');
@@ -44,7 +46,15 @@ export class SubtitleOverlayComponent {
     return /[\u4e00-\u9fff]/.test(char);
   }
 
-  onCharacterHover(event: MouseEvent, char: string, index: number) {
+  onCharacterHover(event: CharacterHoverEvent) {
+    const char = event.character;
+    
+    // Clear any pending hide timeout immediately
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+      this.hideTooltipTimeout = null;
+    }
+    
     // Skip punctuation
     if (!this.isChineseCharacter(char)) {
       this.hoveredCharacter = null;
@@ -54,7 +64,8 @@ export class SubtitleOverlayComponent {
     // Get approximate pinyin for this character
     // This is simplified - in production you'd want proper character-to-pinyin mapping
     const pinyinWords = this.pinyinWords;
-    const approximatePinyin = pinyinWords[Math.min(index, pinyinWords.length - 1)];
+    const charIndex = this.chineseCharacters.indexOf(char);
+    const approximatePinyin = pinyinWords[Math.min(charIndex, pinyinWords.length - 1)];
 
     this.hoveredCharacter = {
       char,
@@ -62,15 +73,19 @@ export class SubtitleOverlayComponent {
       translation: this.getCharacterTranslation(char),
     };
 
-    // Position tooltip
+    // Position tooltip above the character element (like Lingopie)
     this.tooltipPosition = {
-      x: event.clientX,
-      y: event.clientY - 60, // Position above cursor
+      x: event.rect.left + (event.rect.width / 2), // Center horizontally on character
+      y: event.rect.top - 15, // Position tooltip bottom above character top
     };
   }
 
   onCharacterLeave() {
-    this.hoveredCharacter = null;
+    // Set timeout to hide tooltip after delay (allows moving between characters)
+    this.hideTooltipTimeout = setTimeout(() => {
+      this.hoveredCharacter = null;
+      this.hideTooltipTimeout = null;
+    }, 100);
   }
 
   onCharacterClick(char: string) {
@@ -103,5 +118,12 @@ export class SubtitleOverlayComponent {
     };
 
     return commonTranslations[char] || 'Unknown';
+  }
+
+  ngOnDestroy() {
+    // Clean up tooltip timeout
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+    }
   }
 }

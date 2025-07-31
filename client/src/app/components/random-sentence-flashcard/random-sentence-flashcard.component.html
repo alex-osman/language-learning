@@ -131,7 +131,10 @@
                 <span
                   *ngFor="let char of currentSentence.sentence.split('')"
                   [ngStyle]="getWordUnderlineStyle(char)"
-                  class="character"
+                  class="character hoverable"
+                  appCharacterHover
+                  (characterHover)="onCharacterHover($event)"
+                  (characterLeave)="onCharacterLeave()"
                 >
                   {{ char }}
                 </span>
@@ -164,21 +167,9 @@
                 </span>
               </div>
 
-              <!-- Character Analysis Button -->
-              <div class="analysis-section">
-                <button
-                  class="btn btn-analysis"
-                  (click)="toggleAnalysis()"
-                  [disabled]="isAnalyzing"
-                >
-                  <span *ngIf="!isAnalyzing">
-                    📊 Character Analysis
-                    <span *ngIf="analysisStats.knownPercentage > 0">
-                      ({{ analysisStats.knownPercentage }}% known)
-                    </span>
-                  </span>
-                  <span *ngIf="isAnalyzing">Analyzing...</span>
-                </button>
+              <!-- Character Analysis Hint -->
+              <div class="analysis-hint" *ngIf="analysisStats.knownPercentage > 0">
+                <small>💡 Hover over characters for details ({{ analysisStats.knownPercentage }}% known)</small>
               </div>
 
               <!-- Review Buttons -->
@@ -254,26 +245,11 @@
     </div>
   </div>
 
-  <!-- Character Analysis Modal -->
-  <div class="analysis-overlay" *ngIf="showAnalysis" (click)="closeAnalysis()">
-    <div class="analysis-modal" (click)="$event.stopPropagation()">
-      <div class="analysis-header">
-        <h3>Character Analysis</h3>
-        <button class="close-btn" (click)="closeAnalysis()" aria-label="Close analysis">✕</button>
-      </div>
-
-      <div class="analysis-content">
-        <app-character-analysis
-          [analysisResults]="analysisResults"
-          [totalCharacters]="analysisStats.totalCharacters"
-          [knownCharacters]="analysisStats.knownCharacters"
-          [unknownCharacters]="analysisStats.unknownCharacters"
-          [knownPercentage]="analysisStats.knownPercentage"
-          [isLoading]="isAnalyzing"
-          [error]="analysisError"
-        >
-        </app-character-analysis>
-      </div>
-    </div>
-  </div>
+  <!-- Character Hover Tooltip -->
+  <app-character-tooltip
+    *ngIf="hoveredCharacter"
+    [analyzedCharacter]="hoveredCharacter"
+    [position]="tooltipPosition"
+    [showDetailed]="true"
+  ></app-character-tooltip>
 </div>

@@ -2,11 +2,12 @@
   <!-- Chinese Text Layer -->
   <div *ngIf="layers.chinese" class="subtitle-layer chinese-layer">
     <span
-      *ngFor="let char of chineseCharacters; let i = index"
+      *ngFor="let char of chineseCharacters"
       class="character"
       [class.punctuation]="!isChineseCharacter(char)"
-      (mouseenter)="onCharacterHover($event, char, i)"
-      (mouseleave)="onCharacterLeave()"
+      appCharacterHover
+      (characterHover)="onCharacterHover($event)"
+      (characterLeave)="onCharacterLeave()"
       (click)="onCharacterClick(char)"
     >
       {{ char }}

@@ -8,12 +8,14 @@ import {
   SentenceAnalysisResult,
 } from '../../services/sentence-analysis.service';
 import { CharacterAnalysisComponent } from '../character-analysis/character-analysis.component';
+import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
+import { CharacterHoverDirective, CharacterHoverEvent } from '../../directives/character-hover.directive';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-random-sentence-flashcard',
   standalone: true,
-  imports: [CommonModule, CharacterAnalysisComponent],
+  imports: [CommonModule, CharacterAnalysisComponent, CharacterTooltipComponent, CharacterHoverDirective],
   templateUrl: './random-sentence-flashcard.component.html',
   styleUrls: ['./random-sentence-flashcard.component.scss'],
 })
@@ -70,6 +72,11 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   isAnalyzing = false;
   analysisError: string | null = null;
 
+  // Character hover state
+  hoveredCharacter: AnalyzedCharacter | null = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private hideTooltipTimeout: any = null;
+
   // Review stats
   reviewStats = {
     total: 0,
@@ -100,6 +107,11 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.removeVideoEventListeners();
+    
+    // Clean up tooltip timeout
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+    }
   }
 
   // ===== VIDEO INITIALIZATION =====
@@ -521,5 +533,41 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
     } else {
       return { 'border-bottom': '3px solid #999999' }; // Grey for unknown
     }
+  }
+
+  // ===== CHARACTER HOVER =====
+
+  onCharacterHover(event: CharacterHoverEvent) {
+    // Clear any pending hide timeout immediately
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+      this.hideTooltipTimeout = null;
+    }
+    
+    if (!this.analysisResults || this.analysisResults.length === 0) {
+      return;
+    }
+
+    const charData = this.analysisResults.find(c => c.char === event.character);
+    if (!charData) {
+      return;
+    }
+
+    // Immediately switch to new character
+    this.hoveredCharacter = charData;
+
+    // Position tooltip above the character element (like Lingopie)
+    this.tooltipPosition = {
+      x: event.rect.left + (event.rect.width / 2), // Center horizontally on character
+      y: event.rect.top - 15 // Position tooltip bottom above character top
+    };
+  }
+
+  onCharacterLeave() {
+    // Set timeout to hide tooltip after delay (allows moving between characters)
+    this.hideTooltipTimeout = setTimeout(() => {
+      this.hoveredCharacter = null;
+      this.hideTooltipTimeout = null;
+    }, 100);
   }
 }

@@ -255,10 +255,17 @@
                 }
 
                 .character {
-                  transition: all 0.2s ease;
+                  transition: all 0.15s ease; // Faster transition
+                  display: inline-block; // Prevent layout shifts
+
+                  &.hoverable {
+                    cursor: pointer;
+                    user-select: none; // Prevent text selection
+                  }
 
                   &:hover {
-                    transform: scale(1.1);
+                    transform: scale(1.05); // Subtle scale
+                    opacity: 0.9; // Less dramatic opacity change
                   }
                 }
               }
@@ -342,27 +349,18 @@
                 font-size: 1.1rem;
               }
 
-              .analysis-section {
+              .analysis-hint {
                 margin-bottom: 2rem;
-
-                .btn-analysis {
-                  background: #9c27b0;
-                  color: white;
-                  border: none;
-                  padding: 0.75rem 1.5rem;
-                  border-radius: 6px;
-                  cursor: pointer;
-                  font-size: 0.9rem;
-                  transition: all 0.2s ease;
-
-                  &:hover:not(:disabled) {
-                    background: #7b1fa2;
-                  }
-
-                  &:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                  }
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                
+                small {
+                  background: rgba(156, 39, 176, 0.1);
+                  padding: 0.5rem 1rem;
+                  border-radius: 16px;
+                  border: 1px solid rgba(156, 39, 176, 0.2);
+                  color: #9c27b0;
                 }
               }
 
@@ -544,68 +542,9 @@
   }
 }
 
-// Character Analysis Modal
-.analysis-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-
-  .analysis-modal {
-    background: white;
-    border-radius: 12px;
-    max-width: 90vw;
-    max-height: 90vh;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-
-    .analysis-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #e0e0e0;
-      background: #f8f9fa;
-
-      h3 {
-        margin: 0;
-        color: #333;
-        font-size: 1.2rem;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: #666;
-        cursor: pointer;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background: #e0e0e0;
-          color: #333;
-        }
-      }
-    }
-
-    .analysis-content {
-      padding: 1rem;
-      overflow-y: auto;
-      max-height: calc(90vh - 120px);
-    }
-  }
+// Character hover enhancement
+.character.hoverable {
+  position: relative;
 }
 
 // Responsive design

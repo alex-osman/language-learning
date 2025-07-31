@@ -1,17 +1,21 @@
 .character-tooltip {
   pointer-events: none;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-100%); // Position based on bottom of tooltip
   animation: tooltipFadeIn 0.2s ease-out;
+
+  &.detailed {
+    transform: translateX(-50%) translateY(-100%); // Same positioning for detailed view
+  }
 }
 
 @keyframes tooltipFadeIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(5px);
+    transform: translateX(-50%) translateY(calc(-100% + 5px)); // Slight offset during fade in
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(-100%); // Final position
   }
 }
 
@@ -24,8 +28,125 @@
   backdrop-filter: blur(10px);
   min-width: 120px;
   text-align: center;
+
+  &.detailed {
+    min-width: 200px;
+    max-width: 280px;
+    padding: 1rem;
+    text-align: left;
+  }
+
+  &.simple {
+    text-align: center;
+  }
 }
 
+// Enhanced detailed view styling
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .character-large {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #4a90e2;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .knowledge-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &.known {
+      background: #4caf50;
+      color: white;
+    }
+
+    &.unknown {
+      background: #f44336;
+      color: white;
+    }
+  }
+}
+
+.tooltip-body {
+  .pronunciation {
+    font-size: 1.1rem;
+    color: #ffd700;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .definition {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  .metadata {
+    font-size: 0.8rem;
+    
+    .metadata-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+      
+      > div {
+        flex: 1;
+      }
+    }
+
+    .label {
+      color: #999;
+      margin-right: 0.25rem;
+    }
+
+    .value {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .frequency .value {
+      color: #ff9800;
+    }
+
+    .character-id .value {
+      color: #2196f3;
+    }
+
+    .easiness .value {
+      color: #9c27b0;
+    }
+
+    .repetitions .value {
+      color: #4caf50;
+    }
+
+    .radicals {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+      .value {
+        color: #00bcd4;
+      }
+    }
+  }
+}
+
+// Simple view styling (legacy)
 .character-large {
   font-size: 2rem;
   font-weight: 600;
@@ -57,4 +178,5 @@
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid rgba(0, 0, 0, 0.95);
+  z-index: 1;
 }

@@ -1,8 +1,61 @@
-<div class="character-tooltip" [ngStyle]="tooltipStyle">
-  <div class="tooltip-content">
-    <div class="character-large">{{ character.char }}</div>
-    <div *ngIf="character.pinyin" class="pinyin">{{ character.pinyin }}</div>
-    <div *ngIf="character.translation" class="translation">{{ character.translation }}</div>
+<div class="character-tooltip" [ngStyle]="tooltipStyle" [class.detailed]="showDetailed">
+  <!-- Enhanced detailed view for flashcard analysis -->
+  <div *ngIf="showDetailed && analyzedCharacter" class="tooltip-content detailed">
+    <div class="tooltip-header">
+      <span class="character-large">{{ displayCharacter }}</span>
+      <span class="knowledge-status" [class]="getKnowledgeStatusClass()">
+        {{ getKnowledgeStatusText() }}
+      </span>
+    </div>
+    
+    <div class="tooltip-body">
+      <div class="pronunciation" *ngIf="displayPinyin">
+        <strong>{{ displayPinyin }}</strong>
+      </div>
+      
+      <div class="definition" *ngIf="displayDefinition">
+        {{ displayDefinition }}
+      </div>
+      
+      <div class="metadata" *ngIf="analyzedCharacter.charData">
+        <div class="metadata-row">
+          <div class="frequency" *ngIf="analyzedCharacter.charData.freq">
+            <span class="label">Freq:</span> 
+            <span class="value">#{{ analyzedCharacter.charData.freq }}</span>
+          </div>
+          
+          <div class="character-id" *ngIf="analyzedCharacter.charData.id">
+            <span class="label">ID:</span> 
+            <span class="value">{{ analyzedCharacter.charData.id }}</span>
+          </div>
+        </div>
+        
+        <div class="metadata-row" *ngIf="analyzedCharacter.charData.easinessFactor">
+          <div class="easiness">
+            <span class="label">Ease:</span> 
+            <span class="value">{{ analyzedCharacter.charData.easinessFactor.toFixed(1) }}</span>
+          </div>
+          
+          <div class="repetitions" *ngIf="analyzedCharacter.charData.repetitions">
+            <span class="label">Reps:</span> 
+            <span class="value">{{ analyzedCharacter.charData.repetitions }}</span>
+          </div>
+        </div>
+        
+        <div class="radicals" *ngIf="analyzedCharacter.charData.radicals">
+          <span class="label">Radicals:</span> 
+          <span class="value">{{ analyzedCharacter.charData.radicals }}</span>
+        </div>
+      </div>
+    </div>
   </div>
+  
+  <!-- Simple view (legacy compatibility) -->
+  <div *ngIf="!showDetailed" class="tooltip-content simple">
+    <div class="character-large">{{ displayCharacter }}</div>
+    <div *ngIf="displayPinyin" class="pinyin">{{ displayPinyin }}</div>
+    <div *ngIf="displayDefinition" class="translation">{{ displayDefinition }}</div>
+  </div>
+  
   <div class="tooltip-arrow"></div>
 </div>

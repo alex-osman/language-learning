@@ -212,7 +212,7 @@ export class SentenceAnalyzerController {
     @Param('sentenceId') sentenceId: string,
     @UserID() userId: number,
     @Query('force') forceRecalculate?: string,
-  ): Promise<SentenceAnalysis[]> {
+  ): Promise<SentenceAnalysis> {
     try {
       this.logger.log(
         `Analyzing sentence ${sentenceId} for user ${userId} with forceRecalculate: ${forceRecalculate}`,
@@ -240,17 +240,15 @@ export class SentenceAnalyzerController {
           // Use cached comprehension percentage
           analysis.known_percent = existingKnowledge!.comprehensionPercentage;
 
-          return [analysis];
+          return analysis;
         }
       }
 
       // Fall back to full analysis
-      return [
-        await this.sentenceAnalyzerService.analyzeSentenceId(
-          sentenceIdNum,
-          userId,
-        ),
-      ];
+      return await this.sentenceAnalyzerService.analyzeSentenceId(
+        sentenceIdNum,
+        userId,
+      );
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
