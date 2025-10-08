@@ -34,12 +34,17 @@ export class FlashcardController {
     const total = await this.flashcardService.getTotalNumberOfCards(userId);
 
     // Convert to DTOs with user context
-    return {
-      characters: await Promise.all(
-        dueCharacters.map((char) =>
-          this.characterService.makeCharacterDTO(char, userId),
-        ),
+    const characterDTOs = await Promise.all(
+      dueCharacters.map((char) =>
+        this.characterService.makeCharacterDTO(char, userId),
       ),
+    );
+
+    // Shuffle the characters array to randomize the order
+    const shuffledCharacters = this.shuffleArray(characterDTOs);
+
+    return {
+      characters: shuffledCharacters,
       total,
     };
   }
@@ -61,12 +66,17 @@ export class FlashcardController {
     const total = await this.flashcardService.getTotalNumberOfCards(userId);
 
     // Convert to DTOs with user context
-    return {
-      characters: await Promise.all(
-        practiceCharacters.map((char) =>
-          this.characterService.makeCharacterDTO(char, userId),
-        ),
+    const characterDTOs = await Promise.all(
+      practiceCharacters.map((char) =>
+        this.characterService.makeCharacterDTO(char, userId),
       ),
+    );
+
+    // Shuffle the characters array to randomize the order
+    const shuffledCharacters = this.shuffleArray(characterDTOs);
+
+    return {
+      characters: shuffledCharacters,
       total,
     };
   }
@@ -135,5 +145,17 @@ export class FlashcardController {
     }
 
     return this.characterService.makeCharacterDTO(character, userId);
+  }
+
+  /**
+   * Shuffle an array using Fisher-Yates algorithm
+   */
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array]; // Create a copy to avoid mutating the original
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 }
