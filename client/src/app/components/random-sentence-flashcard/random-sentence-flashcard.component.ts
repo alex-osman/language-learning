@@ -9,13 +9,16 @@ import {
 } from '../../services/sentence-analysis.service';
 import { CharacterAnalysisComponent } from '../character-analysis/character-analysis.component';
 import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
-import { CharacterHoverDirective, CharacterHoverEvent } from '../../directives/character-hover.directive';
+import {
+  CharacterHoverDirective,
+  CharacterHoverEvent,
+} from '../../directives/character-hover.directive';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-random-sentence-flashcard',
   standalone: true,
-  imports: [CommonModule, CharacterAnalysisComponent, CharacterTooltipComponent, CharacterHoverDirective],
+  imports: [CommonModule, CharacterTooltipComponent, CharacterHoverDirective],
   templateUrl: './random-sentence-flashcard.component.html',
   styleUrls: ['./random-sentence-flashcard.component.scss'],
 })
@@ -107,7 +110,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.removeVideoEventListeners();
-    
+
     // Clean up tooltip timeout
     if (this.hideTooltipTimeout) {
       clearTimeout(this.hideTooltipTimeout);
@@ -543,7 +546,7 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
       clearTimeout(this.hideTooltipTimeout);
       this.hideTooltipTimeout = null;
     }
-    
+
     if (!this.analysisResults || this.analysisResults.length === 0) {
       return;
     }
@@ -558,8 +561,8 @@ export class RandomSentenceFlashcardComponent implements OnInit, OnDestroy {
 
     // Position tooltip above the character element (like Lingopie)
     this.tooltipPosition = {
-      x: event.rect.left + (event.rect.width / 2), // Center horizontally on character
-      y: event.rect.top - 15 // Position tooltip bottom above character top
+      x: event.rect.left + event.rect.width / 2, // Center horizontally on character
+      y: event.rect.top - 15, // Position tooltip bottom above character top
     };
   }
 
