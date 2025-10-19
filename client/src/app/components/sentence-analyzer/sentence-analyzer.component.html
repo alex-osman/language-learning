@@ -28,8 +28,7 @@
       <div
         *ngFor="let result of analysisResults"
         class="character-item"
-        [class.known]="result.known"
-        [class.unknown]="!result.known"
+        [ngStyle]="getEasinessGradientStyle(result)"
       >
         <span class="char">{{ result.char }}</span>
         <span class="count" *ngIf="result.count > 1">({{ result.count }})</span>

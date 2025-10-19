@@ -6,6 +6,8 @@ import {
   SentenceAnalysisResult,
   AnalyzedCharacter,
 } from '../../services/sentence-analysis.service';
+import { EasinessColorService } from '../../services/easiness-color.service';
+import { CharacterStylingUtils } from '../../services/character-styling.utils';
 import { Subject, debounceTime, distinctUntilChanged, filter } from 'rxjs';
 
 @Component({
@@ -27,7 +29,10 @@ export class SentenceAnalyzerComponent implements OnInit {
 
   private textInput$ = new Subject<string>();
 
-  constructor(private sentenceAnalysisService: SentenceAnalysisService) {}
+  constructor(
+    private sentenceAnalysisService: SentenceAnalysisService,
+    private easinessColorService: EasinessColorService
+  ) {}
 
   ngOnInit() {
     // Set up the text input stream with debouncing and filtering
@@ -86,5 +91,22 @@ export class SentenceAnalyzerComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  // Easiness gradient styling method with original border behavior
+  getEasinessGradientStyle(result: AnalyzedCharacter): { [key: string]: string } {
+    const gradientStyle = CharacterStylingUtils.getEasinessGradientStyle(
+      this.easinessColorService,
+      result
+    );
+
+    // Override border color to preserve original known/unknown behavior
+    if (result.known) {
+      gradientStyle['border-color'] = '#90ee90'; // Original green border for known
+    } else {
+      gradientStyle['border-color'] = '#ffb6c1'; // Original red border for unknown
+    }
+
+    return gradientStyle;
   }
 }

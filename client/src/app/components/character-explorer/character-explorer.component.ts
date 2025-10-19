@@ -3,6 +3,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges, input } from '@angu
 import { FormsModule } from '@angular/forms';
 import { CharacterDTO } from '../../services/data.service';
 import { EasinessColorService } from '../../services/easiness-color.service';
+import { CharacterStylingUtils } from '../../services/character-styling.utils';
 import { FlashcardService } from '../../services/flashcard.service';
 import { MovieService } from '../../services/movie.service';
 import { PinyinService } from '../../services/pinyin.service';
@@ -412,24 +413,13 @@ export class CharacterExplorerComponent implements OnInit {
     this.updateFilteredCharacters();
   }
 
-  // Easiness color methods (reused from CharactersComponent)
+  // Easiness color methods using shared utility
   getEasinessGradientStyle(char: CharacterDTO): { [key: string]: string } {
-    if (char.repetitions === 0 && char.interval === 0) {
-      return {
-        'background-color': '#e0e0e0',
-        'border-color': '#bdbdbd',
-      };
-    }
-    return this.easinessColorService.getGradientStyles(char.easinessFactor);
+    return CharacterStylingUtils.getEasinessGradientStyle(this.easinessColorService, char);
   }
 
   getEasinessTextStyle(char: CharacterDTO): { [key: string]: string } {
-    if (char.repetitions === 0 && char.interval === 0) {
-      return {
-        color: '#757575',
-      };
-    }
-    return this.easinessColorService.getTextColor(char.easinessFactor);
+    return CharacterStylingUtils.getEasinessTextStyle(this.easinessColorService, char);
   }
 
   // Helper methods for UI display
