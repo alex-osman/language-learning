@@ -40,9 +40,7 @@
         <span *ngIf="result.charData?.freq" class="frequency"
           >Freq: {{ result.charData.freq }}</span
         >
-        <span *ngIf="!result.known && result.charData" class="char-id"
-          >ID: {{ result.charData.id }}</span
-        >
+        <span *ngIf="result.charData" class="char-id">ID: {{ result.charData.id }}</span>
       </div>
     </div>
   </div>
