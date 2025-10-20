@@ -284,7 +284,7 @@ Create a 45-60 second script that:
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const response = await this.openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+          model: this.CHAT_MODEL,
           messages: [
             {
               role: 'system',

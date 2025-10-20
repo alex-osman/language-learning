@@ -10,17 +10,11 @@ import {
   CharacterDTO,
   TONES_MAPPED_TO_LOCATION,
 } from '@shared/interfaces/data.interface';
+import { BaseAiService } from './base-ai.service';
 
 @Injectable()
-export class MovieAiService {
+export class MovieAiService extends BaseAiService {
   private readonly logger = new Logger(MovieAiService.name);
-  private readonly openai: OpenAI;
-
-  constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  }
 
   async generateMovie(
     character: CharacterDTO,
@@ -67,7 +61,7 @@ ${userInput ? `Additional user-requested elements: ${userInput}` : ''}
 The scene should help remember both the character's appearance and meaning through the story.`;
 
       const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
+        model: this.CHAT_MODEL,
         messages: [
           {
             role: 'system',
@@ -150,7 +144,8 @@ Story context: ${storyText}
     this.logger.log('================================');
 
     const response = await this.openai.images.generate({
-      model: 'gpt-image-1',
+      moderation: 'low',
+      model: this.IMAGE_MODEL,
       prompt: imagePrompt,
       n: 1,
       quality: 'low' as any,

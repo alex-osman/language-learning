@@ -29,7 +29,7 @@ export class RadioTtsService extends BaseAiService {
       );
       try {
         const res = await this.openai.audio.speech.create({
-          model: 'tts-1', // Correct OpenAI TTS model name
+          model: this.TTS_MODEL, // Correct OpenAI TTS model name
           voice: 'alloy', // Could vary by language if needed
           response_format: 'mp3',
           input: text, // Plain text, no SSML

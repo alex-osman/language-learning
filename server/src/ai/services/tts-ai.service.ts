@@ -51,7 +51,7 @@ export class TtsAiService extends BaseAiService {
 
     // Generate the speech if it doesn't exist
     const response = await this.openai.audio.speech.create({
-      model: 'gpt-4o-mini-tts',
+      model: this.TTS_MODEL,
       voice: 'echo',
       input: request.text,
       instructions:
