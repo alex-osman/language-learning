@@ -1,0 +1,135 @@
+<div class="game-container">
+  <div class="header">
+    <div>
+      <h1>Character Connections</h1>
+      <p class="subtitle">Connect the characters by finding shared radicals or sounds</p>
+    </div>
+    @if (!isLoading()) {
+      <button (click)="startNewGame()" class="btn-new-game-top">🎲 New Game</button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">Loading characters...</div>
+  } @else {
+    <!-- Challenge Display -->
+    <div class="challenge">
+      <div class="character-display start">
+        <div class="label">START</div>
+        <div class="character">{{ startCharacter()?.character }}</div>
+        <div class="pinyin">{{ startCharacter()?.pinyin }}</div>
+        <div class="definition">{{ startCharacter()?.definition }}</div>
+        @if (startCharacter()?.radicals && startCharacter()!.radicals.length > 0) {
+          <div class="display-radicals">
+            @for (radical of startCharacter()!.radicals; track radical.id) {
+              <span class="radical-badge-small">{{ radical.radical }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="arrow-big">→ ... →</div>
+
+      <div class="character-display end">
+        <div class="label">END</div>
+        <div class="character">{{ endCharacter()?.character }}</div>
+        <div class="pinyin">{{ endCharacter()?.pinyin }}</div>
+        <div class="definition">{{ endCharacter()?.definition }}</div>
+        @if (endCharacter()?.radicals && endCharacter()!.radicals.length > 0) {
+          <div class="display-radicals">
+            @for (radical of endCharacter()!.radicals; track radical.id) {
+              <span class="radical-badge-small">{{ radical.radical }}</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Input Section -->
+    @if (!gameWon()) {
+      <div class="input-section">
+        <input
+          type="text"
+          [ngModel]="inputValue()"
+          (ngModelChange)="inputValue.set($event)"
+          (keyup.enter)="onSubmitCharacter()"
+          placeholder="输入下一个字... (Type next character)"
+          class="character-input"
+          autofocus
+        />
+        <button (click)="onSubmitCharacter()" class="btn-add">Add</button>
+      </div>
+      <p class="hint">Type Chinese characters like: 云, 运, 边, 力</p>
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="error-message">{{ errorMessage() }}</div>
+    }
+
+    <!-- Current Path Visualization -->
+    <div class="path-display">
+      <h3>Your Chain ({{ currentSteps() }} characters):</h3>
+      <div class="chain">
+        @for (char of currentPath(); track char.id; let i = $index) {
+          <div class="chain-step">
+            <div class="character-tile">
+              <div class="char-main">{{ char.character }}</div>
+              <div class="char-pinyin">{{ char.pinyin }}</div>
+              <div class="char-definition">{{ char.definition }}</div>
+              @if (char.radicals && char.radicals.length > 0) {
+                <div class="char-radicals">
+                  <span class="radicals-label">Radicals:</span>
+                  @for (radical of char.radicals; track radical.id) {
+                    <span class="radical-badge">{{ radical.radical }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Show what this character shares with the NEXT one -->
+            @if (i < connections().length) {
+              <div class="arrow-with-connection">
+                <div class="arrow">→</div>
+                <div class="connection-info">
+                  @if (connections()[i].sharedRadicals.length > 0) {
+                    <div class="shared-radical">
+                      <strong>Shared radical:</strong> {{ connections()[i].sharedRadicals.join(', ') }}
+                    </div>
+                  }
+                  @if (connections()[i].samePinyin) {
+                    <div class="same-pinyin">
+                      <strong>Same sound:</strong> {{ connections()[i].pinyinSound }}
+                    </div>
+                  }
+                  @if (connections()[i].sharedRadicals.length === 0 && !connections()[i].samePinyin) {
+                    <div class="no-connection">
+                      ⚠️ No obvious connection
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Victory Message -->
+    @if (gameWon()) {
+      <div class="victory-message">
+        <h2>🎉 You Won!</h2>
+        <p>Connected in {{ currentSteps() }} characters ({{ currentSteps() - 1 }} steps)</p>
+        <button (click)="startNewGame()" class="btn-new-game">New Game</button>
+      </div>
+    }
+
+    <!-- Controls -->
+    <div class="controls">
+      <button (click)="undoLastMove()" [disabled]="currentPath().length <= 1" class="btn-undo">
+        ← Undo
+      </button>
+      <button (click)="startNewGame()" class="btn-new-game">New Game</button>
+    </div>
+  }
+</div>

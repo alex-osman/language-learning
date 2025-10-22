@@ -16,6 +16,7 @@ import { SentenceFlashcardComponent } from './components/sentence-flashcard/sent
 import { RandomSentenceFlashcardComponent } from './components/random-sentence-flashcard/random-sentence-flashcard.component';
 import { SentenceGalleryComponent } from './components/sentence-gallery/sentence-gallery.component';
 import { VideoPlayerComponent } from './components/video-player/video-player.component';
+import { CharacterConnectionsComponent } from './components/character-connections/character-connections.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -47,6 +48,11 @@ export const routes: Routes = [
   {
     path: 'characters',
     component: CharactersPageComponent,
+  },
+  {
+    path: 'character-connections',
+    component: CharacterConnectionsComponent,
+    title: 'Character Connections',
   },
   {
     path: 'flashcards',
