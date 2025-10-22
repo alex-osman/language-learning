@@ -445,38 +445,265 @@ h1 {
   }
 }
 
-// Responsive design
+// Responsive design - Mobile
 @media (max-width: 768px) {
+  .game-container {
+    padding: 1rem;
+  }
+
+  // Header - stack vertically
   .header {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    > div {
+      width: 100%;
+    }
+  }
+
+  h1 {
+    font-size: 1.75em;
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.95em;
+    margin-bottom: 0;
   }
 
   .btn-new-game-top {
     width: 100%;
+    padding: 1rem;
+    font-size: 1em;
   }
 
+  // Challenge - stack START/END vertically
   .challenge {
     flex-direction: column;
     gap: 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .character-display {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    padding: 1.25rem;
+
+    .character {
+      font-size: 5em; // Bigger on mobile for visibility
+    }
+
+    .pinyin {
+      font-size: 1.1em;
+    }
+
+    .definition {
+      font-size: 0.85em;
+    }
+
+    .display-radicals {
+      margin-top: 0.5rem;
+
+      .radical-badge-small {
+        font-size: 0.75em;
+      }
+    }
   }
 
   .arrow-big {
     transform: rotate(90deg);
+    font-size: 1.5em;
+    margin: 0;
+  }
+
+  // Input section - stack vertically
+  .input-section {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .character-input {
+    max-width: 100%;
+    width: 100%;
+    font-size: 1.2em;
+    padding: 0.75rem;
+    min-height: 44px; // Touch-friendly
+  }
+
+  .btn-add {
+    width: 100%;
+    min-height: 44px; // Touch-friendly
+    font-size: 1em;
+  }
+
+  .hint {
+    font-size: 0.85em;
+    padding: 0 0.5rem;
+  }
+
+  // Error message
+  .error-message {
+    font-size: 0.9em;
+    padding: 0.75rem;
+  }
+
+  // Path display - full width, vertical layout
+  .path-display {
+    margin: 2rem 0;
+
+    h3 {
+      font-size: 1.25em;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .chain {
+    gap: 0;
+    align-items: stretch;
   }
 
   .chain-step {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
+    margin-bottom: 0;
   }
 
-  .arrow-with-connection {
-    margin-left: 0;
-    flex-direction: column;
+  .character-tile {
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
     text-align: center;
+    margin-bottom: 0.5rem;
+
+    .char-main {
+      font-size: 2.5em; // Larger for mobile
+    }
+
+    .char-pinyin {
+      font-size: 1em;
+    }
+
+    .char-definition {
+      font-size: 0.8em;
+    }
+
+    .char-radicals {
+      justify-content: center;
+      margin-top: 0.5rem;
+
+      .radicals-label {
+        font-size: 0.7em;
+      }
+
+      .radical-badge {
+        font-size: 0.8em;
+        padding: 0.15rem 0.35rem;
+      }
+    }
+  }
+
+  // Connection display - vertical with card style
+  .arrow-with-connection {
+    flex-direction: column;
+    align-items: center;
+    margin: 0 0 0.5rem 0;
+    gap: 0.5rem;
+    width: 100%;
 
     .arrow {
       transform: rotate(90deg);
+      font-size: 1.5em;
+      margin: 0;
+    }
+  }
+
+  .connection-info {
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    font-size: 0.85em;
+    padding: 0.75rem;
+    margin: 0;
+
+    .shared-radical,
+    .same-pinyin,
+    .no-connection {
+      display: block;
+      margin: 0.25rem 0;
+    }
+  }
+
+  // Victory message
+  .victory-message {
+    padding: 2rem 1.5rem;
+    margin: 1.5rem 0;
+
+    h2 {
+      font-size: 2em;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 1.25rem;
+    }
+
+    .victory-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-share,
+    .btn-new-game {
+      width: 100%;
+      min-height: 44px; // Touch-friendly
+      font-size: 1em;
+    }
+
+    .share-success {
+      font-size: 0.9em;
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  // Controls
+  .controls {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .btn-undo,
+  .btn-new-game {
+    width: 100%;
+    min-height: 44px; // Touch-friendly
+    font-size: 1em;
+  }
+}
+
+// Extra small phones
+@media (max-width: 375px) {
+  h1 {
+    font-size: 1.5em;
+  }
+
+  .character-display {
+    max-width: 240px;
+
+    .character {
+      font-size: 4em;
+    }
+  }
+
+  .character-tile {
+    .char-main {
+      font-size: 2em;
     }
   }
 }
