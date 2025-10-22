@@ -69,7 +69,8 @@
 
   <!-- Current Path Visualization -->
   <div class="path-display">
-    <h3>Your Chain ({{ currentSteps() }} characters):</h3>
+    <h3>Your Chain ({{ currentSteps() }} characters) • Score: {{ totalScore() }} pts</h3>
+    <p class="score-hint">Lower is better! Radical=10pts • Pinyin=5pts • Creative=20pts</p>
     <div class="chain">
       @for (char of currentPath(); track char.id; let i = $index) {
       <div class="chain-step">
@@ -103,6 +104,7 @@
             } @if (connections()[i].sharedRadicals.length === 0 && !connections()[i].samePinyin) {
             <div class="no-connection">⚠️ No obvious connection</div>
             }
+            <div class="connection-points">+{{ connections()[i].points }} pts</div>
           </div>
         </div>
         }
@@ -115,7 +117,9 @@
   @if (gameWon()) {
   <div class="victory-message">
     <h2>🎉 You Won!</h2>
-    <p>Connected in {{ currentSteps() }} characters ({{ currentSteps() - 1 }} steps)</p>
+    <p>Connected in {{ currentSteps() }} characters</p>
+    <p class="score-display">Score: {{ totalScore() }} points</p>
+    <p class="score-detail">({{ currentSteps() - 1 }} connections • Lower is better!)</p>
 
     <div class="victory-buttons">
       <button (click)="shareResults()" class="btn-share">

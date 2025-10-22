@@ -203,8 +203,16 @@ h1 {
 
   h3 {
     color: #2c3e50;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     font-size: 1.5em;
+  }
+
+  .score-hint {
+    text-align: center;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+    font-style: italic;
   }
 }
 
@@ -316,6 +324,15 @@ h1 {
     font-style: italic;
   }
 
+  .connection-points {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #d0e3ff;
+    font-weight: 700;
+    color: #667eea;
+    font-size: 0.95em;
+  }
+
   strong {
     font-weight: 600;
   }
@@ -339,6 +356,18 @@ h1 {
 
   p {
     font-size: 1.3em;
+    margin-bottom: 0.75rem;
+  }
+
+  .score-display {
+    font-size: 2em;
+    font-weight: 700;
+    margin: 1rem 0;
+  }
+
+  .score-detail {
+    font-size: 1em;
+    opacity: 0.9;
     margin-bottom: 1.5rem;
   }
 

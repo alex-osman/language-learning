@@ -6,6 +6,7 @@ export interface ConnectionInfo {
   sharedRadicals: string[];  // e.g., ['女', '口']
   samePinyin: boolean;       // true if same sound
   pinyinSound: string | null; // e.g., "ma"
+  points: number;            // Score for this connection
 }
 
 @Injectable({
@@ -37,20 +38,40 @@ export class CharacterConnectionsGameService {
 
   /**
    * Generate random start and end characters for the challenge
+   * Ensures they are not directly connected (too easy)
    */
   generateChallenge(): { start: CharacterDTO, end: CharacterDTO } {
     if (this.allCharacters.length === 0) {
       throw new Error('Characters not loaded yet. Call loadCharacters() first.');
     }
 
-    const start = this.allCharacters[Math.floor(Math.random() * this.allCharacters.length)];
-    let end = this.allCharacters[Math.floor(Math.random() * this.allCharacters.length)];
+    let attempts = 0;
+    const maxAttempts = 50;
 
-    // Make sure start and end are different
-    while (end.character === start.character) {
-      end = this.allCharacters[Math.floor(Math.random() * this.allCharacters.length)];
+    while (attempts < maxAttempts) {
+      const start = this.allCharacters[Math.floor(Math.random() * this.allCharacters.length)];
+      const end = this.allCharacters[Math.floor(Math.random() * this.allCharacters.length)];
+
+      // Make sure they're different
+      if (start.character === end.character) {
+        attempts++;
+        continue;
+      }
+
+      // Check if they're directly connected (too easy)
+      const connection = this.findConnection(start, end);
+      const isDirectlyConnected = connection.sharedRadicals.length > 0 || connection.samePinyin;
+
+      if (!isDirectlyConnected) {
+        return { start, end };
+      }
+
+      attempts++;
     }
 
+    // Fallback: just return any two different characters if we can't find a good pair
+    const start = this.allCharacters[0];
+    const end = this.allCharacters[Math.min(1, this.allCharacters.length - 1)];
     return { start, end };
   }
 
@@ -65,31 +86,43 @@ export class CharacterConnectionsGameService {
   /**
    * Find what two characters share (for display purposes only)
    * Does NOT validate if connection is "good" - just shows what they have in common
+   * Also calculates points for this connection
    */
   findConnection(char1: CharacterDTO, char2: CharacterDTO): ConnectionInfo {
     const sharedRadicals = this.getSharedRadicals(char1, char2);
     const samePinyin = this.haveSamePinyin(char1, char2);
 
+    // Calculate points (lower is better)
+    let points = 20; // Default penalty for no connection
+    if (sharedRadicals.length > 0) {
+      points = 10; // Radical connection
+    }
+    if (samePinyin) {
+      points = Math.min(points, 5); // Pinyin connection (better if they also share radical)
+    }
+
     return {
       sharedRadicals,
       samePinyin,
-      pinyinSound: samePinyin ? this.removeTones(char1.pinyin) : null
+      pinyinSound: samePinyin ? this.removeTones(char1.pinyin) : null,
+      points
     };
   }
 
   /**
    * Get radicals that appear in both characters
    * Also checks if one character itself appears as a radical in the other
-   * e.g., 舌 appears as a component in 话
+   * Also does one-level decomposition of complex radicals
+   * e.g., 想 has 相 as radical, and 相 = 木 + 目, so 想 can connect via 木 or 目
    */
   private getSharedRadicals(char1: CharacterDTO, char2: CharacterDTO): string[] {
     const shared: string[] = [];
 
     if (!char1.radicals && !char2.radicals) return [];
 
-    // Get radical lists
-    const radicals1 = char1.radicals?.map(r => r.radical) || [];
-    const radicals2 = char2.radicals?.map(r => r.radical) || [];
+    // Get radical lists (including one-level decomposition)
+    const radicals1 = this.getRadicalsWithDecomposition(char1);
+    const radicals2 = this.getRadicalsWithDecomposition(char2);
 
     // Check if radicals from char1 appear in char2's radicals
     const sharedFromRadicals = radicals1.filter(r => radicals2.includes(r));
@@ -109,6 +142,31 @@ export class CharacterConnectionsGameService {
 
     // Remove duplicates
     return [...new Set(shared)];
+  }
+
+  /**
+   * Get all radicals for a character, including one-level decomposition of complex radicals
+   * e.g., if character has 相 as radical, and 相 has [木, 目] as radicals,
+   * return [相, 木, 目]
+   */
+  private getRadicalsWithDecomposition(char: CharacterDTO): string[] {
+    const allRadicals: string[] = [];
+    const baseRadicals = char.radicals?.map(r => r.radical) || [];
+
+    // Add base radicals
+    allRadicals.push(...baseRadicals);
+
+    // For each radical, check if it's also a character we know
+    // If so, add its sub-radicals (one level only)
+    for (const radical of baseRadicals) {
+      const radicalAsChar = this.charactersMap.get(radical);
+      if (radicalAsChar && radicalAsChar.radicals) {
+        const subRadicals = radicalAsChar.radicals.map(r => r.radical);
+        allRadicals.push(...subRadicals);
+      }
+    }
+
+    return [...new Set(allRadicals)]; // Remove duplicates
   }
 
   /**

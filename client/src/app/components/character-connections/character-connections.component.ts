@@ -29,6 +29,9 @@ export class CharacterConnectionsComponent implements OnInit {
 
   // Computed
   currentSteps = computed(() => this.currentPath().length);
+  totalScore = computed(() => {
+    return this.connections().reduce((sum, conn) => sum + conn.points, 0);
+  });
 
   constructor(private gameService: CharacterConnectionsGameService) {}
 
@@ -132,6 +135,7 @@ export class CharacterConnectionsComponent implements OnInit {
     const end = this.endCharacter();
     const path = this.currentPath();
     const conns = this.connections();
+    const score = this.totalScore();
 
     if (!start || !end) return '';
 
@@ -154,11 +158,11 @@ export class CharacterConnectionsComponent implements OnInit {
 
     // Build the share text
     const shareText = `Character Connections ${dateStr}
-${start.character} → ${end.character} (${path.length} characters)
+${start.character} → ${end.character} • Score: ${score} pts
 
 ${emojiSequence}
 
-🔷 radical • 🔊 pinyin • ⚠️ creative`;
+🔷 radical(10) • 🔊 pinyin(5) • ⚠️ creative(20)`;
 
     return shareText;
   }
