@@ -24,6 +24,9 @@ export class CharacterConnectionsComponent implements OnInit {
   // Store connection info for each step (for display)
   connections = signal<ConnectionInfo[]>([]);
 
+  // Share feature
+  shareSuccess = signal<boolean>(false);
+
   // Computed
   currentSteps = computed(() => this.currentPath().length);
 
@@ -121,5 +124,61 @@ export class CharacterConnectionsComponent implements OnInit {
     }
 
     return parts.join(' • ');
+  }
+
+  // Generate shareable text like Wordle
+  generateShareText(): string {
+    const start = this.startCharacter();
+    const end = this.endCharacter();
+    const path = this.currentPath();
+    const conns = this.connections();
+
+    if (!start || !end) return '';
+
+    // Get today's date in readable format
+    const today = new Date();
+    const dateStr = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear().toString().slice(-2)}`;
+
+    // Generate emoji sequence for connections
+    const emojiSequence = conns.map(conn => {
+      if (conn.sharedRadicals.length > 0 && conn.samePinyin) {
+        return '🔷🔊'; // Both radical and pinyin
+      } else if (conn.sharedRadicals.length > 0) {
+        return '🔷'; // Radical only
+      } else if (conn.samePinyin) {
+        return '🔊'; // Pinyin only
+      } else {
+        return '⚠️'; // No obvious connection
+      }
+    }).join('→');
+
+    // Build the share text
+    const shareText = `Character Connections ${dateStr}
+${start.character} → ${end.character} (${path.length} characters)
+
+${emojiSequence}
+
+🔷 radical • 🔊 pinyin • ⚠️ creative`;
+
+    return shareText;
+  }
+
+  // Copy share text to clipboard
+  async shareResults() {
+    const shareText = this.generateShareText();
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      this.shareSuccess.set(true);
+
+      // Reset success message after 2 seconds
+      setTimeout(() => {
+        this.shareSuccess.set(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      // Fallback: try to select text for manual copy
+      alert('Share text:\n\n' + shareText);
+    }
   }
 }

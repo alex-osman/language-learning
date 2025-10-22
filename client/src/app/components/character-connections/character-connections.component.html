@@ -116,7 +116,17 @@
   <div class="victory-message">
     <h2>🎉 You Won!</h2>
     <p>Connected in {{ currentSteps() }} characters ({{ currentSteps() - 1 }} steps)</p>
-    <button (click)="startNewGame()" class="btn-new-game">New Game</button>
+
+    <div class="victory-buttons">
+      <button (click)="shareResults()" class="btn-share">
+        📋 Share
+      </button>
+      <button (click)="startNewGame()" class="btn-new-game">New Game</button>
+    </div>
+
+    @if (shareSuccess()) {
+      <div class="share-success">✓ Copied to clipboard!</div>
+    }
   </div>
   }
 
