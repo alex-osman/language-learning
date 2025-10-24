@@ -262,8 +262,10 @@ export class CharacterService {
     else if (pinyinNoTones.length >= 2 && pinyinNoTones[1] === 'u') {
       initial = pinyinNoTones.substring(0, 2);
       final = pinyinNoTones.substring(2);
-    }
-    // Handle initials ending in 'i' that combine with following vowels
+    } else if (pinyinNoTones.length == 2 && pinyinNoTones[1] === 'i') {
+      initial = pinyinNoTones;
+      final = '';
+    } // Handle initials ending in 'i' that combine with following vowels
     else if (pinyinNoTones.startsWith('bi') && pinyinNoTones.length > 2) {
       initial = 'bi';
       final = pinyinNoTones.substring(2);
