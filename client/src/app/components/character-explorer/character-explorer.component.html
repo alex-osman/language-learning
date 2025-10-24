@@ -204,9 +204,9 @@
         <span class="character">{{ char.character }}</span>
         <span class="pinyin">{{ char.pinyin }}</span>
         <span class="definition">{{ char.definition }}</span>
-        <span *ngIf="char.freq" class="frequency">Freq: {{ char.freq }}</span
-        ><br />
-        <span *ngIf="!char.lastReviewDate && char.id" class="char-id">ID: {{ char.id }}</span>
+        <span class="definition"
+          >#{{ char.id }} <span *ngIf="char.freq"> ({{ char.freq }}) </span>
+        </span>
       </div>
 
       <div class="character-status" *ngIf="mode !== 'analysis'">
