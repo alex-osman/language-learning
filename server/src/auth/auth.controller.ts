@@ -43,6 +43,8 @@ export class AuthController {
     const scenes = [
       // everything on
       [rocketLamp.on, shelfLamp.on, livingRoom.on],
+      // lamps off
+      [rocketLamp.off, shelfLamp.off, livingRoom.on],
       // just lamps on
       [rocketLamp.on, shelfLamp.on, livingRoom.off],
 
