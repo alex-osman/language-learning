@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 
 @Controller('api/auth')
 export class AuthController {
+  private switch_value = true;
   constructor(private authService: AuthService) {}
 
   @Public()
@@ -16,5 +17,14 @@ export class AuthController {
   @Get('profile')
   async getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Public()
+  @Get('switch')
+  async switchThing() {
+    this.switch_value = !this.switch_value;
+    return {
+      switch: this.switch_value,
+    };
   }
 }
