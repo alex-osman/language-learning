@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Request,
+} from '@nestjs/common';
 import { Public } from 'src/decorators/public.decorator';
 import { AuthService } from './auth.service';
 
@@ -19,7 +27,7 @@ const smartMap = {
 
 @Controller('api/auth')
 export class AuthController {
-  private count = 0;
+  private brightnessCount = 0;
   constructor(private authService: AuthService) {}
 
   @Public()
@@ -35,15 +43,20 @@ export class AuthController {
   }
 
   @Public()
-  @Get('switch')
-  async switchThing() {
-    brightnessButton();
-    const { rocketLamp, shelfLamp } = smartMap;
-    fetch(rocketLamp.on);
-    fetch(shelfLamp.on);
+  @Get('switch/:param')
+  async switchThing(@Param('param') param: string) {
+    if (param === 'brightness') {
+      brightnessButton();
+      const { rocketLamp, shelfLamp } = smartMap;
+      fetch(this.brightnessCount % 3 === 0 ? rocketLamp.off : rocketLamp.on);
+      fetch(this.brightnessCount % 3 === 0 ? shelfLamp.off : shelfLamp.on);
+      this.brightnessCount++;
+    } else if (param === 'rocketLamp') {
+    } else if (param === 'shelfLamp') {
+    }
 
     return {
-      count: this.count,
+      brightnessCount: this.brightnessCount,
     };
   }
 }
