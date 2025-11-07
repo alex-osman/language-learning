@@ -37,35 +37,35 @@ export class AuthController {
   @Public()
   @Get('switch')
   async switchThing() {
-    this.count++;
-    const { rocketLamp, shelfLamp, livingRoom } = smartMap;
-
-    const scenes = [
-      // everything on
-      [rocketLamp.on, shelfLamp.on, livingRoom.on],
-      // lamps off
-      [rocketLamp.off, shelfLamp.off, livingRoom.on],
-      // just lamps on
-      [rocketLamp.on, shelfLamp.on, livingRoom.off],
-
-      // everything off
-      [rocketLamp.off, shelfLamp.off, livingRoom.off],
-    ];
-
-    const urls = scenes[this.count % scenes.length];
-    console.log('Triggering smart home scene', this.count % scenes.length);
-    for (const url of urls) {
-      try {
-        const response = await fetch(url);
-        const data = await response.text();
-        console.log('Smart home response', data);
-      } catch (error) {
-        console.error('Error triggering smart home scene:', error);
-      }
-    }
+    brightnessButton();
+    const { rocketLamp, shelfLamp } = smartMap;
+    fetch(rocketLamp.on);
+    fetch(shelfLamp.on);
 
     return {
       count: this.count,
     };
   }
 }
+
+// this will mimic a curl request
+const brightnessButton = () => {
+  const token =
+    'cd85963f99405e21d15a7e9aee362bdb2dfee4a507335db144ff6e57b109a24a';
+  return fetch('https://api.lifx.com/v1/lights/all/cycle', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      states: [
+        { power: 'on', brightness: 0.5, color: 'kelvin:2700', duration: 0.5 },
+        { power: 'on', brightness: 0.7, color: 'kelvin:2700', duration: 0.5 },
+        { power: 'on', brightness: 0.85, color: 'kelvin:2700', duration: 0.5 },
+        { power: 'on', brightness: 1, color: 'kelvin:2700', duration: 0.5 },
+      ],
+      direction: 'forward',
+    }),
+  });
+};
