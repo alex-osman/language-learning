@@ -117,11 +117,6 @@ const sceneButton = (count: number) => {
       scene: smartMap.scenes.everythingWarm,
     },
     {
-      rocketLamp: 'off',
-      shelfLamp: 'off',
-      scene: smartMap.scenes.everythingOff,
-    },
-    {
       rocketLamp: 'on',
       shelfLamp: 'on',
       scene: smartMap.scenes.everythingOff,
