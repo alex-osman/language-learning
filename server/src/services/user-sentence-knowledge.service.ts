@@ -39,7 +39,7 @@ export class UserSentenceKnowledgeService {
       .where('usk.userID = :userId', { userId })
       .andWhere('usk.comprehensionPercentage BETWEEN :min AND :max', {
         min: minComprehension,
-        max: 95,
+        max: minComprehension + 15,
       })
       .orderBy('RAND()')
       .limit(limit)

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SentenceFlashcardService, SentenceDTO } from '../../services/sentence-flashcard.service';
@@ -7,7 +7,6 @@ import {
   AnalyzedCharacter,
   SentenceAnalysisResult,
 } from '../../services/sentence-analysis.service';
-import { CharacterAnalysisComponent } from '../character-analysis/character-analysis.component';
 import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
 import {
   CharacterHoverDirective,

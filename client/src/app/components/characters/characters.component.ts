@@ -95,7 +95,7 @@ export class CharactersComponent implements OnInit {
 
     this.isLoadingAdditional = true;
 
-    this.dataService.getAdditionalCharacters(400).subscribe({
+    this.dataService.getAdditionalCharacters(900).subscribe({
       next: characters => {
         this.characters = [...this.characters, ...characters];
         this.updateCharactersProgress();
