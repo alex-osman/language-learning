@@ -21,7 +21,7 @@ import {
           (click)="loadAdditionalCharacters()"
           [disabled]="isLoadingAdditional"
         >
-          {{ isLoadingAdditional ? 'Loading...' : 'Load More Characters (400+)' }}
+          {{ isLoadingAdditional ? 'Loading...' : 'Load More Characters' }}
         </button>
       </div>
 
