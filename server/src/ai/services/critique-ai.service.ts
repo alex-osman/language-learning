@@ -75,7 +75,7 @@ export class CritiqueAiService extends BaseAiService {
 
       // Get completion from OpenAI
       this.logger.debug('Requesting chat completion from OpenAI!');
-      const completion = await this.openai.chat.completions.create({
+      const completion = await this.chat({
         model: this.CHAT_MODEL,
         messages: apiMessages,
         max_completion_tokens: 500,

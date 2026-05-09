@@ -61,7 +61,7 @@ Example:
 
       // Get initial completion from OpenAI
       this.logger.debug('Requesting chat completion from OpenAI');
-      const completion = await this.openai.chat.completions.create({
+      const completion = await this.chat({
         model: this.CHAT_MODEL,
         messages: apiMessages,
         max_completion_tokens: 150,
@@ -78,7 +78,7 @@ Example:
         { role: 'user' as const, content: responseContent },
       ];
 
-      const structuredCompletion = await this.openai.chat.completions.create({
+      const structuredCompletion = await this.chat({
         model: this.CHAT_MODEL,
         messages: structureMessages,
         max_completion_tokens: 2000,

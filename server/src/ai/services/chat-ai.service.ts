@@ -73,7 +73,7 @@ export class ChineseChatAiService extends BaseAiService {
 
       // Get initial completion from OpenAI
       this.logger.debug('Requesting initial chat completion from OpenAI');
-      const completion = await this.openai.chat.completions.create({
+      const completion = await this.chat({
         model: this.CHAT_MODEL,
         messages: apiMessages,
         max_completion_tokens: 150,
@@ -90,7 +90,7 @@ export class ChineseChatAiService extends BaseAiService {
         { role: 'user' as const, content: responseContent },
       ];
 
-      const structuredCompletion = await this.openai.chat.completions.create({
+      const structuredCompletion = await this.chat({
         model: this.CHAT_MODEL,
         messages: structureMessages,
         max_completion_tokens: 2000,

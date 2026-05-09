@@ -60,7 +60,7 @@ ${userInput ? `Additional user-requested elements: ${userInput}` : ''}
 
 The scene should help remember both the character's appearance and meaning through the story.`;
 
-      const completion = await this.openai.chat.completions.create({
+      const completion = await this.chat({
         model: this.CHAT_MODEL,
         messages: [
           {
