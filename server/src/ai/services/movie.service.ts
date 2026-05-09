@@ -74,7 +74,7 @@ The scene should help remember both the character's appearance and meaning throu
           },
         ],
         temperature: 0.8,
-        max_tokens: 350,
+        max_completion_tokens: 350,
       });
       const movieScene = completion.choices[0]?.message?.content;
       if (!movieScene) {

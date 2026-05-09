@@ -65,7 +65,7 @@ Example:
         model: this.CHAT_MODEL,
         messages: apiMessages,
         temperature: 0.7,
-        max_tokens: 150,
+        max_completion_tokens: 150,
       });
 
       const responseContent =
@@ -83,7 +83,7 @@ Example:
         model: this.CHAT_MODEL,
         messages: structureMessages,
         temperature: 0,
-        max_tokens: 2000,
+        max_completion_tokens: 2000,
         response_format: { type: 'json_object' },
       });
 
