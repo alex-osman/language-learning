@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CharacterDTO } from './data.service';
 
 export interface EpisodeDTO {
@@ -163,55 +163,18 @@ export const SCENE_1_SENTENCES: Sentence[] = [
 export class MediaService {
   constructor(private http: HttpClient) {}
 
-  getEpisodeProgress(
-    episodeId: number,
-    userId: number
-  ): Observable<{ comprehensionPercentage: number }> {
+  getEpisodeProgress(episodeId: number): Observable<{ comprehensionPercentage: number }> {
     return this.http.get<{ comprehensionPercentage: number }>(
-      `/api/episodes/${episodeId}/progress?userId=${userId}`
+      `/api/episodes/${episodeId}/progress`
     );
   }
 
   getAllMedia(): Observable<Media[]> {
-    // TODO: Replace with real API call
-    return of([
-      {
-        id: 1,
-        title: 'Peppa Pig',
-        type: 'tv',
-        imageUrl:
-          'https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Peppa_Pig_logo.svg/250px-Peppa_Pig_logo.svg.png',
-        knownCache: 40,
-      },
-      {
-        id: 2,
-        title: 'Jiayun',
-        type: 'tv',
-        imageUrl: 'https://i3.ytimg.com/vi/oaA5N6Wso_o/hqdefault.jpg',
-        knownCache: 80,
-      },
-      {
-        id: 3,
-        title: 'Orion and the Dark',
-        type: 'movie',
-        imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjRyr6aEHNj5jqGI6CCQcFvotD-LcAiZVfM9r35NGI7kF_UGNk',
-        knownCache: 33,
-      },
-    ]);
+    return this.http.get<Media[]>('/api/media');
   }
 
   getSeasonsForMedia(mediaId: number): Observable<Season[]> {
-    // TODO: Replace with real API call
-    return of([
-      {
-        id: 1,
-        title: 'Season 1',
-        number: 1,
-        episodes: [],
-        progress: { knownCache: 50 },
-      },
-    ]);
+    return this.http.get<Season[]>(`/api/seasons/${mediaId}`);
   }
 
   getEpisodesForMedia(mediaId: number): Observable<Episode[]> {

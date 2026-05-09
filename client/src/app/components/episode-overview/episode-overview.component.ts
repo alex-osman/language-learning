@@ -3,10 +3,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MediaService, Episode, EpisodeDTO } from '../../services/media.service';
 import {
-  SentenceAnalysisResult,
   EnhancedSentenceAnalysisResult,
   SentenceAnalysisService,
-  UserSentenceKnowledgeDTO,
 } from '../../services/sentence-analysis.service';
 import {
   ProgressIndicatorComponent,
@@ -33,24 +31,22 @@ interface EpisodeOverviewData {
   styleUrl: './episode-overview.component.scss',
 })
 export class EpisodeOverviewComponent implements OnInit {
-  // Route parameters
   mediaId: string = '';
   episodeId: number = 0;
 
-  // Component state
   episode: EpisodeDTO | null = null;
   isLoading = true;
   error: string | null = null;
-  sentenceAnalysisData: { [sentenceId: string]: SentenceAnalysisResult } = {};
-  enhancedAnalysisData: { [sentenceId: string]: UserSentenceKnowledgeDTO } = {};
 
-  // UI state
+  // Per-sentence analysis data with full per-character detail
+  sentenceAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
+  // Overall episode comprehension from the server
+  episodeComprehension: number = 0;
+
   isCharactersCollapsed = true;
   isSentenceGalleryCollapsed = true;
-  // Template helpers
   Math = Math;
 
-  // Video reference
   @ViewChild('episodeVideo') episodeVideo!: ElementRef<HTMLVideoElement>;
 
   constructor(
@@ -61,30 +57,62 @@ export class EpisodeOverviewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.extractRouteParameters();
-  }
+    this.route.params.subscribe(params => {
+      this.mediaId = params['mediaId'] || '';
+      this.episodeId = params['episodeId'] || 0;
 
-  // ===== COMPUTED PROPERTIES =====
+      if (this.mediaId && this.episodeId) {
+        this.loadEpisodeData();
+      } else {
+        this.error = 'Missing required route parameters.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   get episodeData(): EpisodeOverviewData | null {
     if (!this.episode) return null;
 
-    const actualProgress = this.calculateActualProgress();
-    const progressSegments = this.calculateProgressSegments();
+    const { learnedCount, seenCount, unknownCount } = this.aggregateCharacterCounts();
+    const total = learnedCount + seenCount + unknownCount;
+
+    const progressSegments: ProgressSegment[] = [];
+    if (total > 0) {
+      if (learnedCount > 0) {
+        progressSegments.push({
+          value: Math.round((learnedCount / total) * 100),
+          color: '#28a745',
+          label: 'learned',
+        });
+      }
+      if (seenCount > 0) {
+        progressSegments.push({
+          value: Math.round((seenCount / total) * 100),
+          color: '#17a2b8',
+          label: 'seen',
+        });
+      }
+      if (unknownCount > 0) {
+        progressSegments.push({
+          value: Math.round((unknownCount / total) * 100),
+          color: '#dc3545',
+          label: 'unknown',
+        });
+      }
+    }
 
     return {
       title: this.episode.title,
       assetUrl: this.episode.assetUrl,
-      percentUnderstood: actualProgress.percentKnown,
-      totalSentencesCount: this.getTotalSentenceCount(),
-      progressSegments: progressSegments.filter(segment => segment.label !== 'unknown'),
-      learnedCount: actualProgress.learnedCharacters,
-      seenCount: actualProgress.seenCharacters,
-      unknownCount: actualProgress.unknownCharacters,
+      percentUnderstood: this.episodeComprehension,
+      totalSentencesCount: this.episode.sentences?.length || 0,
+      progressSegments,
+      learnedCount,
+      seenCount,
+      unknownCount,
     };
   }
 
-  // ===== INITIALIZATION =====
   toggleCharacters() {
     this.isCharactersCollapsed = !this.isCharactersCollapsed;
   }
@@ -93,263 +121,111 @@ export class EpisodeOverviewComponent implements OnInit {
     this.isSentenceGalleryCollapsed = !this.isSentenceGalleryCollapsed;
   }
 
-  private extractRouteParameters() {
-    this.route.params.subscribe(params => {
-      this.mediaId = params['mediaId'] || '';
-      this.episodeId = params['episodeId'] || '';
-
-      if (this.hasValidRouteParameters()) {
-        this.loadEpisodeData();
-      } else {
-        this.handleRouteError();
-      }
-    });
-  }
-
-  private hasValidRouteParameters(): boolean {
-    return !!(this.mediaId && this.episodeId);
-  }
-
-  private handleRouteError() {
-    this.error = 'Missing required route parameters.';
-    this.isLoading = false;
-  }
-
-  // ===== DATA LOADING =====
-
   private loadEpisodeData() {
     this.isLoading = true;
     this.error = null;
 
     this.mediaService.getEpisodeWithSentences(this.episodeId).subscribe({
-      next: episodeData => this.handleEpisodeLoaded(episodeData),
-      error: err => this.handleEpisodeLoadError(err),
+      next: episodeData => {
+        this.episode = episodeData;
+        this.isLoading = false;
+        this.loadEpisodeProgress();
+        this.startSentenceAnalysis();
+      },
+      error: err => {
+        console.error('Error loading episode:', err);
+        this.error = 'Failed to load episode data.';
+        this.isLoading = false;
+      },
     });
   }
 
-  private handleEpisodeLoaded(episodeData: EpisodeDTO) {
-    this.episode = episodeData;
-    this.isLoading = false;
-    this.startSentenceAnalysis();
+  private loadEpisodeProgress() {
+    this.mediaService.getEpisodeProgress(this.episodeId).subscribe({
+      next: progress => {
+        this.episodeComprehension = progress.comprehensionPercentage;
+      },
+      error: err => {
+        console.error('Error loading episode progress:', err);
+      },
+    });
   }
-
-  private handleEpisodeLoadError(err: any) {
-    console.error('Error loading episode:', err);
-    this.error = 'Failed to load episode data.';
-    this.isLoading = false;
-  }
-
-  // ===== SENTENCE ANALYSIS =====
 
   private startSentenceAnalysis() {
-    if (!this.episode) return;
+    if (!this.episode?.sentences?.length) return;
 
-    // Clear existing analysis data
-    this.sentenceAnalysisData = {};
-    this.enhancedAnalysisData = {};
+    const texts = this.episode.sentences.map(s => s.sentence);
 
-    const allSentences = this.episode.sentences || [];
-
-    if (allSentences.length === 0) return;
-
-    const texts = allSentences.map(sentence => sentence.sentence);
-
-    // Use batch enhanced analysis for better performance
-    this.mediaService.getEpisodeProgress(this.episodeId, 2).subscribe({
-      next: (progress: { comprehensionPercentage: number }) => {
-        console.log('progress', progress);
-      },
-      error: err => {
-        console.error('Error getting episode progress:', err);
-      },
-    });
-
-    this.sentenceAnalysisService.analyzeEpisode(this.episodeId).subscribe({
+    this.sentenceAnalysisService.analyzeTextsWithKnowledgeStatus(texts).subscribe({
       next: results => {
-        this.handleBatchAnalysisResults(results, allSentences);
+        results.forEach((result, index) => {
+          if (this.episode!.sentences[index]) {
+            this.sentenceAnalysisData[this.episode!.sentences[index].id] = result;
+          }
+        });
       },
-      error: err => {
-        console.error('Enhanced batch analysis failed:', err);
-      },
+      error: err => console.error('Sentence analysis failed:', err),
     });
   }
 
-  private handleBatchAnalysisResults(results: UserSentenceKnowledgeDTO[], allSentences: any[]) {
-    results.forEach((result, index) => {
-      if (allSentences[index]) {
-        this.enhancedAnalysisData[allSentences[index].id] = result;
-      }
-    });
-  }
-
-  private handleBasicBatchAnalysisResults(results: SentenceAnalysisResult[], allSentences: any[]) {
-    results.forEach((result, index) => {
-      if (allSentences[index]) {
-        this.sentenceAnalysisData[allSentences[index].id] = result;
-      }
-    });
-  }
-
-  // ===== CALCULATIONS =====
-
-  private calculateActualProgress(): {
-    percentKnown: number;
-    knownCharacters: number;
-    totalCharacters: number;
-    learnedCharacters: number;
-    seenCharacters: number;
-    unknownCharacters: number;
+  // Deduplicate characters across all sentences using Sets
+  private aggregateCharacterCounts(): {
+    learnedCount: number;
+    seenCount: number;
+    unknownCount: number;
   } {
-    if (!this.episode || !this.hasEnhancedAnalysisData()) {
-      return {
-        percentKnown: 0,
-        knownCharacters: 0,
-        totalCharacters: 0,
-        learnedCharacters: 0,
-        seenCharacters: 0,
-        unknownCharacters: 0,
-      };
-    }
+    const learnedSet = new Set<string>();
+    const seenSet = new Set<string>();
+    const unknownSet = new Set<string>();
 
-    const { totalLearnedCharacters, totalSeenCharacters, totalUnknownCharacters, totalCharacters } =
-      this.aggregateEnhancedAnalysisData();
-
-    if (totalCharacters === 0) {
-      return {
-        percentKnown: 0,
-        knownCharacters: 0,
-        totalCharacters: 0,
-        learnedCharacters: 0,
-        seenCharacters: 0,
-        unknownCharacters: 0,
-      };
-    }
-
-    const knownCharacters = totalLearnedCharacters + totalSeenCharacters;
-    const percentKnown = Math.round((knownCharacters / totalCharacters) * 100);
+    Object.values(this.sentenceAnalysisData).forEach(analysis => {
+      analysis.learned_characters?.forEach(c => learnedSet.add(c));
+      analysis.seen_characters?.forEach(c => seenSet.add(c));
+      analysis.unknown_characters?.forEach(c => {
+        if (!learnedSet.has(c) && !seenSet.has(c)) unknownSet.add(c);
+      });
+    });
 
     return {
-      percentKnown,
-      knownCharacters,
-      totalCharacters,
-      learnedCharacters: totalLearnedCharacters,
-      seenCharacters: totalSeenCharacters,
-      unknownCharacters: totalUnknownCharacters,
+      learnedCount: learnedSet.size,
+      seenCount: seenSet.size,
+      unknownCount: unknownSet.size,
     };
   }
 
-  private hasEnhancedAnalysisData(): boolean {
-    if (!this.episode) return false;
+  getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {
+    const analysis = this.sentenceAnalysisData[sentenceId];
+    if (!analysis) return { 'border-bottom': '2px solid #555' };
 
-    const allSentences = this.episode.sentences || [];
-    return (
-      allSentences.length > 0 &&
-      allSentences.every(sentence => this.enhancedAnalysisData[sentence.id] !== undefined)
-    );
+    const charData = analysis.all_characters?.find(c => c.char === char);
+    if (!charData) return { 'border-bottom': '2px solid #555' };
+
+    switch (charData.status) {
+      case 'learned':
+        return { 'border-bottom': '2px solid #28a745' };
+      case 'learning':
+        return { 'border-bottom': '2px solid #ffc107' };
+      case 'seen':
+        return { 'border-bottom': '2px solid #17a2b8' };
+      default:
+        return { 'border-bottom': '2px solid #555' };
+    }
   }
 
-  private aggregateEnhancedAnalysisData(): {
-    totalLearnedCharacters: number;
-    totalSeenCharacters: number;
-    totalUnknownCharacters: number;
-    totalCharacters: number;
-  } {
-    // Use Sets to track unique characters by status
-    let learnedChars = 0;
-    let seenChars = 0;
-    let unknownChars = 0;
-
-    if (this.episode!.sentences) {
-      this.episode!.sentences.forEach(sentence => {
-        const analysis = this.enhancedAnalysisData[sentence.id];
-        if (analysis) {
-          // Add unique characters to appropriate sets
-          learnedChars += analysis.knownCharacters;
-          unknownChars += analysis.unknownCharacters;
-        }
-      });
-    }
-
-    const totalLearnedCharacters = learnedChars;
-    const totalSeenCharacters = seenChars;
-    const totalUnknownCharacters = unknownChars;
-    const totalCharacters = totalLearnedCharacters + totalSeenCharacters + totalUnknownCharacters;
-
-    return {
-      totalLearnedCharacters,
-      totalSeenCharacters,
-      totalUnknownCharacters,
-      totalCharacters,
-    };
+  getSentenceComprehension(sentenceId: number): number {
+    const analysis = this.sentenceAnalysisData[sentenceId];
+    if (!analysis) return 0;
+    return analysis.learned_percent + analysis.seen_percent;
   }
-
-  private getTotalSentenceCount(): number {
-    if (!this.episode) return 0;
-
-    return this.episode.sentences?.length || 0;
-  }
-
-  private calculateProgressSegments(): ProgressSegment[] {
-    const progress = this.calculateActualProgress();
-    console.log('progress', progress);
-
-    if (progress.totalCharacters === 0) {
-      return [];
-    }
-
-    const learnedPercent = Math.round(
-      (progress.learnedCharacters / progress.totalCharacters) * 100
-    );
-    const seenPercent = Math.round((progress.seenCharacters / progress.totalCharacters) * 100);
-    const unknownPercent = Math.round(
-      (progress.unknownCharacters / progress.totalCharacters) * 100
-    );
-
-    const segments: ProgressSegment[] = [];
-
-    if (learnedPercent > 0) {
-      segments.push({
-        value: learnedPercent,
-        color: '#28a745', // Green for learned
-        label: 'learned',
-      });
-    }
-
-    if (seenPercent > 0) {
-      segments.push({
-        value: seenPercent,
-        color: '#17a2b8', // Cyan for seen
-        label: 'seen',
-      });
-    }
-
-    if (unknownPercent > 0) {
-      segments.push({
-        value: unknownPercent,
-        color: '#dc3545', // Red for unknown
-        label: 'unknown',
-      });
-    }
-
-    return segments;
-  }
-
-  // ===== UI UPDATES =====
-
-  // ===== USER ACTIONS =====
 
   goBack() {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   startPractice() {
-    // Navigate directly to episode practice
-    if (this.episode && this.episode.sentences && this.episode.sentences.length > 0) {
+    if (this.episode?.sentences?.length) {
       this.router.navigate(['/sentence-flashcard', this.episodeId], {
-        queryParams: {
-          mediaId: this.mediaId,
-          episodeId: this.episodeId,
-        },
+        queryParams: { mediaId: this.mediaId, episodeId: this.episodeId },
       });
     }
   }
@@ -358,8 +234,6 @@ export class EpisodeOverviewComponent implements OnInit {
     if (this.episodeVideo?.nativeElement) {
       const video = this.episodeVideo.nativeElement;
       video.paused ? video.play() : video.pause();
-    } else {
-      console.warn('Video element not found');
     }
   }
 
@@ -367,52 +241,10 @@ export class EpisodeOverviewComponent implements OnInit {
     this.router.navigate(['/media', this.mediaId, 'episodes', this.episodeId, 'video']);
   }
 
-  getWordUnderlineStyle(sentenceId: number, char: string): { [key: string]: string } {
-    const analysis = this.enhancedAnalysisData[sentenceId];
-    if (!analysis) {
-      return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
-    }
-
-    if (analysis.knownCharacters > 0) {
-      return { 'border-bottom': '3px solid #53b1ff' };
-    }
-
-    return { 'border-bottom': '3px solid #999999' }; // Darker grey for unknown
-  }
-
-  // Specific method for underline colors with higher saturation and lower lightness
-  private getUnderlineColor(easinessFactor: number): string {
-    const minEasiness = 1.3;
-    const maxEasiness = 2.5;
-
-    // Normalize easiness factor
-    const normalizedEasiness = Math.max(
-      0,
-      Math.min(1, (easinessFactor - minEasiness) / (maxEasiness - minEasiness))
-    );
-
-    // Calculate hue (red to green)
-    const hue = 0 + normalizedEasiness * 120; // 0 = red, 120 = green
-
-    // Use higher saturation and lower lightness for more vivid underlines
-    const saturation = 80; // Higher saturation
-    const lightness = 50; // Lower lightness for more vivid colors
-
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-  }
-
   goToTimestamp(timestamp: number) {
     if (this.episodeVideo?.nativeElement) {
-      // Convert milliseconds to seconds
-      const timeInSeconds = timestamp / 1000;
-      this.episodeVideo.nativeElement.currentTime = timeInSeconds;
-
-      // Pause the video if it's playing to let user see the specific moment
+      this.episodeVideo.nativeElement.currentTime = timestamp / 1000;
       this.episodeVideo.nativeElement.play();
-
-      console.log(`Navigated to timestamp: ${timeInSeconds}s`);
-    } else {
-      console.warn('Video element not found');
     }
   }
 }

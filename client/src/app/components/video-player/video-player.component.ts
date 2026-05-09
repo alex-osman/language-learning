@@ -70,6 +70,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   // Sentence analysis data
   enhancedAnalysisData: { [sentenceId: string]: EnhancedSentenceAnalysisResult } = {};
 
+  // Character click panel
+  selectedCharData: { char: string; pinyin: string; definition: string; status: string } | null = null;
+
   private timeUpdateInterval?: number;
 
   constructor(
@@ -375,20 +378,55 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private aggregateAnalysisData(): { totalKnownCharacters: number; totalCharacters: number } {
-    let totalKnownCharacters = 0;
-    let totalCharacters = 0;
+    const knownSet = new Set<string>();
+    const allSet = new Set<string>();
 
     this.episode!.sentences.forEach(sentence => {
       const analysis = this.enhancedAnalysisData[sentence.id];
       if (analysis) {
-        totalKnownCharacters += analysis.learned_count;
-        totalCharacters += analysis.total_characters;
+        analysis.all_characters.forEach(c => {
+          allSet.add(c.char);
+          if (c.status === 'learned' || c.status === 'learning' || c.status === 'seen') {
+            knownSet.add(c.char);
+          }
+        });
       } else {
-        totalCharacters += sentence.sentence.length;
+        // No data yet — count unique Chinese chars as unknown
+        sentence.sentence.split('').filter(c => /[\u4e00-\u9fff]/.test(c)).forEach(c => allSet.add(c));
       }
     });
 
-    return { totalKnownCharacters, totalCharacters };
+    return { totalKnownCharacters: knownSet.size, totalCharacters: allSet.size };
+  }
+
+  onCharacterClick(char: string) {
+    // Find character data from current sentence analysis
+    if (this.currentSentence) {
+      const analysis = this.enhancedAnalysisData[this.currentSentence.id];
+      const charData = analysis?.all_characters.find(c => c.char === char);
+      if (charData) {
+        this.selectedCharData = {
+          char,
+          pinyin: charData.charData?.pinyin || '',
+          definition: charData.charData?.definition || '',
+          status: charData.status,
+        };
+        // Pause video while inspecting
+        if (this.videoElement?.nativeElement && !this.videoElement.nativeElement.paused) {
+          this.videoElement.nativeElement.pause();
+        }
+        return;
+      }
+    }
+    // Fallback: show with no extra data
+    this.selectedCharData = { char, pinyin: '', definition: '', status: 'unknown' };
+    if (this.videoElement?.nativeElement && !this.videoElement.nativeElement.paused) {
+      this.videoElement.nativeElement.pause();
+    }
+  }
+
+  dismissCharPanel() {
+    this.selectedCharData = null;
   }
 
   @HostListener('window:keydown', ['$event'])

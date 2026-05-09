@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://mandarindb.com",
+      "localStorage": [
+        {
+          "name": "access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWxleG9zbWFuQGxpdmUuY29tIiwiaWF0IjoxNzc4Mjk2MjM0LCJleHAiOjE3Nzg5MDEwMzR9.SL_EqrLGyCeDcpn4Z1ehmR_nd13_xeaWPSiPXjAIYO0"
+        }
+      ]
+    }
+  ]
+}

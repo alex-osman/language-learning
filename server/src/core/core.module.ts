@@ -27,6 +27,8 @@ import { SRTParserService } from '../services/srt-parser.service';
 import { YouTubeImportService } from '../services/youtube-import.service';
 import { MovieAiService } from '../ai/services/movie.service';
 import { Season } from 'src/entities/season.entity';
+import { Media } from 'src/entities/media.entity';
+import { MediaService } from '../services/media.service';
 
 @Module({
   imports: [
@@ -42,6 +44,7 @@ import { Season } from 'src/entities/season.entity';
       UserSentenceKnowledge,
       UserEpisodeKnowledge,
       Season,
+      Media,
     ]),
   ],
   providers: [
@@ -61,6 +64,7 @@ import { Season } from 'src/entities/season.entity';
     SRTParserService,
     YouTubeImportService,
     MovieAiService,
+    MediaService,
   ],
   exports: [
     CharacterService,
@@ -79,6 +83,7 @@ import { Season } from 'src/entities/season.entity';
     SRTParserService,
     YouTubeImportService,
     MovieAiService,
+    MediaService,
   ],
 })
 export class CoreModule {}

@@ -82,11 +82,7 @@
           <div class="progress-indicator">
             <app-progress-indicator
               type="linear"
-              [value]="
-                ((enhancedAnalysisData[sentence.id]?.knownCharacters || 0) /
-                  (enhancedAnalysisData[sentence.id]?.totalUniqueCharacters || 1)) *
-                100
-              "
+              [value]="getSentenceComprehension(sentence.id)"
               theme="success"
               [height]="4"
               [showLabel]="false"

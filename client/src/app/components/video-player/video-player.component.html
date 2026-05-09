@@ -42,8 +42,20 @@
         *ngIf="currentSentence"
         [sentence]="currentSentence"
         [layers]="subtitleLayers"
+        (characterClick)="onCharacterClick($event)"
         class="subtitle-overlay"
       ></app-subtitle-overlay>
+
+      <!-- Character Detail Panel -->
+      <div *ngIf="selectedCharData" class="char-panel" (click)="dismissCharPanel()">
+        <div class="char-panel-content" (click)="$event.stopPropagation()">
+          <button class="char-panel-close" (click)="dismissCharPanel()">✕</button>
+          <div class="char-panel-char">{{ selectedCharData.char }}</div>
+          <div *ngIf="selectedCharData.pinyin" class="char-panel-pinyin">{{ selectedCharData.pinyin }}</div>
+          <div *ngIf="selectedCharData.definition" class="char-panel-definition">{{ selectedCharData.definition }}</div>
+          <div class="char-panel-status" [class]="'status-' + selectedCharData.status">{{ selectedCharData.status }}</div>
+        </div>
+      </div>
     </div>
 
     <!-- Player Controls -->

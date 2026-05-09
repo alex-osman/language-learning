@@ -225,3 +225,65 @@
     }
   }
 }
+.char-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+
+  .char-panel-content {
+    background: #1e1e2e;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    min-width: 160px;
+    position: relative;
+  }
+
+  .char-panel-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    &:hover { color: #fff; }
+  }
+
+  .char-panel-char {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+
+  .char-panel-pinyin {
+    font-size: 1.1rem;
+    color: #aad4f5;
+    margin-bottom: 0.3rem;
+  }
+
+  .char-panel-definition {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 0.75rem;
+  }
+
+  .char-panel-status {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+    &.status-learned  { background: #28a745; color: #fff; }
+    &.status-learning { background: #ffc107; color: #000; }
+    &.status-seen     { background: #17a2b8; color: #fff; }
+    &.status-unknown  { background: #555;    color: #ccc; }
+  }
+}
