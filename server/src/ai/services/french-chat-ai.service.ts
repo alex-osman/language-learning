@@ -64,7 +64,6 @@ Example:
       const completion = await this.openai.chat.completions.create({
         model: this.CHAT_MODEL,
         messages: apiMessages,
-        temperature: 0.7,
         max_completion_tokens: 150,
       });
 
@@ -82,7 +81,6 @@ Example:
       const structuredCompletion = await this.openai.chat.completions.create({
         model: this.CHAT_MODEL,
         messages: structureMessages,
-        temperature: 0,
         max_completion_tokens: 2000,
         response_format: { type: 'json_object' },
       });

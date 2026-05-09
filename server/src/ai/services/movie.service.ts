@@ -73,7 +73,6 @@ The scene should help remember both the character's appearance and meaning throu
             content: prompt,
           },
         ],
-        temperature: 0.8,
         max_completion_tokens: 350,
       });
       const movieScene = completion.choices[0]?.message?.content;

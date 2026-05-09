@@ -78,7 +78,6 @@ export class CritiqueAiService extends BaseAiService {
       const completion = await this.openai.chat.completions.create({
         model: this.CHAT_MODEL,
         messages: apiMessages,
-        temperature: 0.7,
         max_completion_tokens: 500,
       });
 
