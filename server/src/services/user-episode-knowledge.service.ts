@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEpisodeKnowledge } from '../entities/user-episode-knowledge.entity';
 import { Episode } from '../entities/episode.entity';
-import { SentenceAnalyzerService } from './sentence-analyzer.service';
+import { Character } from '../entities/character.entity';
+import {
+  CharacterKnowledgeStatus,
+  UserCharacterKnowledgeService,
+} from './user-character-knowledge.service';
 
 @Injectable()
 export class UserEpisodeKnowledgeService {
@@ -12,7 +16,9 @@ export class UserEpisodeKnowledgeService {
     private userEpisodeKnowledgeRepository: Repository<UserEpisodeKnowledge>,
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
-    private sentenceAnalyzerService: SentenceAnalyzerService,
+    @InjectRepository(Character)
+    private characterRepository: Repository<Character>,
+    private userCharacterKnowledgeService: UserCharacterKnowledgeService,
   ) {}
 
   async findByUserAndEpisode(
@@ -44,26 +50,56 @@ export class UserEpisodeKnowledgeService {
     });
     if (!episode) throw new Error('Episode not found');
 
-    const analyses = await this.sentenceAnalyzerService.analyzeSentenceIds(
-      episode.sentences.map((s) => s.id),
-      userId,
+    // Count total character occurrences and known occurrences.
+    // "Known" = seen, learning, or learned (anything with a firstSeenDate or lastReviewDate).
+    // Denominator = total char occurrences (non-unique) so common chars like 的 count fully.
+    const allText = episode.sentences.map((s) => s.sentence).join('');
+    const chars = allText.replace(/[^\u4e00-\u9fff]/g, '').split('');
+
+    const charCounts = new Map<string, number>();
+    for (const c of chars) {
+      charCounts.set(c, (charCounts.get(c) || 0) + 1);
+    }
+
+    const totalOccurrences = chars.length;
+    const uniqueChars = Array.from(charCounts.keys());
+
+    // Batch fetch character DB records
+    const charRecords = await Promise.all(
+      uniqueChars.map((c) =>
+        this.characterRepository.findOne({ where: { character: c } }),
+      ),
     );
 
-    const knownCount = analyses.reduce((acc, cur) => acc + cur.known_count, 0);
-    const totalCount = analyses.reduce(
-      (acc, cur) => acc + cur.total_characters,
-      0,
+    // For each unique char, check knowledge status and multiply by occurrence count
+    let knownOccurrences = 0;
+    await Promise.all(
+      uniqueChars.map(async (char, i) => {
+        const charRecord = charRecords[i];
+        if (!charRecord) return;
+        const status =
+          await this.userCharacterKnowledgeService.getCharacterKnowledgeStatus(
+            userId,
+            charRecord.id,
+          );
+        if (status !== CharacterKnowledgeStatus.UNKNOWN) {
+          knownOccurrences += charCounts.get(char) || 0;
+        }
+      }),
     );
+
     const comprehensionPercentage =
-      totalCount > 0 ? (knownCount / totalCount) * 100 : 0;
+      totalOccurrences > 0
+        ? Math.round((knownOccurrences / totalOccurrences) * 100)
+        : 0;
 
     const recordData = {
       userID: userId,
       episodeID: episodeId,
-      comprehensionPercentage: Math.round(comprehensionPercentage),
-      totalUniqueCharacters: totalCount,
-      knownCharacters: knownCount,
-      unknownCharacters: totalCount - knownCount,
+      comprehensionPercentage,
+      totalUniqueCharacters: totalOccurrences,
+      knownCharacters: knownOccurrences,
+      unknownCharacters: totalOccurrences - knownOccurrences,
       calculatedAt: new Date(),
     } as Partial<UserEpisodeKnowledge>;
 

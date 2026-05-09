@@ -378,25 +378,25 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private aggregateAnalysisData(): { totalKnownCharacters: number; totalCharacters: number } {
-    const knownSet = new Set<string>();
-    const allSet = new Set<string>();
+    let knownOccurrences = 0;
+    let totalOccurrences = 0;
 
     this.episode!.sentences.forEach(sentence => {
       const analysis = this.enhancedAnalysisData[sentence.id];
       if (analysis) {
         analysis.all_characters.forEach(c => {
-          allSet.add(c.char);
+          totalOccurrences += c.count;
           if (c.status === 'learned' || c.status === 'learning' || c.status === 'seen') {
-            knownSet.add(c.char);
+            knownOccurrences += c.count;
           }
         });
       } else {
-        // No data yet — count unique Chinese chars as unknown
-        sentence.sentence.split('').filter(c => /[\u4e00-\u9fff]/.test(c)).forEach(c => allSet.add(c));
+        // No data yet — count as unknown occurrences
+        totalOccurrences += sentence.sentence.split('').filter(c => /[\u4e00-\u9fff]/.test(c)).length;
       }
     });
 
-    return { totalKnownCharacters: knownSet.size, totalCharacters: allSet.size };
+    return { totalKnownCharacters: knownOccurrences, totalCharacters: totalOccurrences };
   }
 
   onCharacterClick(char: string) {
