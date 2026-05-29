@@ -6,6 +6,8 @@ import { Character } from '../entities/character.entity';
 import { UserCharacterKnowledge } from '../entities/user-character-knowledge.entity';
 import { Sentence } from '../entities/sentence.entity';
 import { UserWordKnowledgeService } from './user-word-knowledge.service';
+
+const CJK_RE = /[一-鿿]/g;
 import {
   CharKnowledgeDTO,
   CharKnowledgeStatus,
@@ -105,6 +107,27 @@ export class LessonService {
 
     const dialogueNums = [...byDialogue.keys()].sort((a, b) => a - b);
     return dialogueNums.map((dn) => byDialogue.get(dn)!);
+  }
+
+  async autoMarkLearnedByChars(userId: number, lessonNumber: number): Promise<number[]> {
+    const words = await this.wordRepository.find({ where: { lessonNumber }, order: { id: 'ASC' } });
+    if (words.length === 0) return [];
+
+    const wordIds = words.map((w) => w.id);
+    const statusMap = await this.userWordKnowledgeService.getStatusMap(userId, wordIds);
+    const charKnowledge = await this.buildCharKnowledgeMap(userId, words.map((w) => w.word));
+
+    const markedIds: number[] = [];
+    for (const word of words) {
+      if ((statusMap.get(word.id) ?? 'unknown') === 'learned') continue;
+      const chars = word.word.match(CJK_RE) ?? [];
+      if (chars.length === 0) continue;
+      if (chars.every((ch) => charKnowledge[ch]?.status === 'learned')) {
+        await this.userWordKnowledgeService.markAsKnown(userId, word.id);
+        markedIds.push(word.id);
+      }
+    }
+    return markedIds;
   }
 
   private async buildCharKnowledgeMap(

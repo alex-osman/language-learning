@@ -72,8 +72,24 @@ export class LessonDetailComponent implements OnInit {
   }
 
   markingAllSeen = false;
+  autoMarkingLearned = false;
   showPinyin = false;
   showEnglish = false;
+
+  autoMarkLearned(): void {
+    if (!this.lesson) return;
+    this.autoMarkingLearned = true;
+    this.lessonService.autoMarkLearned(this.lessonNumber).subscribe({
+      next: (markedIds) => {
+        const idSet = new Set(markedIds);
+        this.lesson!.words.forEach((w) => {
+          if (idSet.has(w.id)) w.knowledgeStatus = 'learned';
+        });
+        this.autoMarkingLearned = false;
+      },
+      error: () => { this.autoMarkingLearned = false; },
+    });
+  }
 
   markAllSeen(): void {
     if (!this.lesson) return;

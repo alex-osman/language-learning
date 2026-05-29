@@ -63,6 +63,10 @@ export class LessonService {
     return this.http.get<LessonDetailDTO>(`${this.apiUrl}/${lessonNumber}`);
   }
 
+  autoMarkLearned(lessonNumber: number): Observable<number[]> {
+    return this.http.post<number[]>(`${this.apiUrl}/${lessonNumber}/auto-mark-learned`, {});
+  }
+
   markAllSeen(lessonNumber: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${lessonNumber}/mark-all-seen`, {});
   }

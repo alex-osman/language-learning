@@ -10,9 +10,14 @@
     <h2>Lesson {{ lesson.lessonNumber }}</h2>
     <div class="lesson-header-row">
       <p class="word-count-label">{{ lesson.words.length }} vocabulary words</p>
-      <button class="mark-seen-btn" (click)="markAllSeen()" [disabled]="markingAllSeen">
-        {{ markingAllSeen ? 'Marking...' : 'Mark all as seen' }}
-      </button>
+      <div class="header-actions">
+        <button class="mark-seen-btn" (click)="autoMarkLearned()" [disabled]="autoMarkingLearned">
+          {{ autoMarkingLearned ? 'Marking...' : 'Auto-mark learned' }}
+        </button>
+        <button class="mark-seen-btn" (click)="markAllSeen()" [disabled]="markingAllSeen">
+          {{ markingAllSeen ? 'Marking...' : 'Mark all as seen' }}
+        </button>
+      </div>
     </div>
 
     <div class="legend">

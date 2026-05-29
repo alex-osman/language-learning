@@ -16,6 +16,15 @@ export class LessonsController {
     return this.lessonService.getLessonsSummary(userId);
   }
 
+  @Post(':lessonNumber/auto-mark-learned')
+  @HttpCode(200)
+  autoMarkLearned(
+    @UserID() userId: number,
+    @Param('lessonNumber', ParseIntPipe) lessonNumber: number,
+  ): Promise<number[]> {
+    return this.lessonService.autoMarkLearnedByChars(userId, lessonNumber);
+  }
+
   @Post(':lessonNumber/mark-all-seen')
   @HttpCode(204)
   async markAllSeen(
