@@ -5,6 +5,37 @@
   <div *ngIf="isLoading" class="loading">Loading lessons...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
 
+  <div class="summary-banner" *ngIf="!isLoading && !error && totalWords > 0">
+    <div class="summary-stats">
+      <div class="stat">
+        <span class="stat-value">{{ totalWords }}</span>
+        <span class="stat-label">total words</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value learned">{{ totalLearned }}</span>
+        <span class="stat-label">learned <span class="stat-pct">{{ pct(totalLearned) }}%</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-value learning">{{ totalLearning }}</span>
+        <span class="stat-label">learning <span class="stat-pct">{{ pct(totalLearning) }}%</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-value seen">{{ totalSeen }}</span>
+        <span class="stat-label">seen <span class="stat-pct">{{ pct(totalSeen) }}%</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-value unknown">{{ totalUnknown }}</span>
+        <span class="stat-label">unseen <span class="stat-pct">{{ pct(totalUnknown) }}%</span></span>
+      </div>
+    </div>
+    <div class="summary-bar">
+      <div class="summary-bar-fill learned"  [style.width.%]="pct(totalLearned)"></div>
+      <div class="summary-bar-fill learning" [style.width.%]="pct(totalLearning)"></div>
+      <div class="summary-bar-fill seen"     [style.width.%]="pct(totalSeen)"></div>
+    </div>
+  </div>
+
   <div class="lessons-grid" *ngIf="!isLoading && !error">
     <div
       class="lesson-card"
