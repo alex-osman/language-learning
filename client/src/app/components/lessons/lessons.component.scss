@@ -1,0 +1,123 @@
+.lessons-page {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.6rem;
+    color: #222;
+  }
+
+  .subtitle {
+    color: #888;
+    margin: 0 0 2rem;
+    font-size: 0.95rem;
+  }
+}
+
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.lesson-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+  padding: 1.25rem 1.2rem 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
+    transform: translateY(-2px);
+  }
+}
+
+.lesson-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.2rem;
+}
+
+.word-count {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 0.8rem;
+}
+
+.progress-section {
+  margin-top: auto;
+}
+
+.status-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+  min-height: 22px;
+}
+
+.pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.01em;
+
+  &.pill-learned {
+    background: #d4edda;
+    color: #2e7d32;
+  }
+
+  &.pill-learning {
+    background: #fff3cd;
+    color: #7a5c00;
+  }
+
+  &.pill-seen {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+}
+
+.progress-bar-track {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+
+  &.empty {
+    background: #f0f0f0;
+  }
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.3s;
+
+  &.learned {
+    background: #4caf50;
+  }
+
+  &.learning {
+    background: #ffc107;
+  }
+
+  &.seen {
+    background: #64b5f6;
+  }
+}
+
+.loading,
+.error {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 3rem;
+}

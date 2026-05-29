@@ -23,6 +23,9 @@ import { UserEpisodeKnowledge } from 'src/entities/user-episode-knowledge.entity
 import { UserCharacterKnowledgeService } from '../services/user-character-knowledge.service';
 import { UserSentenceKnowledgeService } from '../services/user-sentence-knowledge.service';
 import { UserEpisodeKnowledgeService } from '../services/user-episode-knowledge.service';
+import { UserWordKnowledge } from 'src/entities/user-word-knowledge.entity';
+import { UserWordKnowledgeService } from '../services/user-word-knowledge.service';
+import { LessonService } from '../services/lesson.service';
 import { SRTParserService } from '../services/srt-parser.service';
 import { YouTubeImportService } from '../services/youtube-import.service';
 import { MovieAiService } from '../ai/services/movie.service';
@@ -43,6 +46,7 @@ import { MediaService } from '../services/media.service';
       UserCharacterKnowledge,
       UserSentenceKnowledge,
       UserEpisodeKnowledge,
+      UserWordKnowledge,
       Season,
       Media,
     ]),
@@ -61,6 +65,8 @@ import { MediaService } from '../services/media.service';
     UserCharacterKnowledgeService,
     UserSentenceKnowledgeService,
     UserEpisodeKnowledgeService,
+    UserWordKnowledgeService,
+    LessonService,
     SRTParserService,
     YouTubeImportService,
     MovieAiService,
@@ -80,6 +86,8 @@ import { MediaService } from '../services/media.service';
     UserCharacterKnowledgeService,
     UserSentenceKnowledgeService,
     UserEpisodeKnowledgeService,
+    UserWordKnowledgeService,
+    LessonService,
     SRTParserService,
     YouTubeImportService,
     MovieAiService,

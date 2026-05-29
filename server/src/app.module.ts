@@ -30,6 +30,8 @@ import { AuthGuard } from './auth/auth.guard';
 import { SeasonsController } from './seasons/seasons.controller';
 import { YouTubeImportController } from './controllers/youtube-import.controller';
 import { MediaController } from './controllers/media.controller';
+import { LessonsController } from './controllers/lessons.controller';
+import { WordFlashcardController } from './controllers/word-flashcard.controller';
 
 @Module({
   imports: [
@@ -61,6 +63,8 @@ import { MediaController } from './controllers/media.controller';
     SeasonsController,
     YouTubeImportController,
     MediaController,
+    LessonsController,
+    WordFlashcardController,
   ],
   providers: [
     AppService,

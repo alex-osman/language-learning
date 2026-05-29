@@ -20,6 +20,15 @@ export class Word {
   @Column({ type: 'int', nullable: true })
   frequencyRank: number;
 
+  @Column({ type: 'int', nullable: true })
+  lessonNumber: number | null;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  partOfSpeech: string | null;
+
+  @Column({ type: 'tinyint', default: 0 })
+  isProperNoun: boolean;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 }

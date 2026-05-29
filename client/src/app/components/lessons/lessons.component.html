@@ -1,0 +1,42 @@
+<div class="lessons-page">
+  <h2>Integrated Chinese — Lessons</h2>
+  <p class="subtitle">Vocabulary from IC Level 1 Part 1</p>
+
+  <div *ngIf="isLoading" class="loading">Loading lessons...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="lessons-grid" *ngIf="!isLoading && !error">
+    <div
+      class="lesson-card"
+      *ngFor="let lesson of lessons"
+      (click)="goToLesson(lesson.lessonNumber)"
+    >
+      <div class="lesson-number">Lesson {{ lesson.lessonNumber }}</div>
+      <div class="word-count">{{ lesson.wordCount }} words</div>
+
+      <div class="progress-section">
+        <div class="status-pills">
+          <span class="pill pill-learned" *ngIf="lesson.learnedCount > 0">{{ lesson.learnedCount }} learned</span>
+          <span class="pill pill-learning" *ngIf="lesson.learningCount > 0">{{ lesson.learningCount }} learning</span>
+          <span class="pill pill-seen" *ngIf="lesson.seenCount > 0">{{ lesson.seenCount }} seen</span>
+        </div>
+
+        <div class="progress-bar-track" *ngIf="progressPercent(lesson) > 0">
+          <div
+            class="progress-bar-fill learned"
+            [style.width.%]="learnedPercent(lesson)"
+          ></div>
+          <div
+            class="progress-bar-fill learning"
+            [style.width.%]="(lesson.learningCount / lesson.wordCount) * 100"
+          ></div>
+          <div
+            class="progress-bar-fill seen"
+            [style.width.%]="(lesson.seenCount / lesson.wordCount) * 100"
+          ></div>
+        </div>
+        <div class="progress-bar-track empty" *ngIf="progressPercent(lesson) === 0"></div>
+      </div>
+    </div>
+  </div>
+</div>

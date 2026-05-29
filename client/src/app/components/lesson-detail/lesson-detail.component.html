@@ -1,0 +1,144 @@
+<div class="lesson-detail-page">
+  <div class="back-link">
+    <a routerLink="/lessons">← All Lessons</a>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container *ngIf="!isLoading && lesson">
+    <h2>Lesson {{ lesson.lessonNumber }}</h2>
+    <div class="lesson-header-row">
+      <p class="word-count-label">{{ lesson.words.length }} vocabulary words</p>
+      <button class="mark-seen-btn" (click)="markAllSeen()" [disabled]="markingAllSeen">
+        {{ markingAllSeen ? 'Marking...' : 'Mark all as seen' }}
+      </button>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch swatch-unknown"></span>Not seen</span>
+      <span class="legend-item"><span class="legend-swatch swatch-seen"></span>Seen</span>
+      <span class="legend-item"><span class="legend-swatch swatch-learning"></span>Learning</span>
+      <span class="legend-item"><span class="legend-swatch swatch-learned"></span>Learned</span>
+    </div>
+
+    <div class="word-table-section">
+      <h3 *ngIf="properNouns.length > 0">Core Vocabulary</h3>
+      <div class="word-table">
+        <div class="word-row header-row">
+          <span>Chinese</span>
+          <span>Pinyin</span>
+          <span>POS</span>
+          <span>Definition</span>
+          <span>Status</span>
+        </div>
+        <div
+          class="word-row"
+          *ngFor="let word of coreWords"
+          [class]="'status-' + word.knowledgeStatus"
+        >
+          <span class="chinese">
+            <span
+              *ngFor="let span of spansFor(word.id)"
+              class="char-span"
+              [style.--underline-color]="span.color"
+              appCharacterHover
+              (characterHover)="onCharacterHover($event)"
+              (characterLeave)="onCharacterLeave()"
+            >{{ span.char }}</span>
+          </span>
+          <span class="pinyin">{{ word.pinyin }}</span>
+          <span class="pos">{{ word.partOfSpeech || '' }}</span>
+          <span class="definition">{{ word.definition }}</span>
+          <span
+            class="status-badge"
+            [class]="'badge-' + word.knowledgeStatus"
+            (click)="toggleKnown(word)"
+            title="{{ word.knowledgeStatus === 'learned' ? 'Click to reset' : 'Click to mark as known' }}"
+          >{{ statusLabel(word.knowledgeStatus) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="word-table-section" *ngIf="properNouns.length > 0">
+      <h3>Proper Nouns</h3>
+      <div class="word-table">
+        <div class="word-row header-row">
+          <span>Chinese</span>
+          <span>Pinyin</span>
+          <span>POS</span>
+          <span>Definition</span>
+          <span>Status</span>
+        </div>
+        <div
+          class="word-row"
+          *ngFor="let word of properNouns"
+          [class]="'status-' + word.knowledgeStatus"
+        >
+          <span class="chinese">
+            <span
+              *ngFor="let span of spansFor(word.id)"
+              class="char-span"
+              [style.--underline-color]="span.color"
+              appCharacterHover
+              (characterHover)="onCharacterHover($event)"
+              (characterLeave)="onCharacterLeave()"
+            >{{ span.char }}</span>
+          </span>
+          <span class="pinyin">{{ word.pinyin }}</span>
+          <span class="pos">{{ word.partOfSpeech || '' }}</span>
+          <span class="definition">{{ word.definition }}</span>
+          <span
+            class="status-badge"
+            [class]="'badge-' + word.knowledgeStatus"
+            (click)="toggleKnown(word)"
+            title="{{ word.knowledgeStatus === 'learned' ? 'Click to reset' : 'Click to mark as known' }}"
+          >{{ statusLabel(word.knowledgeStatus) }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="dialogues-section" *ngIf="lesson.dialogues && lesson.dialogues.length > 0">
+      <div class="dialogues-header">
+        <h3 class="section-title">Dialogues</h3>
+        <div class="dialogue-toggles">
+          <button
+            class="toggle-btn"
+            [class.active]="showPinyin"
+            (click)="showPinyin = !showPinyin"
+          >Pinyin</button>
+          <button
+            class="toggle-btn"
+            [class.active]="showEnglish"
+            (click)="showEnglish = !showEnglish"
+          >English</button>
+        </div>
+      </div>
+      <div class="dialogue-block" *ngFor="let dialogue of lesson.dialogues; let di = index">
+        <h4 class="dialogue-title">Dialogue {{ di + 1 }}</h4>
+        <div class="dialogue-lines">
+          <div class="dialogue-line" *ngFor="let s of dialogue" [class.pinyin-hidden]="!showPinyin" [class.english-hidden]="!showEnglish">
+            <div class="dialogue-chinese">
+              <span
+                *ngFor="let span of spansForSentence(s.id)"
+                class="char-span"
+                [style.--underline-color]="span.color"
+                appCharacterHover
+                (characterHover)="onCharacterHover($event)"
+                (characterLeave)="onCharacterLeave()"
+              >{{ span.char }}</span>
+            </div>
+            <div class="dialogue-pinyin" *ngIf="showPinyin">{{ s.pinyin }}</div>
+            <div class="dialogue-english" *ngIf="showEnglish">{{ s.english }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+<app-character-tooltip
+  *ngIf="hoveredCharacter"
+  [analyzedCharacter]="hoveredCharacter"
+  [position]="tooltipPosition"
+  [showDetailed]="true"
+></app-character-tooltip>
+</div>

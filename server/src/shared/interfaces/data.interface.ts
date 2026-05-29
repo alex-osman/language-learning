@@ -79,7 +79,57 @@ export interface WordDTO {
   definition: string;
   notes?: string;
   frequencyRank?: number;
+  lessonNumber?: number | null;
+  partOfSpeech?: string | null;
+  isProperNoun?: boolean;
   createdAt: Date;
+}
+
+export type WordKnowledgeStatus = 'unknown' | 'seen' | 'learning' | 'learned';
+
+export interface LessonWordDTO {
+  id: number;
+  word: string;
+  pinyin: string;
+  definition: string;
+  partOfSpeech?: string | null;
+  isProperNoun: boolean;
+  knowledgeStatus: WordKnowledgeStatus;
+}
+
+export interface LessonSummaryDTO {
+  lessonNumber: number;
+  wordCount: number;
+  seenCount: number;
+  learningCount: number;
+  learnedCount: number;
+}
+
+export type CharKnowledgeStatus = 'unknown' | 'seen' | 'learning' | 'learned';
+
+export interface CharKnowledgeDTO {
+  status: CharKnowledgeStatus;
+  score: number; // 0–1, for learning/learned gradient (red → green)
+  pinyin?: string;
+  definition?: string;
+  easinessFactor?: number;
+  repetitions?: number;
+}
+
+export interface LessonSentenceDTO {
+  id: number;
+  chinese: string;
+  pinyin: string;
+  english: string;
+  dialogueNumber: number;
+  sequenceOrder: number;
+}
+
+export interface LessonDetailDTO {
+  lessonNumber: number;
+  words: LessonWordDTO[];
+  charKnowledge: Record<string, CharKnowledgeDTO>; // keyed by Chinese character
+  dialogues: LessonSentenceDTO[][];  // dialogues[0] = Dialogue I, dialogues[1] = Dialogue II
 }
 
 export interface DataStructure {

@@ -14,13 +14,13 @@ export class Sentence {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 300, nullable: true })
+  @Column({ type: 'text', nullable: true })
   sentence: string;
 
-  @Column({ type: 'varchar', length: 300, nullable: true })
+  @Column({ type: 'text', nullable: true })
   pinyin: string;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
+  @Column({ type: 'text', nullable: true })
   translation: string;
 
   @Column({ type: 'varchar', length: 200, nullable: true })
@@ -59,6 +59,15 @@ export class Sentence {
     (userSentenceKnowledge) => userSentenceKnowledge.sentence,
   )
   userSentenceKnowledge: UserSentenceKnowledge[];
+
+  @Column({ type: 'int', nullable: true })
+  lesson_number: number | null;
+
+  @Column({ type: 'int', nullable: true })
+  dialogue_number: number | null;
+
+  @Column({ type: 'int', nullable: true })
+  sequence_order: number | null;
 
   @ManyToOne(() => Episode, (episode) => episode.sentences, { nullable: true })
   @JoinColumn({ name: 'episode_id' })

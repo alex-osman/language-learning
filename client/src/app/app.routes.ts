@@ -18,6 +18,9 @@ import { SentenceGalleryComponent } from './components/sentence-gallery/sentence
 import { VideoPlayerComponent } from './components/video-player/video-player.component';
 import { CharacterConnectionsComponent } from './components/character-connections/character-connections.component';
 import { authGuard } from './guards/auth.guard';
+import { LessonsComponent } from './components/lessons/lessons.component';
+import { LessonDetailComponent } from './components/lesson-detail/lesson-detail.component';
+import { WordFlashcardsComponent } from './components/word-flashcards/word-flashcards.component';
 
 export const routes: Routes = [
   {
@@ -75,6 +78,21 @@ export const routes: Routes = [
   {
     path: 'learning',
     component: LearningComponent,
+  },
+  {
+    path: 'lessons',
+    component: LessonsComponent,
+    title: 'Lessons',
+  },
+  {
+    path: 'lessons/:lessonNumber',
+    component: LessonDetailComponent,
+    title: 'Lesson',
+  },
+  {
+    path: 'word-flashcards',
+    component: WordFlashcardsComponent,
+    title: 'Word Flashcards',
   },
   // Hierarchical gallery routes
   {
