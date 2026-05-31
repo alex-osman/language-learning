@@ -105,19 +105,11 @@
     <div class="dialogues-section" *ngIf="lesson.dialogues && lesson.dialogues.length > 0">
       <div class="dialogues-header">
         <h3 class="section-title">Dialogues</h3>
-        <select
-          *ngIf="availableVoices.length > 1"
-          class="voice-picker"
-          [value]="selectedVoiceName"
-          (change)="onVoiceChange($any($event.target).value)"
-        >
-          <option *ngFor="let v of availableVoices" [value]="v.name">{{ v.name }}</option>
-        </select>
       </div>
       <div class="dialogue-block" *ngFor="let dialogue of lesson.dialogues; let di = index">
         <h4 class="dialogue-title">Dialogue {{ di + 1 }}</h4>
         <div class="dialogue-lines">
-          <div class="dialogue-line" *ngFor="let s of dialogue"
+          <div class="dialogue-line" *ngFor="let s of dialogue; let si = index"
             [class.has-pinyin]="lineShow(s.id).p"
             [class.has-english]="lineShow(s.id).e">
             <div class="dialogue-chinese">
@@ -135,7 +127,7 @@
             <div class="line-toggles">
               <button class="line-toggle-btn" [class.active]="lineShow(s.id).p" (click)="toggleLineP(s.id)">PY</button>
               <button class="line-toggle-btn" [class.active]="lineShow(s.id).e" (click)="toggleLineE(s.id)">EN</button>
-              <button class="line-toggle-btn speak-btn" [class.active]="speakingId === s.id" (click)="speak(s.id, s.chinese)">
+              <button class="line-toggle-btn speak-btn" [class.active]="speakingId === s.id" (click)="speak(s.id, s.chinese, si)">
                 {{ speakingId === s.id ? '■' : '▶' }}
               </button>
             </div>

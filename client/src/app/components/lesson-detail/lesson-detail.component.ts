@@ -80,26 +80,13 @@ export class LessonDetailComponent implements OnInit {
   autoMarkingLearned = false;
   lineState = new Map<number, { p: boolean; e: boolean }>();
 
-  availableVoices: SpeechSynthesisVoice[] = [];
-  selectedVoiceName: string | null = null;
+  private meijiaVoice: SpeechSynthesisVoice | null = null;
+  private tingtingVoice: SpeechSynthesisVoice | null = null;
 
   private loadVoices(): void {
     const all = window.speechSynthesis.getVoices();
-    const zh = all.filter((v) => v.lang.startsWith('zh'));
-    if (zh.length) {
-      this.availableVoices = zh;
-      const saved = localStorage.getItem('tts-voice');
-      if (saved && zh.find((v) => v.name === saved)) {
-        this.selectedVoiceName = saved;
-      } else {
-        this.selectedVoiceName = zh[0].name;
-      }
-    }
-  }
-
-  onVoiceChange(name: string): void {
-    this.selectedVoiceName = name;
-    localStorage.setItem('tts-voice', name);
+    this.meijiaVoice = all.find((v) => v.name.toLowerCase().replace('-', '') === 'meijia') ?? null;
+    this.tingtingVoice = all.find((v) => v.name.toLowerCase().replace('-', '') === 'tingting') ?? null;
   }
 
   lineShow(id: number): { p: boolean; e: boolean } {
@@ -112,16 +99,14 @@ export class LessonDetailComponent implements OnInit {
 
   speakingId: number | null = null;
 
-  speak(id: number, text: string): void {
+  speak(id: number, text: string, lineIndex: number = 0): void {
     window.speechSynthesis.cancel();
     if (this.speakingId === id) { this.speakingId = null; return; }
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = 'zh-CN';
     utt.rate = 1.0;
-    if (this.selectedVoiceName) {
-      const voice = this.availableVoices.find((v) => v.name === this.selectedVoiceName);
-      if (voice) utt.voice = voice;
-    }
+    const voice = lineIndex % 2 === 0 ? this.meijiaVoice : this.tingtingVoice;
+    if (voice) utt.voice = voice;
     utt.onend = () => { this.speakingId = null; };
     utt.onerror = () => { this.speakingId = null; };
     this.speakingId = id;
