@@ -127,6 +127,9 @@
             <div class="line-toggles">
               <button class="line-toggle-btn" [class.active]="lineShow(s.id).p" (click)="toggleLineP(s.id)">PY</button>
               <button class="line-toggle-btn" [class.active]="lineShow(s.id).e" (click)="toggleLineE(s.id)">EN</button>
+              <button class="line-toggle-btn speak-btn" [class.active]="speakingId === s.id" (click)="speak(s.id, s.chinese)">
+                {{ speakingId === s.id ? '■' : '▶' }}
+              </button>
             </div>
           </div>
         </div>

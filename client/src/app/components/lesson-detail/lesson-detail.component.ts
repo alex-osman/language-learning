@@ -83,6 +83,20 @@ export class LessonDetailComponent implements OnInit {
   toggleLineP(id: number): void { const s = this.lineShow(id); s.p = !s.p; }
   toggleLineE(id: number): void { const s = this.lineShow(id); s.e = !s.e; }
 
+  speakingId: number | null = null;
+
+  speak(id: number, text: string): void {
+    window.speechSynthesis.cancel();
+    if (this.speakingId === id) { this.speakingId = null; return; }
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'zh-CN';
+    utt.rate = 0.85;
+    utt.onend = () => { this.speakingId = null; };
+    utt.onerror = () => { this.speakingId = null; };
+    this.speakingId = id;
+    window.speechSynthesis.speak(utt);
+  }
+
   autoMarkLearned(): void {
     if (!this.lesson) return;
     this.autoMarkingLearned = true;

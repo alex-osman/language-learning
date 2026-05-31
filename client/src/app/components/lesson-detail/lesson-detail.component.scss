@@ -258,6 +258,12 @@
     color: #1565c0;
     background: #e3f2fd;
   }
+
+  &.speak-btn.active {
+    border-color: #a5d6a7;
+    color: #2e7d32;
+    background: #f1f8e9;
+  }
 }
 
 .loading,
