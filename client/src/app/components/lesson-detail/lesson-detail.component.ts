@@ -52,6 +52,11 @@ export class LessonDetailComponent implements OnInit {
         this.isLoading = false;
       },
     });
+
+    this.loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+    }
   }
 
   get coreWords(): LessonWordDTO[] {
@@ -75,6 +80,28 @@ export class LessonDetailComponent implements OnInit {
   autoMarkingLearned = false;
   lineState = new Map<number, { p: boolean; e: boolean }>();
 
+  availableVoices: SpeechSynthesisVoice[] = [];
+  selectedVoiceName: string | null = null;
+
+  private loadVoices(): void {
+    const all = window.speechSynthesis.getVoices();
+    const zh = all.filter((v) => v.lang.startsWith('zh'));
+    if (zh.length) {
+      this.availableVoices = zh;
+      const saved = localStorage.getItem('tts-voice');
+      if (saved && zh.find((v) => v.name === saved)) {
+        this.selectedVoiceName = saved;
+      } else {
+        this.selectedVoiceName = zh[0].name;
+      }
+    }
+  }
+
+  onVoiceChange(name: string): void {
+    this.selectedVoiceName = name;
+    localStorage.setItem('tts-voice', name);
+  }
+
   lineShow(id: number): { p: boolean; e: boolean } {
     if (!this.lineState.has(id)) this.lineState.set(id, { p: false, e: false });
     return this.lineState.get(id)!;
@@ -90,7 +117,11 @@ export class LessonDetailComponent implements OnInit {
     if (this.speakingId === id) { this.speakingId = null; return; }
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = 'zh-CN';
-    utt.rate = 0.85;
+    utt.rate = 1.0;
+    if (this.selectedVoiceName) {
+      const voice = this.availableVoices.find((v) => v.name === this.selectedVoiceName);
+      if (voice) utt.voice = voice;
+    }
     utt.onend = () => { this.speakingId = null; };
     utt.onerror = () => { this.speakingId = null; };
     this.speakingId = id;
