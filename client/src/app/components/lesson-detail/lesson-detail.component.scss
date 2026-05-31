@@ -184,9 +184,6 @@
 }
 
 .dialogues-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 1rem;
 }
 
@@ -194,29 +191,6 @@
   font-size: 1.05rem;
   color: #555;
   margin: 0;
-}
-
-.dialogue-toggles {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.toggle-btn {
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 20px;
-  border: 1.5px solid #ccc;
-  background: transparent;
-  color: #999;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-
-  &.active {
-    border-color: #64b5f6;
-    color: #1565c0;
-    background: #e3f2fd;
-  }
 }
 
 .dialogue-block {
@@ -244,16 +218,18 @@
   padding: 0.7rem 1.1rem;
   border-bottom: 1px solid #f2f2f2;
   display: grid;
-  grid-template-columns: minmax(120px, auto) 1fr 1fr;
-  gap: 0.75rem 1.25rem;
-  align-items: baseline;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto;
+  gap: 0.3rem 1rem;
+  align-items: start;
 
   &:last-child { border-bottom: none; }
   &:nth-child(even) { background: #fafafa; }
 
-  &.pinyin-hidden { grid-template-columns: minmax(120px, auto) 1fr; }
-  &.english-hidden { grid-template-columns: minmax(120px, auto) 1fr; }
-  &.pinyin-hidden.english-hidden { grid-template-columns: 1fr; }
+  .dialogue-chinese { grid-column: 1; }
+  .dialogue-pinyin  { grid-column: 1; font-size: 0.82rem; color: #666; }
+  .dialogue-english { grid-column: 1; font-size: 0.85rem; color: #444; font-style: italic; }
+  .line-toggles     { grid-column: 2; grid-row: 1; align-self: center; display: flex; gap: 0.25rem; }
 }
 
 .dialogue-chinese {
@@ -263,15 +239,25 @@
   line-height: 1.6;
 }
 
-.dialogue-pinyin {
-  font-size: 0.82rem;
-  color: #666;
-}
+.line-toggle-btn {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  border: 1.5px solid #ddd;
+  background: transparent;
+  color: #bbb;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  letter-spacing: 0.03em;
 
-.dialogue-english {
-  font-size: 0.85rem;
-  color: #444;
-  font-style: italic;
+  &:hover { border-color: #aaa; color: #888; }
+
+  &.active {
+    border-color: #64b5f6;
+    color: #1565c0;
+    background: #e3f2fd;
+  }
 }
 
 .loading,

@@ -73,8 +73,15 @@ export class LessonDetailComponent implements OnInit {
 
   markingAllSeen = false;
   autoMarkingLearned = false;
-  showPinyin = false;
-  showEnglish = false;
+  lineState = new Map<number, { p: boolean; e: boolean }>();
+
+  lineShow(id: number): { p: boolean; e: boolean } {
+    if (!this.lineState.has(id)) this.lineState.set(id, { p: false, e: false });
+    return this.lineState.get(id)!;
+  }
+
+  toggleLineP(id: number): void { const s = this.lineShow(id); s.p = !s.p; }
+  toggleLineE(id: number): void { const s = this.lineShow(id); s.e = !s.e; }
 
   autoMarkLearned(): void {
     if (!this.lesson) return;

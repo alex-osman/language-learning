@@ -105,23 +105,13 @@
     <div class="dialogues-section" *ngIf="lesson.dialogues && lesson.dialogues.length > 0">
       <div class="dialogues-header">
         <h3 class="section-title">Dialogues</h3>
-        <div class="dialogue-toggles">
-          <button
-            class="toggle-btn"
-            [class.active]="showPinyin"
-            (click)="showPinyin = !showPinyin"
-          >Pinyin</button>
-          <button
-            class="toggle-btn"
-            [class.active]="showEnglish"
-            (click)="showEnglish = !showEnglish"
-          >English</button>
-        </div>
       </div>
       <div class="dialogue-block" *ngFor="let dialogue of lesson.dialogues; let di = index">
         <h4 class="dialogue-title">Dialogue {{ di + 1 }}</h4>
         <div class="dialogue-lines">
-          <div class="dialogue-line" *ngFor="let s of dialogue" [class.pinyin-hidden]="!showPinyin" [class.english-hidden]="!showEnglish">
+          <div class="dialogue-line" *ngFor="let s of dialogue"
+            [class.has-pinyin]="lineShow(s.id).p"
+            [class.has-english]="lineShow(s.id).e">
             <div class="dialogue-chinese">
               <span
                 *ngFor="let span of spansForSentence(s.id)"
@@ -132,8 +122,12 @@
                 (characterLeave)="onCharacterLeave()"
               >{{ span.char }}</span>
             </div>
-            <div class="dialogue-pinyin" *ngIf="showPinyin">{{ s.pinyin }}</div>
-            <div class="dialogue-english" *ngIf="showEnglish">{{ s.english }}</div>
+            <div class="dialogue-pinyin" *ngIf="lineShow(s.id).p">{{ s.pinyin }}</div>
+            <div class="dialogue-english" *ngIf="lineShow(s.id).e">{{ s.english }}</div>
+            <div class="line-toggles">
+              <button class="line-toggle-btn" [class.active]="lineShow(s.id).p" (click)="toggleLineP(s.id)">PY</button>
+              <button class="line-toggle-btn" [class.active]="lineShow(s.id).e" (click)="toggleLineE(s.id)">EN</button>
+            </div>
           </div>
         </div>
       </div>
