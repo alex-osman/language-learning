@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
+const BYPASS_AUTH = true;
+const BYPASS_EMAIL = 'alexosman@live.com';
+
 export interface LoginRequest {
   email: string;
 }
@@ -61,6 +64,8 @@ export class AuthService {
     const token = this.getToken();
     if (token) {
       this.loadUserProfile();
+    } else if (BYPASS_AUTH) {
+      this.login({ email: BYPASS_EMAIL }).subscribe();
     }
   }
 
