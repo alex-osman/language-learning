@@ -41,6 +41,9 @@ client/.angular/cache
 /libpeerconnection.log
 testem.log
 /typings
+.playwright-mcp/
+language-learning-*.png
+lesson*-snapshot.md
 
 # System files
 .DS_Store

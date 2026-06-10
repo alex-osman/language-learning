@@ -125,6 +125,28 @@
   margin-top: auto;
 }
 
+.lesson-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.9rem;
+}
+
+.tutor-btn {
+  min-width: 76px;
+  min-height: 32px;
+  border: 1.5px solid #1565c0;
+  border-radius: 8px;
+  background: #1565c0;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  &:hover {
+    background: #0d47a1;
+  }
+}
+
 .status-pills {
   display: flex;
   flex-wrap: wrap;

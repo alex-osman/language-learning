@@ -1,0 +1,98 @@
+<div class="lesson-tutor-page">
+  <div class="top-row">
+    <a [routerLink]="content.detailRoute" class="back-link">All Lesson {{ content.lessonNumber }} Details</a>
+    <span class="source-note">{{ content.sourceNote }}</span>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading tutor...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container *ngIf="!isLoading && !error">
+    <header class="lesson-hero">
+      <div>
+        <p class="eyebrow">Lesson {{ content.lessonNumber }} Tutor · {{ content.pinyinTitle }}</p>
+        <h1>{{ content.title }} <span>{{ content.chineseTitle }}</span></h1>
+        <p class="hero-copy">{{ content.heroCopy }}</p>
+      </div>
+      <div class="progress-panel">
+        <div>
+          <strong>{{ practicedLines }}</strong>
+          <span>lines practiced</span>
+        </div>
+        <div>
+          <strong>{{ completedDrills }}/{{ drills.length }}</strong>
+          <span>pattern checks</span>
+        </div>
+        <div>
+          <strong>{{ generatedFamilySentences.length }}</strong>
+          <span>personal lines</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="mode-tabs" aria-label="Tutor modes">
+      <button
+        *ngFor="let mode of modes"
+        type="button"
+        [class.active]="activeMode === mode.id"
+        (click)="setMode(mode.id)"
+      >
+        {{ mode.label }}
+      </button>
+    </nav>
+
+    <app-dialogue-tutor-mode
+      *ngIf="activeMode === 'dialogue'"
+      [title]="content.dialogueTitle"
+      [guide]="content.dialogueGuide"
+      [lines]="dialogueOne"
+      [drill]="drills[0]"
+      [speakingId]="speakingId"
+      [lineState]="lineState"
+      (speakLine)="handleSpeak($event)"
+    ></app-dialogue-tutor-mode>
+
+    <app-roleplay-tutor-mode
+      *ngIf="activeMode === 'roleplay' && content.roleplay"
+      [config]="content.roleplay"
+      [transcript]="roleplayTranscript"
+      [isLoading]="roleplayIsLoading"
+      [error]="roleplayError"
+      (submitLearnerMessage)="submitRoleplayMessage($event)"
+      (retry)="retryRoleplay()"
+      (reset)="resetRoleplay()"
+    ></app-roleplay-tutor-mode>
+
+    <app-vocabulary-tutor-mode
+      *ngIf="activeMode === 'vocab'"
+      [vocabNote]="content.vocabNote"
+      [coreWords]="coreWords"
+      [properNouns]="properNouns"
+    ></app-vocabulary-tutor-mode>
+
+    <app-patterns-tutor-mode
+      *ngIf="activeMode === 'patterns'"
+      [patterns]="content.patterns"
+      [drills]="drills"
+    ></app-patterns-tutor-mode>
+
+    <app-personal-practice-mode
+      *ngIf="activeMode === 'family'"
+      [config]="content.personalPractice"
+      [profile]="familyProfile"
+      [generatedSentences]="generatedFamilySentences"
+      (saveProfile)="saveFamilyProfile()"
+      (resetProfile)="resetFamilyProfile()"
+    ></app-personal-practice-mode>
+
+    <app-review-tutor-mode
+      *ngIf="activeMode === 'review'"
+      [practicedLines]="practicedLines"
+      [completedDrills]="completedDrills"
+      [generatedSentenceCount]="generatedFamilySentences.length"
+      [lines]="dialogueTwo"
+      (speakLine)="handleSpeak($event)"
+    ></app-review-tutor-mode>
+  </ng-container>
+
+</div>

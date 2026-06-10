@@ -11,6 +11,7 @@ import {
 import { CharacterTooltipComponent } from '../character-tooltip/character-tooltip.component';
 import { CharacterHoverDirective, CharacterHoverEvent } from '../../directives/character-hover.directive';
 import { AnalyzedCharacter } from '../../services/sentence-analysis.service';
+import { hasTutorContent } from '../lesson-tutor/content/lesson-tutor-content.registry';
 
 export interface CharSpan {
   char: string;
@@ -65,6 +66,10 @@ export class LessonDetailComponent implements OnInit {
 
   get properNouns(): LessonWordDTO[] {
     return this.lesson?.words.filter((w) => w.isProperNoun) ?? [];
+  }
+
+  supportsTutor(): boolean {
+    return hasTutorContent(this.lessonNumber);
   }
 
   statusLabel(status: string): string {

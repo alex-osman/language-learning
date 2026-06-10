@@ -1,0 +1,52 @@
+<section class="mode-section roleplay-mode">
+  <div class="section-heading">
+    <div>
+      <h2>{{ config.title }}</h2>
+      <p>{{ config.description }}</p>
+    </div>
+    <button type="button" class="secondary-action" (click)="reset.emit()">Reset roleplay</button>
+  </div>
+
+  <div class="roleplay-shell">
+    <div class="roleplay-transcript" aria-live="polite">
+      <article
+        class="roleplay-turn"
+        *ngFor="let turn of transcript"
+        [class.learner-turn]="turn.speaker === 'learner'"
+        [class.tutor-turn]="turn.speaker === 'tutor'"
+      >
+        <div class="turn-speaker">{{ turn.speaker === 'learner' ? 'You' : 'Tutor' }}</div>
+        <div class="turn-body">
+          <div class="line-chinese" *ngIf="turn.speaker === 'tutor'">{{ turn.chinese }}</div>
+          <div class="learner-text" *ngIf="turn.speaker === 'learner'">{{ turn.text }}</div>
+          <div class="line-pinyin" *ngIf="turn.speaker === 'tutor' && turn.showPinyin">{{ turn.pinyin }}</div>
+          <div class="line-english" *ngIf="turn.speaker === 'tutor' && turn.showEnglish">{{ turn.english }}</div>
+          <div class="line-actions" *ngIf="turn.speaker === 'tutor'">
+            <button type="button" (click)="togglePinyin(turn)">PY</button>
+            <button type="button" (click)="toggleEnglish(turn)">EN</button>
+          </div>
+        </div>
+      </article>
+      <article class="roleplay-turn tutor-turn loading-turn" *ngIf="isLoading">
+        <div class="turn-speaker">Tutor</div>
+        <div class="turn-body">Thinking...</div>
+      </article>
+    </div>
+
+    <div class="roleplay-error" *ngIf="error">
+      <span>{{ error }}</span>
+      <button type="button" (click)="retry.emit()" [disabled]="isLoading">Retry</button>
+    </div>
+
+    <form class="roleplay-input" (ngSubmit)="submit()">
+      <input
+        type="text"
+        name="roleplayMessage"
+        [(ngModel)]="draft"
+        [disabled]="isLoading"
+        placeholder="Answer in Chinese or English"
+      />
+      <button type="submit" [disabled]="isLoading || !draft.trim()">Send</button>
+    </form>
+  </div>
+</section>

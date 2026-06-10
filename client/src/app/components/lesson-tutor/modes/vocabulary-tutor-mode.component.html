@@ -1,0 +1,22 @@
+<section class="mode-section">
+  <div class="section-heading">
+    <h2>Vocabulary Builder</h2>
+    <p>{{ vocabNote }}</p>
+  </div>
+  <div class="word-grid">
+    <article class="word-card" *ngFor="let word of coreWords">
+      <div class="word-card-head">
+        <span class="word-order">{{ word.sourceOrder }}</span>
+        <span class="word-text">
+          {{ word.word }}
+        </span>
+      </div>
+      <div class="word-meta">{{ word.pinyin }} · {{ word.partOfSpeech }}</div>
+      <p>{{ word.definition }}</p>
+    </article>
+  </div>
+  <div class="proper-nouns" *ngIf="properNouns.length > 0">
+    <h3>Proper nouns</h3>
+    <span *ngFor="let word of properNouns">{{ word.word }} · {{ word.pinyin }}</span>
+  </div>
+</section>

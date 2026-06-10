@@ -1,0 +1,51 @@
+<section class="mode-section family-mode">
+  <div class="section-heading">
+    <h2>{{ config.title }}</h2>
+    <p>{{ config.description }}</p>
+  </div>
+  <div class="family-layout">
+    <form class="family-form" (ngSubmit)="saveProfile.emit()">
+      <label *ngFor="let field of config.fields">
+        {{ field.label }}
+        <input
+          *ngIf="field.inputType === 'number'"
+          type="number"
+          [attr.min]="field.min"
+          [attr.max]="field.max"
+          [name]="field.key"
+          [ngModel]="fieldValue(field)"
+          (ngModelChange)="setFieldValue(field, $event)"
+        />
+        <input
+          *ngIf="field.inputType === 'text'"
+          type="text"
+          [name]="field.key"
+          [ngModel]="fieldValue(field)"
+          (ngModelChange)="setFieldValue(field, $event)"
+        />
+      </label>
+      <h3>{{ config.selectionHeading }}</h3>
+      <div class="member-list">
+        <label class="member-row" *ngFor="let member of profile.selections">
+          <input type="checkbox" name="{{ member.key }}Selected" [(ngModel)]="member.selected" />
+          <span>{{ member.label }} · {{ member.chinese }}</span>
+          <input
+            *ngIf="config.selectionDetailLabel"
+            type="text"
+            name="{{ member.key }}Detail"
+            [(ngModel)]="member.detailText"
+            [placeholder]="config.selectionDetailPlaceholder || config.selectionDetailLabel"
+          />
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="submit">Save and generate</button>
+        <button type="button" (click)="resetProfile.emit()">Reset</button>
+      </div>
+    </form>
+    <div class="generated-lines">
+      <h3>{{ config.generatedLabel }}</h3>
+      <p *ngFor="let sentence of generatedSentences">{{ sentence }}</p>
+    </div>
+  </div>
+</section>

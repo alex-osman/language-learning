@@ -20,6 +20,7 @@ import { CharacterConnectionsComponent } from './components/character-connection
 import { authGuard } from './guards/auth.guard';
 import { LessonsComponent } from './components/lessons/lessons.component';
 import { LessonDetailComponent } from './components/lesson-detail/lesson-detail.component';
+import { LessonTutorComponent } from './components/lesson-tutor/lesson-tutor.component';
 import { WordFlashcardsComponent } from './components/word-flashcards/word-flashcards.component';
 
 export const routes: Routes = [
@@ -83,6 +84,11 @@ export const routes: Routes = [
     path: 'lessons',
     component: LessonsComponent,
     title: 'Lessons',
+  },
+  {
+    path: 'lessons/:lessonNumber/tutor',
+    component: LessonTutorComponent,
+    title: 'Lesson Tutor',
   },
   {
     path: 'lessons/:lessonNumber',

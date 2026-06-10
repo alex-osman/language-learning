@@ -1,0 +1,32 @@
+<section class="mode-section">
+  <div class="section-heading">
+    <h2>Review Queue</h2>
+    <p>This first prototype turns completed tutor work into a local session summary.</p>
+  </div>
+  <div class="review-grid">
+    <div>
+      <strong>{{ practicedLines }}</strong>
+      <span>dialogue lines marked done</span>
+    </div>
+    <div>
+      <strong>{{ completedDrills }}</strong>
+      <span>correct pattern checks</span>
+    </div>
+    <div>
+      <strong>{{ generatedSentenceCount }}</strong>
+      <span>personalized sentences available</span>
+    </div>
+  </div>
+  <div class="dialogue-lines compact">
+    <article class="dialogue-line" *ngFor="let line of lines; let i = index">
+      <div class="line-main">
+        <div class="line-chinese">{{ line.chinese }}</div>
+        <div class="line-pinyin">{{ line.pinyin }}</div>
+        <div class="line-english">{{ line.english }}</div>
+      </div>
+      <div class="line-actions">
+        <button type="button" (click)="speakLine.emit({ id: line.id, text: line.chinese, lineIndex: i })">Play</button>
+      </div>
+    </article>
+  </div>
+</section>

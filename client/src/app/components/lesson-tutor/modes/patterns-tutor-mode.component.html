@@ -1,0 +1,31 @@
+<section class="mode-section">
+  <div class="section-heading">
+    <h2>Patterns in Context</h2>
+    <p>Start from the textbook dialogue, then answer a small deterministic check.</p>
+  </div>
+  <div class="pattern-grid">
+    <article class="pattern-card" *ngFor="let pattern of patterns">
+      <h3>{{ pattern.title }}</h3>
+      <p class="example">{{ pattern.example }}</p>
+      <p>{{ pattern.explanation }}</p>
+    </article>
+  </div>
+
+  <div class="drill-list">
+    <article class="drill-card" *ngFor="let drill of drills">
+      <h3>{{ drill.prompt }}</h3>
+      <div class="choice-row">
+        <button
+          *ngFor="let choice of drill.choices"
+          type="button"
+          [class.correct]="drill.selected === choice && choice === drill.answer"
+          [class.incorrect]="drill.selected === choice && choice !== drill.answer"
+          (click)="selectDrill(drill, choice)"
+        >
+          {{ choice }}
+        </button>
+      </div>
+      <p class="feedback" *ngIf="drill.selected">{{ drill.explanation }}</p>
+    </article>
+  </div>
+</section>

@@ -10,6 +10,7 @@ import { TtsAiService } from './ai/services/tts-ai.service';
 import { ChineseChatAiService } from './ai/services/chat-ai.service';
 import { FrenchChatAiService } from './ai/services/french-chat-ai.service';
 import { CritiqueAiService } from './ai/services/critique-ai.service';
+import { LessonRoleplayAiService } from './ai/services/lesson-roleplay-ai.service';
 import { ConversationService } from './ai/services/conversation.service';
 import { MovieAiService } from './ai/services/movie.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -72,6 +73,7 @@ import { WordFlashcardController } from './controllers/word-flashcard.controller
     ChineseChatAiService,
     FrenchChatAiService,
     CritiqueAiService,
+    LessonRoleplayAiService,
     ConversationService,
     MovieAiService,
     {

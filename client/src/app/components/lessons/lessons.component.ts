@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LessonService, LessonSummaryDTO } from '../../services/lesson.service';
+import { hasTutorContent } from '../lesson-tutor/content/lesson-tutor-content.registry';
 
 @Component({
   selector: 'app-lessons',
@@ -50,7 +51,16 @@ export class LessonsComponent implements OnInit {
     return Math.round((lesson.learnedCount / lesson.wordCount) * 100);
   }
 
+  supportsTutor(lessonNumber: number): boolean {
+    return hasTutorContent(lessonNumber);
+  }
+
   goToLesson(lessonNumber: number): void {
     this.router.navigate(['/lessons', lessonNumber]);
+  }
+
+  goToTutor(event: MouseEvent, lessonNumber: number): void {
+    event.stopPropagation();
+    this.router.navigate(['/lessons', lessonNumber, 'tutor']);
   }
 }

@@ -15,10 +15,13 @@ import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDto } from './dto/chat-response.dto';
 import { CritiqueRequestDto } from './dto/critique-request.dto';
 import { CritiqueResponseDto } from './dto/critique-response.dto';
+import { LessonRoleplayRequestDto } from './dto/lesson-roleplay-request.dto';
+import { LessonRoleplayResponseDto } from './dto/lesson-roleplay-response.dto';
 import { TtsRequestDto } from './dto/tts-request.dto';
 import { ChineseChatAiService } from './services/chat-ai.service';
 import { CritiqueAiService } from './services/critique-ai.service';
 import { FrenchChatAiService } from './services/french-chat-ai.service';
+import { LessonRoleplayAiService } from './services/lesson-roleplay-ai.service';
 import { TtsAiService } from './services/tts-ai.service';
 import { MovieAiService } from './services/movie.service';
 import { CharacterDTO } from '@shared/interfaces/data.interface';
@@ -40,6 +43,7 @@ export class AiController {
     private readonly chineseChatService: ChineseChatAiService,
     private readonly frenchChatService: FrenchChatAiService,
     private readonly critiqueService: CritiqueAiService,
+    private readonly lessonRoleplayService: LessonRoleplayAiService,
     private readonly characterService: CharacterService,
     private readonly userCharacterKnowledgeService: UserCharacterKnowledgeService,
     private readonly movieService: MovieAiService,
@@ -101,6 +105,25 @@ export class AiController {
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Failed to generate critique response',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('lesson-roleplay')
+  async lessonRoleplay(
+    @Body() request: LessonRoleplayRequestDto,
+  ): Promise<LessonRoleplayResponseDto> {
+    try {
+      return await this.lessonRoleplayService.generateRoleplayTurn(request);
+    } catch (error: any) {
+      this.logger.error(`Lesson roleplay generation failed:`);
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to generate lesson roleplay response',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

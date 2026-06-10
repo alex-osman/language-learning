@@ -1,0 +1,44 @@
+<section class="mode-section dialogue-mode">
+  <div class="guide-panel">
+    <div>
+      <h2>{{ title }}</h2>
+      <p>{{ guide }}</p>
+    </div>
+  </div>
+
+  <div class="dialogue-lines">
+    <article class="dialogue-line" *ngFor="let line of lines; let i = index" [class.done]="lineShow(line.id).practiced">
+      <div class="line-main">
+        <div class="line-chinese">
+          {{ line.chinese }}
+        </div>
+        <div class="line-pinyin" *ngIf="lineShow(line.id).pinyin">{{ line.pinyin }}</div>
+        <div class="line-english" *ngIf="lineShow(line.id).english">{{ line.english }}</div>
+      </div>
+      <div class="line-actions">
+        <button type="button" (click)="speakLine.emit({ id: line.id, text: line.chinese, lineIndex: i })">{{ speakingId === line.id ? 'Stop' : 'Play' }}</button>
+        <button type="button" (click)="togglePinyin(line.id)">PY</button>
+        <button type="button" (click)="toggleEnglish(line.id)">EN</button>
+        <button type="button" (click)="markPracticed(line.id)">Done</button>
+      </div>
+    </article>
+  </div>
+
+  <div class="practice-card" *ngIf="drill">
+    <h3>Practice check</h3>
+    <p>{{ drill.prompt }}</p>
+    <div class="choice-row">
+      <button
+        *ngFor="let choice of drill.choices"
+        type="button"
+        [class.correct]="drill.selected === choice && choice === drill.answer"
+        [class.incorrect]="drill.selected === choice && choice !== drill.answer"
+        (click)="selectDrill(choice)"
+      >
+        {{ choice }}
+      </button>
+    </div>
+    <p class="feedback" *ngIf="drill.selected">{{ drill.explanation }}</p>
+  </div>
+
+</section>

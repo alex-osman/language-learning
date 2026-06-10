@@ -68,6 +68,12 @@
         </div>
         <div class="progress-bar-track empty" *ngIf="progressPercent(lesson) === 0"></div>
       </div>
+
+      <div class="lesson-actions" *ngIf="supportsTutor(lesson.lessonNumber)">
+        <button type="button" class="tutor-btn" (click)="goToTutor($event, lesson.lessonNumber)">
+          Tutor
+        </button>
+      </div>
     </div>
   </div>
 </div>

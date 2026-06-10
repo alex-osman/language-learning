@@ -11,6 +11,7 @@
     <div class="lesson-header-row">
       <p class="word-count-label">{{ lesson.words.length }} vocabulary words</p>
       <div class="header-actions">
+        <a *ngIf="supportsTutor()" class="tutor-link" [routerLink]="['/lessons', lesson.lessonNumber, 'tutor']">Start Tutor</a>
         <button class="mark-seen-btn" (click)="autoMarkLearned()" [disabled]="autoMarkingLearned">
           {{ autoMarkingLearned ? 'Marking...' : 'Auto-mark learned' }}
         </button>
