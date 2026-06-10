@@ -206,6 +206,18 @@
     &:hover {
       border-color: #9aa4b2;
     }
+
+    &.active {
+      border-color: #64b5f6;
+      color: #1565c0;
+      background: #e3f2fd;
+    }
+
+    &.speak-btn.active {
+      border-color: #a5d6a7;
+      color: #2e7d32;
+      background: #f1f8e9;
+    }
   }
 }
 

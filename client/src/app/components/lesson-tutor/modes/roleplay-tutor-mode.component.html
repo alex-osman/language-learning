@@ -11,7 +11,7 @@
     <div class="roleplay-transcript" aria-live="polite">
       <article
         class="roleplay-turn"
-        *ngFor="let turn of transcript"
+        *ngFor="let turn of transcript; let ti = index"
         [class.learner-turn]="turn.speaker === 'learner'"
         [class.tutor-turn]="turn.speaker === 'tutor'"
       >
@@ -22,8 +22,11 @@
           <div class="line-pinyin" *ngIf="turn.speaker === 'tutor' && turn.showPinyin">{{ turn.pinyin }}</div>
           <div class="line-english" *ngIf="turn.speaker === 'tutor' && turn.showEnglish">{{ turn.english }}</div>
           <div class="line-actions" *ngIf="turn.speaker === 'tutor'">
-            <button type="button" (click)="togglePinyin(turn)">PY</button>
-            <button type="button" (click)="toggleEnglish(turn)">EN</button>
+            <button type="button" [class.active]="turn.showPinyin" (click)="togglePinyin(turn)">PY</button>
+            <button type="button" [class.active]="turn.showEnglish" (click)="toggleEnglish(turn)">EN</button>
+            <button type="button" class="speak-btn" [class.active]="speakingIndex === ti" (click)="speak(ti, turn.chinese!)">
+              {{ speakingIndex === ti ? '■' : '▶' }}
+            </button>
           </div>
         </div>
       </article>
