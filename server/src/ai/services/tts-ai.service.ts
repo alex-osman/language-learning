@@ -8,10 +8,15 @@ import * as crypto from 'crypto';
 @Injectable()
 export class TtsAiService extends BaseAiService {
   private readonly speechDir = path.join(
-    process.cwd(),
+    __dirname,
+    '..',
+    '..',
+    '..',
+    '..',
     '..',
     'client',
-    'public',
+    'dist',
+    'browser',
     'assets',
     'speech',
   );
